@@ -6,6 +6,7 @@ import json
 # Create an MCP server
 mcp = FastMCP("Adobe Photoshop", log_level="ERROR")
 
+APPLICATION = "photoshop"
 
 # Add an addition tool
 #@mcp.tool()
@@ -32,7 +33,7 @@ def create_document(name: str, width: int, height:int, resolution:int, colorMode
 @mcp.tool()
 def test() -> None:
     
-    url = "http://127.0.0.1:3030"
+    url = "http://127.0.0.1:3030/commands/add/"
 
     data = json.dumps({
         "foo":"bar"
@@ -64,7 +65,7 @@ def test() -> None:
 #    return "Hi"
 
 def sendCommand(command:dict):
-    url = "http://127.0.0.1:3030"
+    url = "http://127.0.0.1:3030/commands/add/"
 
     data = json.dumps(command)
 
@@ -80,6 +81,7 @@ def sendCommand(command:dict):
 
 def createCommand(action:str, options:dict) -> str:
     command = {
+        "application":APPLICATION,
         "action":action,
         "options":options
     }

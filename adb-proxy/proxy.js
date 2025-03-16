@@ -1,30 +1,77 @@
-const express = require('express')
-const app = express()
+const express = require('express');
+const app = express();
 app.use(express.json());
-const port = 3030
+const port = 3030;
 
-app.get('/retrieve/', (req, res) => {
+const PHOTOSHOP = "photoshop";
+const ILLUSTRATOR = "illustrator";
 
-    let packet = {
-        status:"SUCCESS",
-        commands : []
+let commands = {
+  [PHOTOSHOP]: [],
+  [ILLUSTRATOR]: []
+};
+
+
+
+app.get('/commands/get/:application', (req, res) => {
+  // Access the variable via req.params
+  const application = req.params.application;
+
+  let packet = null
+
+  if (!isSupportedApplication(application)) {
+    packet = {
+      status: "FAIL",
+      message: `Unknown command application: ${application}`
+    };
+  } else {
+
+    packet = {
+      status: "SUCCESS",
+      application:application,
+      commands:commands[application].slice()
     }
 
-    let out = JSON.stringify(packet)
+    commands[application].length = 0
+  }
 
-    res.setHeader('Content-Type', 'application/json');
-    res.send(out)
-  })
-
-app.post('/', function(request, response){
-    console.log(request.body);
-    
-    let out = {status:"SUCCESS"}
-    
-    // your JSON
-     response.send(JSON.stringify(out));    // echo the result back
+  res.json(packet);
 });
 
+// POST endpoint to add a new command
+app.post('/commands/add/', (req, res) => {
+
+  console.log("/commands/add/")
+
+  const command = req.body;
+  const application = command.application;
+
+  console.log(command)
+
+  // Default to SUCCESS
+  let out = { status: "SUCCESS" };
+
+  // Check if application is recognized
+  if (!isSupportedApplication(application)) {
+    out = {
+      status: "FAIL",
+      message: `Unknown command application: ${application}`
+    };
+  } else {
+    // If recognized, push the entire command object into the array
+    commands[application].push(command);
+  }
+
+  console.log(out)
+  // Return the status
+  res.json(out);
+});
+
+const isSupportedApplication = (application) => {
+  return application === PHOTOSHOP || application === ILLUSTRATOR;
+};
+
+// Start the server
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+  console.log(`Example app listening on port ${port}`);
+});
