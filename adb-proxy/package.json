@@ -1,0 +1,14 @@
+{
+  "name": "adb-proxy",
+  "version": "0.85.1",
+  "description": "Adobe MCP App Proxy Server",
+  "main": "proxy.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mike Chambers",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

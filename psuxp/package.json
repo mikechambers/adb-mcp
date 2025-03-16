@@ -1,0 +1,7 @@
+{
+  "name": "uxp-template-ps-starter",
+  "version": "1.0.0",
+  "description": "Starter template for creating Adobe UXP based-Photoshop plugin.",
+  "author": "Adobe Inc",
+  "license": "Apache-2.0"
+}
