@@ -14,8 +14,10 @@ APPLICATION = "photoshop"
 #    """Add two numbers"""
 #    return a + b
 
+
+#todo: how can we let AI know what options are? say for mode?
 @mcp.tool()
-def create_document(name: str, width: int, height:int, resolution:int, colorMode:str = "RGBColorMode"):
+def create_document(name: str, width: int, height:int, resolution:int, fill_color:dict = {"red":0, "green":0, "blue":0}, colorMode:str = "RGB"):
     """Creates a new Photoshop Document"""
     
     command = createCommand("createDocument", {
@@ -23,6 +25,7 @@ def create_document(name: str, width: int, height:int, resolution:int, colorMode
         "width":width,
         "height":height,
         "resolution":resolution,
+        "fillColor":fill_color,
         "colorMode":colorMode
     })
 
