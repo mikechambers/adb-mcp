@@ -33,7 +33,15 @@ def create_document(name: str, width: int, height:int, resolution:int, fill_colo
 
 
 @mcp.tool()
-def create_text_layer(layer_name:str, text:str, font_size:int, position:dict = {"x": 100, "y":100}):
+def create_text_layer(
+    layer_name:str, 
+    text:str, 
+    font_size:int, 
+    postscript_font_name:str, 
+    opacity:int = 100, 
+    text_color:dict = {"red":255, "green":255, "blue":255}, 
+    position:dict = {"x": 100, "y":100}
+    ):
     """Creates a new text layer within the current open Photoshop Document"""
     print("create_text_layer")
 
@@ -41,7 +49,10 @@ def create_text_layer(layer_name:str, text:str, font_size:int, position:dict = {
         "name":layer_name,
         "contents":text,
         "fontSize": font_size,
-        "position":position
+        "opacity":opacity,
+        "position":position,
+        "fontName":postscript_font_name,
+        "textColor":text_color
     })
 
     sendCommand(command)

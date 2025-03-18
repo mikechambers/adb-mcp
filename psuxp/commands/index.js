@@ -44,49 +44,32 @@ let createTextLayer = async (command) => {
         throw new Error("No active document. Please create or open a document first.");
     }
 
-    let c = parseColor({red:255, green:0, blue:0})
-
-    console.log(app.activeDocument.createTextLayer)
-
     try {
         await core.executeAsModal(
             async () => {
             
+                let c = parseColor(options.textColor)
 
                 //need to adjust font size is DPI is anything other than 72.
                 //should document as part of createTextLayer call
                 let fontSize = (app.activeDocument.resolution / 72) * options.fontSize;
 
                 let a = await app.activeDocument.createTextLayer({
-                blendMode: constants.BlendMode.DISSOLVE,//ignored
-                textColor: c,
-                color:constants.LabelColors.BLUE,//ignored
-                opacity:50, //ignored 
-                name: "layer name",//ignored
-                contents: options.contents,
-                fontSize: fontSize,
-                fontName: "ArialMT",
-                position: {x:700, y:600}//y is ignored
-                
-            })
+                    //blendMode: constants.BlendMode.DISSOLVE,//ignored
+                    textColor: c,
+                    //color:constants.LabelColors.BLUE,//ignored
+                    //opacity:50, //ignored 
+                    //name: "layer name",//ignored
+                    contents: options.contents,
+                    fontSize: fontSize,
+                    fontName: options.fontName, //"ArialMT",
+                    position: options.position//y is the baseline of the text. Not top left
+                })
 
-            //https://developer.adobe.com/photoshop/uxp/2022/ps_reference/classes/layer/
+                //https://developer.adobe.com/photoshop/uxp/2022/ps_reference/classes/layer/
 
-            //can use bounds to change registration point?
-
-            console.log(a)
-
-            a.name = options.name
-            a.opacity = 25
-            a.blendMode = constants.BlendMode.DISSOLVE
-
-            //works
-            //a.applyGaussianBlur(200)
-
-            //https://developer.adobe.com/photoshop/uxp/2022/ps_reference/classes/characterstyle/
-            //https://developer.adobe.com/photoshop/uxp/2022/ps_reference/classes/textitem/
-            //a.textItem.characterStyle.size = s //this work, but sets to 48pt
-        
+                a.name = options.name
+                a.opacity = options.opacity
         },
             {
                 commandName: "Creating text layer...",
