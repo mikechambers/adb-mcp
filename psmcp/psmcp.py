@@ -57,6 +57,18 @@ def create_text_layer(
 
     sendCommand(command)
 
+@mcp.tool()
+def apply_gausian_blur(layer_name: str, radius: float = 2.5):
+    """Applies a Gausian Blur to the specified layer"""
+    #0.1 to 255
+
+    command = createCommand("applyGaussianBlur", {
+        "layerName":layer_name,
+        "radius":radius,
+    })
+
+    sendCommand(command)
+
 """
 @mcp.tool()
 def test() -> None:

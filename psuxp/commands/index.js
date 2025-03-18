@@ -25,6 +25,9 @@ let parseAndRouteCommand = async (command) => {
         case "createTextLayer":
             await createTextLayer(command)
             break
+        case "applyGaussianBlur":
+            await applyGaussianBlur(command)
+            break
         default:
             console.log("Unknown Command", action)
             break;
@@ -32,6 +35,61 @@ let parseAndRouteCommand = async (command) => {
 
 }
 
+function findLayer(name, layers) {
+
+    if(!layers) {
+        layers = app.activeDocument.layers
+    }
+
+    for (const layer of layers) {
+        if (layer.name === name) {
+            return layer;
+        }
+
+        if (layer.layers && layer.layers.length > 0) {
+            const found = findLayerByName(name, layer.layers);
+            if (found) {
+                return found; // Stop as soon as we’ve found the target layer
+            }
+        }
+    }
+
+    return null;
+}
+
+
+let applyGaussianBlur = async (command) => {
+
+    console.log("applyGaussianBlur")
+
+    let options = command.options
+    let layerName = options.layerName
+
+    let layer = findLayer(layerName)
+
+    console.log(layer)
+    console.log(command.options)
+
+    if(!layer) {
+        console.log(`applyGaussianBlur : Could not find layer named : [$[layerName]]`)
+        return
+    }
+
+    await execute(
+        async () => {
+            await layer.applyGaussianBlur(options.radius)
+        }
+    );
+}
+
+async function execute(callback, commandName = "Executing command...") {
+    try {
+        return await core.executeAsModal(callback, { commandName:commandName });
+    } catch (e) {
+        console.error("Error creating text layer:", e);
+        throw e;
+    }
+}
 
 let createTextLayer = async (command) => {
     
@@ -44,60 +102,35 @@ let createTextLayer = async (command) => {
         throw new Error("No active document. Please create or open a document first.");
     }
 
-    try {
-        await core.executeAsModal(
-            async () => {
-            
-                let c = parseColor(options.textColor)
+    await execute(
+        async () => {
+        
+            let c = parseColor(options.textColor)
 
-                //need to adjust font size is DPI is anything other than 72.
-                //should document as part of createTextLayer call
-                let fontSize = (app.activeDocument.resolution / 72) * options.fontSize;
+            //need to adjust font size is DPI is anything other than 72.
+            //should document as part of createTextLayer call
+            let fontSize = (app.activeDocument.resolution / 72) * options.fontSize;
 
-                let a = await app.activeDocument.createTextLayer({
-                    //blendMode: constants.BlendMode.DISSOLVE,//ignored
-                    textColor: c,
-                    //color:constants.LabelColors.BLUE,//ignored
-                    //opacity:50, //ignored 
-                    //name: "layer name",//ignored
-                    contents: options.contents,
-                    fontSize: fontSize,
-                    fontName: options.fontName, //"ArialMT",
-                    position: options.position//y is the baseline of the text. Not top left
-                })
+            let a = await app.activeDocument.createTextLayer({
+                //blendMode: constants.BlendMode.DISSOLVE,//ignored
+                textColor: c,
+                //color:constants.LabelColors.BLUE,//ignored
+                //opacity:50, //ignored 
+                //name: "layer name",//ignored
+                contents: options.contents,
+                fontSize: fontSize,
+                fontName: options.fontName, //"ArialMT",
+                position: options.position//y is the baseline of the text. Not top left
+            })
 
-                //https://developer.adobe.com/photoshop/uxp/2022/ps_reference/classes/layer/
+            //https://developer.adobe.com/photoshop/uxp/2022/ps_reference/classes/layer/
 
-                a.name = options.name
-                a.opacity = options.opacity
-        },
-            {
-                commandName: "Creating text layer...",
-            }
-        );
-    } catch (e) {
-        console.error("Error creating text layer:", e);
-        throw e;
-    }
-
-    //await doc.createPixelLayer({ name: "myLayer", opacity: 80, fillNeutral: true })
-
-    return 
-    await app.activeDocument.createTextLayer({
-        name:"foo",
-        contents:"hello world",
-        fontSize:24,
-        position:{x: 200, y: 300}
-    });
-    return
+            a.name = options.name
+            a.opacity = options.opacity
+        }
+    );
 
 
-    await require('photoshop').app.activeDocument.createLayer({
-        name:options.name,
-        contents:options.contents,
-        fontSize:options.fontSize,
-        position:options.position
-    });
 }
 
 let createDocument = async (command) => {
