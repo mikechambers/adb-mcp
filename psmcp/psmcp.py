@@ -2,11 +2,14 @@
 from mcp.server.fastmcp import FastMCP
 import requests
 import json
+from Cocoa import NSFontManager, NSFont
 
 # Create an MCP server
 mcp = FastMCP("Adobe Photoshop", log_level="ERROR")
 
 APPLICATION = "photoshop"
+
+
 
 # Add an addition tool
 #@mcp.tool()
@@ -99,10 +102,15 @@ def test() -> None:
 #    """Get a personalized greeting"""
 #    return f"Hello, {name}!"
 
-#@mcp.resource("config://say_hi")
-#def say_hi() -> str:
-#    """Echo a message as a resource"""
-#    return "Hi"
+@mcp.resource("config://get_blend_modes")
+def get_blend_modes() -> list[str]:
+    """Returns font names available to use"""
+    return blend_modes
+
+@mcp.resource("config://get_fonts")
+def get_fonts() -> list[str]:
+    """Returns font names available to use"""
+    return fonts
 
 def sendCommand(command:dict):
     url = "http://127.0.0.1:3030/commands/add/"
@@ -127,3 +135,57 @@ def createCommand(action:str, options:dict) -> str:
     }
 
     return command
+
+
+def list_all_fonts_postscript():
+    manager = NSFontManager.sharedFontManager()
+    # This returns a list of all known face names (e.g., 'Arial-BoldMT', 'Helvetica', etc.)
+    face_names = manager.availableFonts()
+
+    ps_names = set()
+    for face_name in face_names:
+        # Create an NSFont for each face name
+        font = NSFont.fontWithName_size_(face_name, 12)
+        if font:
+            # Get its NSFontDescriptor
+            descriptor = font.fontDescriptor()
+            # The PostScript name is stored under the "NSFontNameAttribute" key
+            ps_name = descriptor.objectForKey_("NSFontNameAttribute")
+            if ps_name:
+                ps_names.add(ps_name)
+
+    return sorted(ps_names)
+
+
+fonts = list_all_fonts_postscript()
+
+blend_modes = [
+    "COLOR",
+    "COLORBURN",
+    "COLORDODGE",
+    "DARKEN",
+    "DARKERCOLOR",
+    "DIFFERENCE",
+    "DISSOLVE",
+    "DIVIDE",
+    "EXCLUSION",
+    "HARDLIGHT",
+    "HARDMIX",
+    "HUE",
+    "LIGHTEN",
+    "LIGHTERCOLOR",
+    "LINEARBURN",
+    "LINEARDODGE",
+    "LINEARLIGHT",
+    "LUMINOSITY",
+    "MULTIPLY",
+    "NORMAL",
+    "OVERLAY",
+    "PASSTHROUGH",
+    "PINLIGHT",
+    "SATURATION",
+    "SCREEN",
+    "SOFTLIGHT",
+    "SUBTRACT",
+    "VIVIDLIGHT"
+]
