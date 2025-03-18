@@ -9,22 +9,18 @@ const APPLICATION = "photoshop"
 let intervalId = null
 
 let onInterval = async () => {
-  console.log("onInterval")
-  let commands = await fetchCommands()
 
-  console.log(commands)
+  let commands = await fetchCommands()
 
   await parseAndRouteCommands(commands)
 
 }
 
 let startInterval = () => {
-  console.log("start interval")
   intervalId = setInterval(onInterval, UPDATE_INTERVAL)
 }
 
 let stopInterval = () => {
-  console.log("stop interval")
   clearInterval(intervalId)
   intervalId = null
 }
@@ -87,24 +83,4 @@ document.getElementById("btnStart").addEventListener("click", () => {
     startInterval();
     b.textContent = "Stop";
   }
-
-  /*
-  try {
-      await require('photoshop').core.executeAsModal(app.createDocument, {
-        name: "Created by Plugin",
-        width: 800,
-        height: 600,
-        resolution: 72,
-        mode: "RGBColorMode"
-    });
-
-      
-      // Display success message
-      //UI.showSuccess("Document created successfully!");
-  } catch (error) {
-      // Handle errors
-      console.error(error);
-      //UI.showError("Failed to create document: " + error.message);
-  }
-      */
 });
