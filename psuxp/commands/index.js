@@ -31,6 +31,10 @@ let parseAndRouteCommand = async (command) => {
         case "applyGaussianBlur":
             await applyGaussianBlur(command)
             break
+            case "applyMotionBlur":
+                await applyMotionBlur(command)
+                break
+            
         default:
             console.log("Unknown Command", action)
             break;
@@ -60,6 +64,26 @@ function findLayer(name, layers) {
     return null;
 }
 
+let applyMotionBlur = async (command) => {
+
+    console.log("applyMotionBlur")
+
+    let options = command.options
+    let layerName = options.layerName
+
+    let layer = findLayer(layerName)
+
+    if(!layer) {
+        console.log(`applyGaussianBlur : Could not find layer named : [$[layerName]]`)
+        return
+    }
+
+    await execute(
+        async () => {
+            await layer.applyMotionBlur(options.angle, options.distance)
+        }
+    );
+}
 
 let applyGaussianBlur = async (command) => {
 
@@ -69,9 +93,6 @@ let applyGaussianBlur = async (command) => {
     let layerName = options.layerName
 
     let layer = findLayer(layerName)
-
-    console.log(layer)
-    console.log(command.options)
 
     if(!layer) {
         console.log(`applyGaussianBlur : Could not find layer named : [$[layerName]]`)

@@ -92,6 +92,18 @@ def apply_gausian_blur(layer_name: str, radius: float = 2.5):
 
     sendCommand(command)
 
+@mcp.tool()
+def apply_motion_blur(layer_name: str, angle: int = 0, distance: float = 30):
+    """Applies a Motion Blur to the specified layer"""
+
+
+    command = createCommand("applyMotionBlur", {
+        "layerName":layer_name,
+        "angle":angle,
+        "distance":distance
+    })
+
+    sendCommand(command)
 
 
 # Add a dynamic greeting resource
