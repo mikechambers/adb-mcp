@@ -252,6 +252,18 @@ let selectRectangle = async (command) => {
                 options.feather,
                 options.antiAlias
             );
+
+            if(options.invert) {
+                let commands = [
+                    {
+                        "_obj": "inverse"
+                    }
+                ];
+                await action.batchPlay(commands, {});
+            }
+
+
+
         }
     );
 }
