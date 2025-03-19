@@ -13,6 +13,13 @@ APPLICATION = "photoshop"
 #ripple, sphere, twirl, wave, zigzag
 #rotate, scale, skew
 #select, fill
+#more options for text (paragraph, alignment)
+#add path
+#select subject
+
+@mcp.prompt()
+def start_project(project_type: str, background_color:str) -> str:
+    return f"Create a new Photoshop file for a {project_type} with a {background_color} background"
 
 #todo: how can we let AI know what options are? say for mode?
 @mcp.tool()
@@ -31,6 +38,25 @@ def create_document(name: str, width: int, height:int, resolution:int, fill_colo
     sendCommand(command)
 
 @mcp.tool()
+def generate_image(
+    layer_name:str,
+    prompt:str,
+    opacity:int = 100,
+    blend_mode:str = "NORMAL",
+):
+    """Uses Adobe Firefly Generative AI to generate an image on a new layer with the specified layer name
+    """
+    
+    command = createCommand("generateImage", {
+        "layerName":layer_name,
+        "prompt":prompt,
+        "opacity":opacity,
+        "blendMode":blend_mode
+    })
+
+    sendCommand(command)
+
+@mcp.tool()
 def create_pixel_layer(
     layer_name:str,
     fillNeutral:bool,
@@ -39,7 +65,6 @@ def create_pixel_layer(
 ):
     """Creates a new pixel layer within the current open Photoshop Document"""
     
-
     command = createCommand("createPixelLayer", {
         "name":layer_name,
         "opacity":opacity,
@@ -60,8 +85,22 @@ def create_text_layer(
     text_color:dict = {"red":255, "green":255, "blue":255}, 
     position:dict = {"x": 100, "y":100}
     ):
-    """Creates a new text layer within the current open Photoshop Document"""
+
+    """
+    Create a new text layer within the current Photoshop document.
     
+    Parameters:
+        layer_name (str): The name of the layer to be created. Will be used to select in other api calls.
+        text (str): The text to include on the layer.
+        font_size: Font size.
+        postscript_font_name: Postscript Font Name to display the text in. List of available fonts can be retrieved from the get_fonts resource.
+        opacity: Opacity for the layer specified in percent.
+        blend_mode: Blend Mode for the layer. List of available modes can be retried from the get_blend_modes resource
+        text_color: Color of the text expressed in Red, Green, Blue values between 0 and 255
+        position: Position where the text will be placed in the layer. Based on bottom left point of the text.
+
+
+    """
 
     command = createCommand("createTextLayer", {
         "name":layer_name,

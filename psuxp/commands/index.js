@@ -39,7 +39,10 @@ let parseAndRouteCommand = async (command) => {
             break
         case "fillSelection":
             await fillSelection(command)
-            break   
+            break
+        case "generateImage":
+            await generateImage(command)
+            break 
         default:
             console.log("Unknown Command", action)
             break;
@@ -60,7 +63,7 @@ function findLayer(name, layers) {
         }
 
         if (layer.layers && layer.layers.length > 0) {
-            const found = findLayerByName(name, layer.layers);
+            const found = findLayer(name, layer.layers);
             if (found) {
                 return found; // Stop as soon as we’ve found the target layer
             }
@@ -70,6 +73,85 @@ function findLayer(name, layers) {
     return null;
 }
 
+let generateImage = async (command) => {
+    console.log("generateImage")
+
+    let options = command.options
+    let layerName = options.layerName
+    /*let layer = findLayer(layerName)
+
+    if(!layer) {
+        console.log(`generateImage : Could not find layer named : [${layerName}]`)
+        return
+    }
+        */
+
+    await execute(
+        async () => {
+            //layer.selected = true
+            let doc = app.activeDocument
+            await doc.selection.selectAll()
+            let commands = [
+                // Generate Image current document
+                {
+                    "_obj": "syntheticTextToImage",
+                    "_target": [
+                        {
+                            "_enum": "ordinal",
+                            "_ref": "document",
+                            "_value": "targetEnum"
+                        }
+                    ],
+                    "documentID": doc.id,
+                    "layerID": 0,
+                    "prompt": options.prompt,
+                    "serviceID": "clio",
+                    "serviceOptionsList": {
+                        "clio": {
+                            "_obj": "clio",
+                            "clio_advanced_options": {
+                                "text_to_image_styles_options": {
+                                    "text_to_image_content_type": "none",
+                                    "text_to_image_effects_count": 0,
+                                    "text_to_image_effects_list": [
+                                        "none",
+                                        "none",
+                                        "none"
+                                    ]
+                                }
+                            },
+                            "dualCrop": true,
+                            "gentech_workflow_name": "text_to_image",
+                            "gi_ADVANCED": "{\"enable_mts\":true}",
+                            "gi_CONTENT_PRESERVE": 0,
+                            "gi_CROP": false,
+                            "gi_DILATE": false,
+                            "gi_ENABLE_PROMPT_FILTER": true,
+                            "gi_GUIDANCE": 6,
+                            "gi_MODE": "ginp",
+                            "gi_NUM_STEPS": -1,
+                            "gi_PROMPT": options.prompt,
+                            "gi_SEED": -1,
+                            "gi_SIMILARITY": 0
+                        }
+                    },
+                    "workflow": "text_to_image",
+                    "workflowType": {
+                        "_enum": "genWorkflow",
+                        "_value": "text_to_image"
+                    }
+                }
+            ];  
+            await action.batchPlay(commands, {});
+            let l = findLayer(options.prompt)
+            l.name = options.layerName
+
+            l.blendMode = getBlendMode(options.blendMode)
+            l.opacity = opacity
+
+        }
+    );
+}
 
 let fillSelection = async (command) => {
 
@@ -80,7 +162,7 @@ let fillSelection = async (command) => {
     let layer = findLayer(layerName)
    
     if(!layer) {
-        console.log(`fillSelection : Could not find layer named : [$[layerName]]`)
+        console.log(`fillSelection : Could not find layer named : [${layerName}]`)
         return
     }
 
@@ -150,7 +232,7 @@ let applyMotionBlur = async (command) => {
     let layer = findLayer(layerName)
 
     if(!layer) {
-        console.log(`applyGaussianBlur : Could not find layer named : [$[layerName]]`)
+        console.log(`applyGaussianBlur : Could not find layer named : [${layerName}]`)
         return
     }
 
@@ -171,7 +253,7 @@ let applyGaussianBlur = async (command) => {
     let layer = findLayer(layerName)
 
     if(!layer) {
-        console.log(`applyGaussianBlur : Could not find layer named : [$[layerName]]`)
+        console.log(`applyGaussianBlur : Could not find layer named : [${layerName}]`)
         return
     }
 

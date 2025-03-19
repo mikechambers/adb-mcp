@@ -1,0 +1,6 @@
+I want a photoshop file for an instagram post. it should be evenly divided into 4 squares of equal colors, and one square of a different color centered, with a blend mode used.
+
+double exposure
+
+generate image of city
+generate image of woman on white background, opacity 50, blend mode SCREEN
