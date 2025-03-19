@@ -41,7 +41,8 @@ def create_text_layer(
     text:str, 
     font_size:int, 
     postscript_font_name:str, 
-    opacity:int = 100, 
+    opacity:int = 100,
+    blend_mode:str = "NORMAL",
     text_color:dict = {"red":255, "green":255, "blue":255}, 
     position:dict = {"x": 100, "y":100}
     ):
@@ -55,7 +56,8 @@ def create_text_layer(
         "opacity":opacity,
         "position":position,
         "fontName":postscript_font_name,
-        "textColor":text_color
+        "textColor":text_color,
+        "blendMode":blend_mode
     })
 
     sendCommand(command)

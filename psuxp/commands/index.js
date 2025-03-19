@@ -125,6 +125,7 @@ let createTextLayer = async (command) => {
 
             //https://developer.adobe.com/photoshop/uxp/2022/ps_reference/classes/layer/
 
+            a.blendMode = getBlendMode(options.blendMode)
             a.name = options.name
             a.opacity = options.opacity
         }
@@ -179,6 +180,10 @@ function parseColor(color) {
         console.error("Error parsing color:", e);
         throw new Error(`Invalid color values: ${JSON.stringify(color)}`);
     }
+}
+
+function getBlendMode(name) {
+    return constants.BlendMode[name]
 }
 
 function getNewDocumentMode(mode) {
