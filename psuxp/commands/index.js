@@ -25,6 +25,9 @@ let parseAndRouteCommand = async (command) => {
         case "createTextLayer":
             await createTextLayer(command)
             break
+        case "createPixelLayer":
+            await createPixelLayer(command)
+            break
         case "applyGaussianBlur":
             await applyGaussianBlur(command)
             break
@@ -128,6 +131,40 @@ let createTextLayer = async (command) => {
             a.blendMode = getBlendMode(options.blendMode)
             a.name = options.name
             a.opacity = options.opacity
+        }
+    );
+}
+
+let createPixelLayer = async (command) => {
+    
+    let options = command.options
+
+    console.log("createPixelLayer", options)
+
+    // Check if there's an active document
+    if (!app.activeDocument) {
+        throw new Error("No active document. Please create or open a document first.");
+    }
+
+    await execute(
+        async () => {
+        
+            //let c = parseColor(options.textColor)
+
+            let b = getBlendMode(options.blendMode)
+
+            let a = await app.activeDocument.createPixelLayer({
+                name:options.name,
+                opacity:options.opacity,
+                fillNeutral:options.fillNeutral,
+                blendMode:b
+            })
+
+            //https://developer.adobe.com/photoshop/uxp/2022/ps_reference/classes/layer/
+
+            //a.blendMode = getBlendMode(options.blendMode)
+            //a.name = options.name
+            //a.opacity = options.opacity
         }
     );
 

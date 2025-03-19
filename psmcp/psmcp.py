@@ -34,6 +34,24 @@ def create_document(name: str, width: int, height:int, resolution:int, fill_colo
 
     sendCommand(command)
 
+@mcp.tool()
+def create_pixel_layer(
+    layer_name:str,
+    fillNeutral:bool,
+    opacity:int = 100,
+    blend_mode:str = "NORMAL",
+):
+    """Creates a new pixel layer within the current open Photoshop Document"""
+    
+
+    command = createCommand("createPixelLayer", {
+        "name":layer_name,
+        "opacity":opacity,
+        "fillNeutral":fillNeutral,
+        "blendMode":blend_mode
+    })
+
+    sendCommand(command)
 
 @mcp.tool()
 def create_text_layer(
@@ -47,7 +65,7 @@ def create_text_layer(
     position:dict = {"x": 100, "y":100}
     ):
     """Creates a new text layer within the current open Photoshop Document"""
-    print("create_text_layer")
+    
 
     command = createCommand("createTextLayer", {
         "name":layer_name,
@@ -74,28 +92,7 @@ def apply_gausian_blur(layer_name: str, radius: float = 2.5):
 
     sendCommand(command)
 
-"""
-@mcp.tool()
-def test() -> None:
-    
-    url = "http://127.0.0.1:3030/commands/add/"
 
-    data = json.dumps({
-        "foo":"bar"
-    })
-
-    headers = {
-        'Content-Type': 'application/json'
-    }
-
-    response = requests.post(url, data=data, headers=headers)
-
-    print(f"Status Code: {response.status_code}")
-    print("Response Content:")
-    print(response.json())
-
-    return None
-"""
 
 # Add a dynamic greeting resource
 # Does not work in claud / or in test
