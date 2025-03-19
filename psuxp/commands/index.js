@@ -360,27 +360,26 @@ let createDocument = async (command) => {
     let colorMode = getNewDocumentMode(command.options.colorMode)
     let fillColor = parseColor(options.fillColor)
 
+  
+    await execute(
+        async () => {
 
-    try {
-        await core.executeAsModal(
-          async () =>
             await app.createDocument({
-              typename: "DocumentCreateOptions",
-              width: options.width,
-              height: options.height,
-              resolution: options.resolution,
-              mode: colorMode,
-              fill:constants.DocumentFill.COLOR,
-              fillColor:fillColor,
-              profile: "sRGB IEC61966-2.1",
-            }),
-          {
-            commandName: "Creating new document...",
-          }
-        );
-      } catch (e) {
-        console.log(e);
-      }
+                typename: "DocumentCreateOptions",
+                width: options.width,
+                height: options.height,
+                resolution: options.resolution,
+                mode: colorMode,
+                fill:constants.DocumentFill.COLOR,
+                fillColor:fillColor,
+                profile: "sRGB IEC61966-2.1",
+            });
+
+            let background = findLayer("Background");
+            background.allLocked = false;
+            background.name = "Background";
+        }
+    );
 }
 
 function parseColor(color) {

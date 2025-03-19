@@ -24,7 +24,12 @@ def start_project(project_type: str, background_color:str) -> str:
 #todo: how can we let AI know what options are? say for mode?
 @mcp.tool()
 def create_document(name: str, width: int, height:int, resolution:int, fill_color:dict = {"red":0, "green":0, "blue":0}, colorMode:str = "RGB"):
-    """Creates a new Photoshop Document"""
+    """Creates a new Photoshop Document
+
+        Layer are created from bottom up based on the order they are created in, so create background elements first and then build on top.
+
+        New document will contain a layer named "Background" that is filled with the specified fill color
+    """
     
     command = createCommand("createDocument", {
         "name":name,
