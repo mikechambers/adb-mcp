@@ -1,4 +1,4 @@
-const { app, constants, core } = require("photoshop");
+const { app, constants, core, action } = require("photoshop");
 
 let parseAndRouteCommands = async (commands) => {
 
@@ -31,10 +31,15 @@ let parseAndRouteCommand = async (command) => {
         case "applyGaussianBlur":
             await applyGaussianBlur(command)
             break
-            case "applyMotionBlur":
-                await applyMotionBlur(command)
-                break
-            
+        case "applyMotionBlur":
+            await applyMotionBlur(command)
+            break
+        case "selectRectangle":
+            await selectRectangle(command)
+            break
+        case "fillSelection":
+            await fillSelection(command)
+            break   
         default:
             console.log("Unknown Command", action)
             break;
@@ -48,6 +53,7 @@ function findLayer(name, layers) {
         layers = app.activeDocument.layers
     }
 
+    //todo there is a later.getByName we can use
     for (const layer of layers) {
         if (layer.name === name) {
             return layer;
@@ -62,6 +68,76 @@ function findLayer(name, layers) {
     }
 
     return null;
+}
+
+
+let fillSelection = async (command) => {
+
+    console.log("fillSelection")
+
+    let options = command.options
+    let layerName = options.layerName
+    let layer = findLayer(layerName)
+   
+    if(!layer) {
+        console.log(`fillSelection : Could not find layer named : [$[layerName]]`)
+        return
+    }
+
+    await execute(
+        async () => {
+            layer.selected = true;
+            let c = parseColor(options.color).rgb
+            let commands = [
+                // Fill
+                {
+                    "_obj": "fill",
+                    "color": {
+                        "_obj": "RGBColor",
+                        "blue": c.blue,
+                        "grain": c.green,
+                        "red": c.red
+                    },
+                    "mode": {
+                        "_enum": "blendMode",
+                        "_value": options.blendMode.toLowerCase()
+                    },
+                    "opacity": {
+                        "_unit": "percentUnit",
+                        "_value": options.opacity
+                    },
+                    "using": {
+                        "_enum": "fillContents",
+                        "_value": "color"
+                    }
+                }
+            ];
+            await action.batchPlay(commands, {});
+        }
+    );
+}
+
+let selectRectangle = async (command) => {
+
+    console.log("selectRectangle")
+
+    let options = command.options
+    //let layerName = options.layerName
+    //let layer = findLayer(layerName)
+   
+
+    await execute(
+        async () => {
+            //layer.selected = true
+            console.log("selecting")
+            await app.activeDocument.selection.selectRectangle(
+                options.bounds,
+                constants.SelectionType.REPLACE,
+                options.feather,
+                options.antiAlias
+            );
+        }
+    );
 }
 
 let applyMotionBlur = async (command) => {
@@ -107,10 +183,12 @@ let applyGaussianBlur = async (command) => {
 }
 
 async function execute(callback, commandName = "Executing command...") {
+    console.log("execute")
+
     try {
         return await core.executeAsModal(callback, { commandName:commandName });
     } catch (e) {
-        console.error("Error creating text layer:", e);
+        console.error("Error executing as modal:", e);
         throw e;
     }
 }
@@ -200,6 +278,7 @@ let createDocument = async (command) => {
     let colorMode = getNewDocumentMode(command.options.colorMode)
     let fillColor = parseColor(options.fillColor)
 
+
     try {
         await core.executeAsModal(
           async () =>
@@ -209,7 +288,7 @@ let createDocument = async (command) => {
               height: options.height,
               resolution: options.resolution,
               mode: colorMode,
-              fill:constants.DocumentFill.BACKGROUNDCOLOR,
+              fill:constants.DocumentFill.COLOR,
               fillColor:fillColor,
               profile: "sRGB IEC61966-2.1",
             }),
@@ -223,7 +302,6 @@ let createDocument = async (command) => {
 }
 
 function parseColor(color) {
-    console.log("parseColor", color)
 
     try {
         const c = new app.SolidColor();
@@ -231,8 +309,6 @@ function parseColor(color) {
         c.rgb.green = color.green;
         c.rgb.blue = color.blue;
 
-        console.log(c)
-        
         return c
     } catch (e) {
         console.error("Error parsing color:", e);

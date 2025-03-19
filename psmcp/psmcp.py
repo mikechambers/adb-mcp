@@ -10,13 +10,9 @@ mcp = FastMCP("Adobe Photoshop", log_level="ERROR")
 APPLICATION = "photoshop"
 
 
-
-# Add an addition tool
-#@mcp.tool()
-#def add(a: int, b: int) -> int:
-#    """Add two numbers"""
-#    return a + b
-
+#ripple, sphere, twirl, wave, zigzag
+#rotate, scale, skew
+#select, fill
 
 #todo: how can we let AI know what options are? say for mode?
 @mcp.tool()
@@ -76,6 +72,42 @@ def create_text_layer(
         "fontName":postscript_font_name,
         "textColor":text_color,
         "blendMode":blend_mode
+    })
+
+    sendCommand(command)
+
+@mcp.tool()
+def fill_selection(
+    layer_name: str,
+    color:dict = {"red":255, "green":0, "blue":0},
+    blend_mode:str = "NORMAL",
+    opacity:int = 100,
+    ):
+
+    """Fills the selection on the specified pixel layer"""
+    
+    command = createCommand("fillSelection", {
+        "layerName":layer_name,
+        "color":color,
+        "blendMode":blend_mode,
+        "opacity":opacity
+    })
+
+    sendCommand(command)
+
+@mcp.tool()
+def select_rectangle(
+    feather:int = 0,
+    anti_alias:bool = True,
+    bounds:dict = {"top": 0, "left": 0, "bottom": 100, "right": 100}
+    ):
+    
+    """Creates a rectangular selection in the Photoshop document """
+
+    command = createCommand("selectRectangle", {
+        "feather":feather,
+        "antiAlias":anti_alias,
+        "bounds":bounds
     })
 
     sendCommand(command)
