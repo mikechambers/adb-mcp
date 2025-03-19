@@ -140,11 +140,18 @@ def fill_selection(
     sendCommand(command)
 
 @mcp.tool()
+def invert_selection():
+    
+    """Inverts the current selection in the Photoshop document"""
+
+    command = createCommand("invertSelection", {})
+    sendCommand(command)
+
+@mcp.tool()
 def select_rectangle(
     feather:int = 0,
     anti_alias:bool = True,
-    bounds:dict = {"top": 0, "left": 0, "bottom": 100, "right": 100},
-    invert_selection:bool = False
+    bounds:dict = {"top": 0, "left": 0, "bottom": 100, "right": 100}
     ):
     
     """Creates a rectangular selection in the Photoshop document """
@@ -152,8 +159,7 @@ def select_rectangle(
     command = createCommand("selectRectangle", {
         "feather":feather,
         "antiAlias":anti_alias,
-        "bounds":bounds,
-        "invert":invert_selection
+        "bounds":bounds
     })
 
     sendCommand(command)

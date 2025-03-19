@@ -46,6 +46,9 @@ let parseAndRouteCommand = async (command) => {
         case "alignContent":
             await alignContent(command)
             break
+        case "invertSelection":
+            await invertSelection(command)
+            break
         default:
             console.log("Unknown Command", action)
             break;
@@ -60,15 +63,12 @@ let alignContent = async (command) => {
     let options = command.options
     let layerName = options.layerName
 
-    console.log("aa")
     let layer = findLayer(layerName)
 
-    console.log("1")
     if(!layer) {
         console.log(`alignContent : Could not find layer named : [${layerName}]`)
         return
     }
-    console.log("2")
 
     //console.log(app.activeDocument.selection)
     if (!app.activeDocument.selection.bounds) {
@@ -76,18 +76,12 @@ let alignContent = async (command) => {
         return
     }
 
-    console.log("3")
-
     await execute(
         async () => {
 
             let m = getAlignmentMode(options.alignmentMode)
           
-            //todo: find all previously selected layers. unselect them, then restore
-            //layer.selected = true
-            console.log("a")
             selectLayer(layer, true)
-            console.log("b")
 
             let commands = [
                 {
@@ -117,6 +111,8 @@ let generateImage = async (command) => {
     console.log("generateImage")
 
     let options = command.options
+
+    //todo: check this. not used
     let layerName = options.layerName
 
     await execute(
@@ -252,18 +248,27 @@ let selectRectangle = async (command) => {
                 options.feather,
                 options.antiAlias
             );
+        }
+    );
+}
 
-            if(options.invert) {
-                let commands = [
-                    {
-                        "_obj": "inverse"
-                    }
-                ];
-                await action.batchPlay(commands, {});
-            }
+let invertSelection = async (command) => {
 
+    console.log("invertSelection")
 
+    if (!app.activeDocument.selection.bounds) {
+        console.log(`invertSelection : Requires an active selection`)
+        return
+    }
 
+    await execute(
+        async () => {
+            let commands = [
+                {
+                    "_obj": "inverse"
+                }
+            ];
+            await action.batchPlay(commands, {});
         }
     );
 }
