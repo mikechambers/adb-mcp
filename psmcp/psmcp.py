@@ -157,6 +157,23 @@ def select_rectangle(
     sendCommand(command)
 
 @mcp.tool()
+def align_content(
+    layer_name: str,
+    alignment_mode:str
+    ):
+    
+    """
+    Aligns content on specified layer to current selection.
+    """
+
+    command = createCommand("alignContent", {
+        "layerName":layer_name,
+        "alignmentMode":alignment_mode
+    })
+
+    sendCommand(command)
+
+@mcp.tool()
 def apply_gausian_blur(layer_name: str, radius: float = 2.5):
     """Applies a Gausian Blur to the specified layer"""
     #0.1 to 255
@@ -198,6 +215,12 @@ def get_blend_modes() -> list[str]:
 def get_fonts() -> list[str]:
     """Returns font names available to use"""
     return fonts
+
+@mcp.resource("config://get_alignment_modes")
+def get_alignment_modes() -> list[str]:
+    """Returns alignment modes available to use"""
+    return alignment_modes
+
 
 def sendCommand(command:dict):
     url = "http://127.0.0.1:3030/commands/add/"
@@ -245,6 +268,15 @@ def list_all_fonts_postscript():
 
 
 fonts = list_all_fonts_postscript()
+
+alignment_modes = [
+    "LEFT",
+    "CENTER_HORIZONTAL",
+    "RIGHT",
+    "TOP",
+    "CENTER_VERTICAL",
+    "BOTTOM"
+]
 
 blend_modes = [
     "COLOR",

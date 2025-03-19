@@ -42,7 +42,10 @@ let parseAndRouteCommand = async (command) => {
             break
         case "generateImage":
             await generateImage(command)
-            break 
+            break
+        case "alignContent":
+            await alignContent(command)
+            break
         default:
             console.log("Unknown Command", action)
             break;
@@ -50,41 +53,71 @@ let parseAndRouteCommand = async (command) => {
 
 }
 
-function findLayer(name, layers) {
+let alignContent = async (command) => {
+    console.log("alignContent")
 
-    if(!layers) {
-        layers = app.activeDocument.layers
+
+    let options = command.options
+    let layerName = options.layerName
+
+    console.log("aa")
+    let layer = findLayer(layerName)
+
+    console.log("1")
+    if(!layer) {
+        console.log(`alignContent : Could not find layer named : [${layerName}]`)
+        return
+    }
+    console.log("2")
+
+    //console.log(app.activeDocument.selection)
+    if (!app.activeDocument.selection.bounds) {
+        console.log(`alignContent : Requires an active selection`)
+        return
     }
 
-    //todo there is a later.getByName we can use
-    for (const layer of layers) {
-        if (layer.name === name) {
-            return layer;
-        }
+    console.log("3")
 
-        if (layer.layers && layer.layers.length > 0) {
-            const found = findLayer(name, layer.layers);
-            if (found) {
-                return found; // Stop as soon as we’ve found the target layer
-            }
-        }
-    }
+    await execute(
+        async () => {
 
-    return null;
+            let m = getAlignmentMode(options.alignmentMode)
+          
+            //todo: find all previously selected layers. unselect them, then restore
+            //layer.selected = true
+            console.log("a")
+            selectLayer(layer, true)
+            console.log("b")
+
+            let commands = [
+                {
+                    "_obj": "align",
+                    "_target": [
+                        {
+                            "_enum": "ordinal",
+                            "_ref": "layer",
+                            "_value": "targetEnum"
+                        }
+                    ],
+                    "alignToCanvas": false,
+                    "using": {
+                        "_enum": "alignDistributeSelector",
+                        "_value": m
+                    }
+                }
+            ];
+            await action.batchPlay(commands, {});
+        }
+    );
 }
+
+
 
 let generateImage = async (command) => {
     console.log("generateImage")
 
     let options = command.options
     let layerName = options.layerName
-    /*let layer = findLayer(layerName)
-
-    if(!layer) {
-        console.log(`generateImage : Could not find layer named : [${layerName}]`)
-        return
-    }
-        */
 
     await execute(
         async () => {
@@ -148,7 +181,6 @@ let generateImage = async (command) => {
 
             l.blendMode = getBlendMode(options.blendMode)
             l.opacity = opacity
-
         }
     );
 }
@@ -168,7 +200,9 @@ let fillSelection = async (command) => {
 
     await execute(
         async () => {
-            layer.selected = true;
+            //layer.selected = true;
+            selectLayer(layer, true)
+
             let c = parseColor(options.color).rgb
             let commands = [
                 // Fill
@@ -397,6 +431,26 @@ function parseColor(color) {
     }
 }
 
+function getAlignmentMode(mode) {
+
+    switch (mode) {
+        case "LEFT":
+            return "ADSLefts"
+        case "CENTER_HORIZONTAL":
+            return "ADSCentersH"
+        case "RIGHT":
+            return "ADSRights"
+        case "TOP":
+            return "ADSTops"
+        case "CENTER_VERTICAL":
+            return "ADSCentersV"
+        case "BOTTOM":
+            return "ADSBottoms"
+        default:
+            break;
+    }  
+}
+
 function getBlendMode(name) {
     return constants.BlendMode[name]
 }
@@ -430,7 +484,56 @@ function getNewDocumentMode(mode) {
   
     return out;
   }
-  
+
+
+function selectLayer(layer, exclusive = false) {
+
+    console.log("selectLayer")
+    if(exclusive) {
+        clearLayerSelections()
+    }
+
+    console.log(layer)
+    layer.selected = true
+}
+
+function clearLayerSelections(layers) {
+
+    if(!layers) {
+        layers = app.activeDocument.layers
+    }
+
+    for (const layer of layers) {
+        layer.selected = false;
+
+        if (layer.layers && layer.layers.length > 0) {
+            clearLayerSelections(layer.layers);
+        }
+    }
+}
+
+function findLayer(name, layers) {
+
+    if(!layers) {
+        layers = app.activeDocument.layers
+    }
+
+    //todo there is a later.getByName we can use
+    for (const layer of layers) {
+        if (layer.name === name) {
+            return layer;
+        }
+
+        if (layer.layers && layer.layers.length > 0) {
+            const found = findLayer(name, layer.layers);
+            if (found) {
+                return found; // Stop as soon as we’ve found the target layer
+            }
+        }
+    }
+
+    return null;
+}
 
 
 module.exports = {
