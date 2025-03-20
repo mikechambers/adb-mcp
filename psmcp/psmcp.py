@@ -246,8 +246,8 @@ def align_content(
     sendCommand(command)
 
 @mcp.tool()
-def apply_gausian_blur(layer_name: str, radius: float = 2.5):
-    """Applies a Gausian Blur to the specified layer"""
+def apply_gaussian_blur(layer_name: str, radius: float = 2.5):
+    """Applies a Gaussian Blur to the specified layer"""
     #0.1 to 255
 
     command = createCommand("applyGaussianBlur", {
@@ -277,6 +277,17 @@ def apply_motion_blur(layer_name: str, angle: int = 0, distance: float = 30):
 #def get_greeting(name: str) -> str:
 #    """Get a personalized greeting"""
 #    return f"Hello, {name}!"
+
+@mcp.resource("config://get_blend_modes")
+def get_instructions() -> str:
+    """Read this first! Returns information and instructions on how to use Photoshop and this API"""
+    return """
+    This API provides tools for creating and working with Photoshop files.
+
+    In general, layers are created from bottom up, so keep that in mind as you figure out the order or operations.
+
+    When using fonts there are a couple of things to keep in mind. First, the font origin is the bottom left of the font, not the top right. You can better align the fonts using the align_content api. Second, don't use too large of a font size. Ultimately the size will depend in part of the document size, but for refernce the word "cosmic" in Myriad Pro at 72 PT takes up about 1000 pixels width wise.
+    """
 
 @mcp.resource("config://get_blend_modes")
 def get_blend_modes() -> list[str]:

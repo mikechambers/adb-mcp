@@ -181,6 +181,7 @@ let generateImage = async (command) => {
                 }
             ];  
             await action.batchPlay(commands, {});
+            
             let l = findLayer(options.prompt)
             l.name = options.layerName
 
