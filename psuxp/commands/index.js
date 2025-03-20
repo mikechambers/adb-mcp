@@ -58,11 +58,138 @@ let parseAndRouteCommand = async (command) => {
         case "deleteSelection":
             await deleteSelection(command)
             break
+        case "addAdjustmentLayerBlackAndWhite":
+            return addAdjustmentLayerBlackAndWhite(command)
+            break
+        case "addAdjustmentLayerVibrance":
+            return addAdjustmentLayerVibrance(command)
+            break;
         default:
             console.log("Unknown Command", action)
             break;
       }
 
+}
+
+
+
+let addAdjustmentLayerVibrance = async (command) => {
+    console.log("addAdjustmentLayerVibrance")
+
+    let options = command.options
+    let layerName = options.layerName
+
+    let layer = findLayer(layerName)
+
+    if(!layer) {
+        console.log(`alignContent : Could not find layer named : [${layerName}]`)
+        return
+    }
+
+    let colors = options.colors
+
+    await execute(
+        async () => {
+
+            selectLayer(layer, true)
+
+            let commands = [
+                // Make adjustment layer
+                {
+                    "_obj": "make",
+                    "_target": [
+                        {
+                            "_ref": "adjustmentLayer"
+                        }
+                    ],
+                    "using": {
+                        "_obj": "adjustmentLayer",
+                        "type": {
+                            "_class": "vibrance"
+                        }
+                    }
+                },
+                // Set current adjustment layer
+                {
+                    "_obj": "set",
+                    "_target": [
+                        {
+                            "_enum": "ordinal",
+                            "_ref": "adjustmentLayer",
+                            "_value": "targetEnum"
+                        }
+                    ],
+                    "to": {
+                        "_obj": "vibrance",
+                        "saturation": options.saturation,
+                        "vibrance": options.vibrance
+                    }
+                }
+            ];
+
+            await action.batchPlay(commands, {});
+        }
+    );
+}
+
+let addAdjustmentLayerBlackAndWhite = async (command) => {
+    console.log("addAdjustmentLayerBlackAndWhite")
+
+    let options = command.options
+    let layerName = options.layerName
+
+    let layer = findLayer(layerName)
+
+    if(!layer) {
+        console.log(`alignContent : Could not find layer named : [${layerName}]`)
+        return
+    }
+
+    let colors = options.colors
+
+    await execute(
+        async () => {
+
+            selectLayer(layer, true)
+
+            let commands = [
+                // Make adjustment layer
+                {
+                    "_obj": "make",
+                    "_target": [
+                        {
+                            "_ref": "adjustmentLayer"
+                        }
+                    ],
+                    "using": {
+                        "_obj": "adjustmentLayer",
+                        "type": {
+                            "_obj": "blackAndWhite",
+                            "blue": colors.blue,
+                            "cyan": colors.cyan,
+                            "grain": colors.green,
+                            "magenta": colors.magenta,
+                            "presetKind": {
+                                "_enum": "presetKindType",
+                                "_value": "presetKindDefault"
+                            },
+                            "red": colors.red,
+                            "tintColor": {
+                                "_obj": "RGBColor",
+                                "blue": 179.00115966796875,
+                                "grain": 211.00067138671875,
+                                "red": 225.00045776367188
+                            },
+                            "useTint": false,
+                            "yellow": colors.yellow
+                        }
+                    }
+                }
+            ];
+
+            await action.batchPlay(commands, {});
+        }
+    );
 }
 
 let alignContent = async (command) => {

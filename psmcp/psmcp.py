@@ -254,6 +254,42 @@ def align_content(
     sendCommand(command)
 
 @mcp.tool()
+def add_vibrance_adjustment_layer(
+    layer_name: str,
+    vibrance:int = 0,
+    saturation:int = 0):
+    """Adds an adjustment layer to specified layer to adjust vibrance and saturation
+
+    Valid values are from -100 to 100
+    """
+    #0.1 to 255
+
+    command = createCommand("addAdjustmentLayerVibrance", {
+        "layerName":layer_name,
+        "saturation":saturation,
+        "vibrance":vibrance
+    })
+
+    sendCommand(command)
+
+@mcp.tool()
+def add_black_and_white_adjustment_layer(
+    layer_name: str,
+    colors:dict = {"blue":20, "cyan":60, "green":40, "magenta":80, "red":40, "yellow":60}):
+    """Adds an adjustment layer to specified layer to change it to black and white
+
+    Valid color values are from -200 to 300
+    """
+    #0.1 to 255
+
+    command = createCommand("addAdjustmentLayerBlackAndWhite", {
+        "layerName":layer_name,
+        "colors":colors,
+    })
+
+    sendCommand(command)
+
+@mcp.tool()
 def apply_gaussian_blur(layer_name: str, radius: float = 2.5):
     """Applies a Gaussian Blur to the specified layer"""
     #0.1 to 255
