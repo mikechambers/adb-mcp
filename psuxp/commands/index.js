@@ -64,6 +64,10 @@ let parseAndRouteCommand = async (command) => {
         case "addAdjustmentLayerVibrance":
             return addAdjustmentLayerVibrance(command)
             break;
+
+        case "addBrightnessContrastAdjustmentLayer":
+            return addBrightnessContrastAdjustmentLayer(command)
+            break;   
         default:
             console.log("Unknown Command", action)
             break;
@@ -71,7 +75,64 @@ let parseAndRouteCommand = async (command) => {
 
 }
 
+let addBrightnessContrastAdjustmentLayer = async (command) => {
+    console.log("addBrightnessContrastAdjustmentLayer")
 
+    let options = command.options
+    let layerName = options.layerName
+
+    let layer = findLayer(layerName)
+
+    if(!layer) {
+        console.log(`alignContent : Could not find layer named : [${layerName}]`)
+        return
+    }
+
+    await execute(
+        async () => {
+
+            selectLayer(layer, true)
+
+            let commands = [
+                // Make adjustment layer
+                {
+                    "_obj": "make",
+                    "_target": [
+                        {
+                            "_ref": "adjustmentLayer"
+                        }
+                    ],
+                    "using": {
+                        "_obj": "adjustmentLayer",
+                        "type": {
+                            "_obj": "brightnessEvent",
+                            "useLegacy": false
+                        }
+                    }
+                },
+                // Set current adjustment layer
+                {
+                    "_obj": "set",
+                    "_target": [
+                        {
+                            "_enum": "ordinal",
+                            "_ref": "adjustmentLayer",
+                            "_value": "targetEnum"
+                        }
+                    ],
+                    "to": {
+                        "_obj": "brightnessEvent",
+                        "brightness": options.brightness,
+                        "center": options.contrast,
+                        "useLegacy": false
+                    }
+                }
+            ];
+
+            await action.batchPlay(commands, {});
+        }
+    );
+}
 
 let addAdjustmentLayerVibrance = async (command) => {
     console.log("addAdjustmentLayerVibrance")

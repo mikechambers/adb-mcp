@@ -254,6 +254,26 @@ def align_content(
     sendCommand(command)
 
 @mcp.tool()
+def add_brightness_contrast_adjustment_layer(
+    layer_name: str,
+    brightness:int = 0,
+    contrast:int = 0):
+    """Adds an adjustment layer to specified layer to adjust brightness and contrast
+
+    Valid values for brightness are from -150 to 150
+    Valid values for contrast are -50 to 100
+    """
+    #0.1 to 255
+
+    command = createCommand("addBrightnessContrastAdjustmentLayer", {
+        "layerName":layer_name,
+        "brightness":brightness,
+        "contrast":contrast
+    })
+
+    sendCommand(command)
+
+@mcp.tool()
 def add_vibrance_adjustment_layer(
     layer_name: str,
     vibrance:int = 0,
