@@ -140,6 +140,20 @@ def fill_selection(
     sendCommand(command)
 
 @mcp.tool()
+def delete_selection(
+    layer_name: str
+    ):
+
+    """Removes the pixels within the selection on the specified pixel layer"""
+    
+    command = createCommand("deleteSelection", {
+        "layerName":layer_name
+    })
+
+    sendCommand(command)
+
+
+@mcp.tool()
 def invert_selection():
     
     """Inverts the current selection in the Photoshop document"""
@@ -157,6 +171,39 @@ def select_rectangle(
     """Creates a rectangular selection in the Photoshop document """
 
     command = createCommand("selectRectangle", {
+        "feather":feather,
+        "antiAlias":anti_alias,
+        "bounds":bounds
+    })
+
+    sendCommand(command)
+
+@mcp.tool()
+def select_polygon(
+    feather:int = 0,
+    anti_alias:bool = True,
+    points:list[dict[str, int]] = [{"x": 50, "y": 10}, {"x": 100, "y": 90}, {"x": 10, "y": 40}]
+    ):
+    
+    """Creates an n-sided polygon selection in the Photoshop document """
+
+    command = createCommand("selectPolygon", {
+        "feather":feather,
+        "antiAlias":anti_alias,
+        "points":points
+    })
+
+    sendCommand(command)
+
+@mcp.tool()
+def select_ellipse(
+    feather:int = 0,
+    anti_alias:bool = True,
+    bounds:dict = {"top": 0, "left": 0, "bottom": 100, "right": 100}
+    ):
+    """Creates an ellipitcal selection in the Photoshop document """
+
+    command = createCommand("selectEllipse", {
         "feather":feather,
         "antiAlias":anti_alias,
         "bounds":bounds

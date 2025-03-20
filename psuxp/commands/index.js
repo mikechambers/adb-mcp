@@ -52,6 +52,12 @@ let parseAndRouteCommand = async (command) => {
         case "invertSelection":
             await invertSelection(command)
             break
+        case "selectPolygon":
+            await selectPolygon(command)
+            break
+        case "deleteSelection":
+            await deleteSelection(command)
+            break
         default:
             console.log("Unknown Command", action)
             break;
@@ -184,6 +190,37 @@ let generateImage = async (command) => {
     );
 }
 
+let deleteSelection = async (command) => {
+
+    console.log("deleteSelection")
+
+    let options = command.options
+    let layerName = options.layerName
+    let layer = findLayer(layerName)
+   
+    if(!layer) {
+        console.log(`fillSelection : Could not find layer named : [${layerName}]`)
+        return
+    }
+
+    if (!app.activeDocument.selection.bounds) {
+        console.log(`invertSelection : Requires an active selection`)
+        return
+    }
+
+    await execute(
+        async () => {
+            selectLayer(layer, true)
+            let commands = [
+                {
+                    "_obj": "delete"
+                }
+            ];
+            await action.batchPlay(commands, {});
+        }
+    );
+}
+
 let fillSelection = async (command) => {
 
     console.log("fillSelection")
@@ -194,6 +231,11 @@ let fillSelection = async (command) => {
    
     if(!layer) {
         console.log(`fillSelection : Could not find layer named : [${layerName}]`)
+        return
+    }
+
+    if (!app.activeDocument.selection.bounds) {
+        console.log(`invertSelection : Requires an active selection`)
         return
     }
 
@@ -227,6 +269,24 @@ let fillSelection = async (command) => {
                 }
             ];
             await action.batchPlay(commands, {});
+        }
+    );
+}
+
+let selectPolygon = async (command) => {
+
+    console.log("selectPolygon")
+
+    let options = command.options   
+
+    await execute(
+        async () => {
+            await app.activeDocument.selection.selectPolygon(
+                options.points,
+                constants.SelectionType.REPLACE,
+                options.feather,
+                options.antiAlias
+            );
         }
     );
 }
