@@ -186,7 +186,7 @@ let generateImage = async (command) => {
             l.name = options.layerName
 
             l.blendMode = getBlendMode(options.blendMode)
-            l.opacity = opacity
+            l.opacity = options.opacity
         }
     );
 }
@@ -540,6 +540,7 @@ function getAlignmentMode(mode) {
         case "BOTTOM":
             return "ADSBottoms"
         default:
+            console.log("getAlignmentMode : Unknown alignment mode", mode)
             break;
     }  
 }
