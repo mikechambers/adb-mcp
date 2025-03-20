@@ -165,6 +165,23 @@ def select_rectangle(
     sendCommand(command)
 
 @mcp.tool()
+def select_ellipse(
+    feather:int = 0,
+    anti_alias:bool = True,
+    bounds:dict = {"top": 0, "left": 0, "bottom": 100, "right": 100}
+    ):
+    
+    """Creates an ellipitcal selection in the Photoshop document """
+
+    command = createCommand("selectEllipse", {
+        "feather":feather,
+        "antiAlias":anti_alias,
+        "bounds":bounds
+    })
+
+    sendCommand(command)
+
+@mcp.tool()
 def align_content(
     layer_name: str,
     alignment_mode:str

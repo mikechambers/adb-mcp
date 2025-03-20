@@ -37,6 +37,9 @@ let parseAndRouteCommand = async (command) => {
         case "selectRectangle":
             await selectRectangle(command)
             break
+        case "selectEllipse":
+            await selectEllipse(command)
+            break
         case "fillSelection":
             await fillSelection(command)
             break
@@ -196,7 +199,6 @@ let fillSelection = async (command) => {
 
     await execute(
         async () => {
-            //layer.selected = true;
             selectLayer(layer, true)
 
             let c = parseColor(options.color).rgb
@@ -229,19 +231,32 @@ let fillSelection = async (command) => {
     );
 }
 
+let selectEllipse = async (command) => {
+
+    console.log("selectEllipse")
+
+    let options = command.options   
+
+    await execute(
+        async () => {
+            await app.activeDocument.selection.selectEllipse(
+                options.bounds,
+                constants.SelectionType.REPLACE,
+                options.feather,
+                options.antiAlias
+            );
+        }
+    );
+}
+
 let selectRectangle = async (command) => {
 
     console.log("selectRectangle")
 
     let options = command.options
-    //let layerName = options.layerName
-    //let layer = findLayer(layerName)
-   
 
     await execute(
         async () => {
-            //layer.selected = true
-            console.log("selecting")
             await app.activeDocument.selection.selectRectangle(
                 options.bounds,
                 constants.SelectionType.REPLACE,
