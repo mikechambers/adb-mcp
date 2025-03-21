@@ -12,6 +12,8 @@ let parseAndRouteCommands = async (commands) => {
     }
 }
 
+
+
 let parseAndRouteCommand = async (command) => {
 
     let action = command.action
@@ -19,78 +21,80 @@ let parseAndRouteCommand = async (command) => {
     console.log("parseAndRouteCommand")
     console.log(command)
 
-    switch (action) {
-        case "createDocument":
-            await createDocument(command)
-            break;
-        case "createTextLayer":
-            await createTextLayer(command)
-            break
-        case "createPixelLayer":
-            await createPixelLayer(command)
-            break
-        case "applyGaussianBlur":
-            await applyGaussianBlur(command)
-            break
-        case "applyMotionBlur":
-            await applyMotionBlur(command)
-            break
-        case "selectRectangle":
-            await selectRectangle(command)
-            break
-        case "selectEllipse":
-            await selectEllipse(command)
-            break
-        case "fillSelection":
-            await fillSelection(command)
-            break
-        case "generateImage":
-            await generateImage(command)
-            break
-        case "alignContent":
-            await alignContent(command)
-            break
-        case "invertSelection":
-            await invertSelection(command)
-            break
-        case "selectPolygon":
-            await selectPolygon(command)
-            break
-        case "deleteSelection":
-            await deleteSelection(command)
-            break
-        case "addAdjustmentLayerBlackAndWhite":
-            return addAdjustmentLayerBlackAndWhite(command)
-            break
-        case "addAdjustmentLayerVibrance":
-            return addAdjustmentLayerVibrance(command)
-            break;
+    let f = commandHandlers[command.action];
 
-        case "addBrightnessContrastAdjustmentLayer":
-            return addBrightnessContrastAdjustmentLayer(command)
-            break; 
-        case "addDropShadowLayerEffect":
-            return addDropShadowLayerEffect(command)
-            break;
-        case "flattenAllLayers":
-            return flattenAllLayers(command)
-            break;        
-            
-        default:
-            console.log("Unknown Command", action)
-            break;
-      }
+    if (typeof f !== 'function') {
+        console.log("Unknown Command", command.action);
+        return;
+    }
+    
+    f(command);
+}
 
+let translateLayer = async (command) => {
+    console.log("translateLayer")
+
+    let options = command.options;
+
+    let layerName = options.layerName
+    let layer = findLayer(layerName)
+
+    if(!layer) {
+        console.log(`setLayerProperties : Could not find layer named : [${layerName}]`)
+        return
+    }
+
+    await execute(
+        async () => {
+            await layer.translate(options.xOffset, options.yOffset)
+        }
+    );
+}
+
+
+let setLayerProperties = async (command) => {
+    console.log("setLayerProperties")
+
+    let options = command.options;
+
+    let layerName = options.layerName
+    let layer = findLayer(layerName)
+
+    if(!layer) {
+        console.log(`setLayerProperties : Could not find layer named : [${layerName}]`)
+        return
+    }
+
+    await execute(
+        async () => {
+            layer.blendMode = getBlendMode(options.blendMode)
+            layer.opacity = options.opacity
+        }
+    );
+}
+
+let duplicateLayer = async (command) => {
+    console.log("duplicateLayer")
+    let options = command.options;
+
+    await execute(
+        async () => {
+            let layer = findLayer(options.sourceLayerName)
+
+            if(!layer) {
+                console.log(`duplicateLayer: Could not find sourceLayerName : ${options.sourceLayerName}`)
+                return
+            }
+
+            let d = await layer.duplicate()
+            d.name = options.duplicateLayerName
+        }
+    );
 }
 
 let flattenAllLayers = async (command) => {
     console.log("flattenAllLayers")
     let options = command.options;
-
-    if (!app.activeDocument) {
-        console.log(`flattenAllLayers : Requires an active selection`)
-        return
-    }
 
     await execute(
         async () => {
@@ -100,6 +104,7 @@ let flattenAllLayers = async (command) => {
 
             if(!layers.length!= 1) {
                 //something went wrong here
+                return
             }
 
             let l = layers[0]
@@ -881,7 +886,7 @@ function getAlignmentMode(mode) {
 }
 
 function getBlendMode(name) {
-    return constants.BlendMode[name]
+    return constants.BlendMode[name.toUpperCase()]
 }
 
 function getNewDocumentMode(mode) {
@@ -969,3 +974,26 @@ module.exports = {
     parseAndRouteCommands
 };
 
+const commandHandlers = {
+    createDocument,
+    createTextLayer,
+    createPixelLayer,
+    applyGaussianBlur,
+    applyMotionBlur,
+    selectRectangle,
+    selectEllipse,
+    fillSelection,
+    generateImage,
+    alignContent,
+    invertSelection,
+    selectPolygon,
+    deleteSelection,
+    addAdjustmentLayerBlackAndWhite,
+    addAdjustmentLayerVibrance,
+    addBrightnessContrastAdjustmentLayer,
+    addDropShadowLayerEffect,
+    flattenAllLayers,
+    duplicateLayer,
+    setLayerProperties,
+    translateLayer,
+}

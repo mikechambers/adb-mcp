@@ -128,6 +128,48 @@ def create_text_layer(
 
     sendCommand(command)
 
+
+@mcp.tool()
+def translate_layer(
+    layer_name: str,
+    x_offset:int = 0,
+    y_offset:int = 0
+    ):
+
+    """
+        Moves the layer on the X and Y axis by the specified number of pixels.
+
+        x_offset: negative values move the layer left, positive values right
+        y_offset: negative values move the layer down, positive values up
+    """
+    
+    command = createCommand("translateLayer", {
+        "layerName":layer_name,
+        "xOffset":x_offset,
+        "yOffset":y_offset
+    })
+
+    sendCommand(command)
+
+@mcp.tool()
+def set_layer_properties(
+    layer_name: str,
+    blend_mode:str = "NORMAL",
+    opacity:int = 100
+    ):
+
+    """
+        Sets the blend mode and opacity on the specified layer
+    """
+    
+    command = createCommand("setLayerProperties", {
+        "layerName":layer_name,
+        "blendMode":blend_mode,
+        "opacity":opacity
+    })
+
+    sendCommand(command)
+
 @mcp.tool()
 def fill_selection(
     layer_name: str,
@@ -270,6 +312,18 @@ def add_drop_shadow_layer_effect(
 
     sendCommand(command)
 
+@mcp.tool()
+def duplicate_layer(layer_to_duplicate_name:str, duplicate_layer_name:str):
+    """
+    Duplicates the specified layer, creating a new layer above it with the specified name
+    """
+
+    command = createCommand("duplicateLayer", {
+        "sourceLayerName":layer_to_duplicate_name,
+        "duplicateLayerName":duplicate_layer_name,
+    })
+
+    sendCommand(command)
 
 @mcp.tool()
 def flatten_all_layers(layer_name:str):
