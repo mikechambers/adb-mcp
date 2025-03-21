@@ -76,7 +76,7 @@ def create_pixel_layer(
     opacity:int = 100,
     blend_mode:str = "NORMAL",
 ):
-    """Creates a new pixel layer within the current open Photoshop Document"""
+    """Creates a new pixel layer within the current open Photoshop Document with the specified name"""
     
     command = createCommand("createPixelLayer", {
         "name":layer_name,
@@ -100,7 +100,7 @@ def create_text_layer(
     ):
 
     """
-    Create a new text layer within the current Photoshop document.
+    Create a new text layer with the specified name within the current Photoshop document.
     
     Parameters:
         layer_name (str): The name of the layer to be created. Will be used to select in other api calls.
@@ -137,7 +137,7 @@ def translate_layer(
     ):
 
     """
-        Moves the layer on the X and Y axis by the specified number of pixels.
+        Moves the layer with the specified name on the X and Y axis by the specified number of pixels.
 
         x_offset: negative values move the layer left, positive values right
         y_offset: negative values move the layer down, positive values up
@@ -159,7 +159,7 @@ def set_layer_properties(
     ):
 
     """
-        Sets the blend mode and opacity on the specified layer
+        Sets the blend mode and opacity on the layer with the specified name
     """
     
     command = createCommand("setLayerProperties", {
@@ -178,7 +178,7 @@ def fill_selection(
     opacity:int = 100,
     ):
 
-    """Fills the selection on the specified pixel layer"""
+    """Fills the selection on the pixel layer with the specified name"""
     
     command = createCommand("fillSelection", {
         "layerName":layer_name,
@@ -194,7 +194,7 @@ def delete_selection(
     layer_name: str
     ):
 
-    """Removes the pixels within the selection on the specified pixel layer"""
+    """Removes the pixels within the selection on the pixel layer with the specified name"""
     
     command = createCommand("deleteSelection", {
         "layerName":layer_name
@@ -269,7 +269,7 @@ def align_content(
     ):
     
     """
-    Aligns content on specified layer to current selection.
+    Aligns content on layer with the specified name to the current selection.
     """
 
     command = createCommand("alignContent", {
@@ -290,7 +290,7 @@ def add_drop_shadow_layer_effect(
     spread:int = 0,
     size:int = 7
     ):
-    """Adds a drop shadow layer effect to specified layer
+    """Adds a drop shadow layer effect to the layer with the specified name
 
     Valid values for opacity are 0 to 100
     Valid values for angle are -179 to -180
@@ -315,7 +315,7 @@ def add_drop_shadow_layer_effect(
 @mcp.tool()
 def duplicate_layer(layer_to_duplicate_name:str, duplicate_layer_name:str):
     """
-    Duplicates the specified layer, creating a new layer above it with the specified name
+    Duplicates the layer specified by layer_to_duplicate_name, creating a new layer above it with the name specified by duplicate_layer_name
     """
 
     command = createCommand("duplicateLayer", {
@@ -343,7 +343,7 @@ def add_color_balance_adjustment_layer(
     highlights:list = [0,0,0],
     midtones:list = [0,0,0],
     shadows:list = [0,0,0]):
-    """Adds an adjustment layer to specified layer to adjust color balance
+    """Adds an adjustment layer to the layer with the specified name to adjust color balance
 
     Each property highlights, midtones and shadows contains an array of 3 values between
     -100 and 100 that represent the relative position between two colors.
@@ -368,7 +368,7 @@ def add_brightness_contrast_adjustment_layer(
     layer_name: str,
     brightness:int = 0,
     contrast:int = 0):
-    """Adds an adjustment layer to specified layer to adjust brightness and contrast
+    """Adds an adjustment layer to the layer with the specified name to adjust brightness and contrast
 
     Valid values for brightness are from -150 to 150
     Valid values for contrast are -50 to 100
@@ -388,7 +388,7 @@ def add_vibrance_adjustment_layer(
     layer_name: str,
     vibrance:int = 0,
     saturation:int = 0):
-    """Adds an adjustment layer to specified layer to adjust vibrance and saturation
+    """Adds an adjustment layer to layer with the specified name to adjust vibrance and saturation
 
     Valid values are from -100 to 100
     """
@@ -406,7 +406,7 @@ def add_vibrance_adjustment_layer(
 def add_black_and_white_adjustment_layer(
     layer_name: str,
     colors:dict = {"blue":20, "cyan":60, "green":40, "magenta":80, "red":40, "yellow":60}):
-    """Adds an adjustment layer to specified layer to change it to black and white
+    """Adds an adjustment layer to the layer with the specified name to change it to black and white
 
     Valid color values are from -200 to 300
     """
@@ -421,7 +421,7 @@ def add_black_and_white_adjustment_layer(
 
 @mcp.tool()
 def apply_gaussian_blur(layer_name: str, radius: float = 2.5):
-    """Applies a Gaussian Blur to the specified layer"""
+    """Applies a Gaussian Blur to the layer with the specified name"""
     #0.1 to 255
 
     command = createCommand("applyGaussianBlur", {
@@ -433,7 +433,7 @@ def apply_gaussian_blur(layer_name: str, radius: float = 2.5):
 
 @mcp.tool()
 def apply_motion_blur(layer_name: str, angle: int = 0, distance: float = 30):
-    """Applies a Motion Blur to the specified layer"""
+    """Applies a Motion Blur to the layer with the specified name"""
 
 
     command = createCommand("applyMotionBlur", {
@@ -465,6 +465,12 @@ def get_instructions() -> str:
     You can get a list of valid alignment modes via get_alignment_modes, and a valid list of blend_modes via get_blend_modes, and a valid list of font names that can be used via get_fonts.
 
     Some calls such as fill_selection and align_content require that you first make a selection.
+
+    Pay attention to what layer names are needed for. Sometimes the specify the name of a newly created layer and sometimes they specify the name of the layer that the action should be performed on.
+
+    As a general rule, you should not flatten files unless asked to do so, or its necessary to apply an effect or look.
+
+    When generating an image, you do not need to first create a pixel layer. A layer will automatically be created when you generate the image.
     """
 
 @mcp.resource("config://get_blend_modes")
