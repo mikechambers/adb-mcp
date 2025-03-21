@@ -338,6 +338,32 @@ def flatten_all_layers(layer_name:str):
     sendCommand(command)
 
 @mcp.tool()
+def add_color_balance_adjustment_layer(
+    layer_name: str,
+    highlights:list = [0,0,0],
+    midtones:list = [0,0,0],
+    shadows:list = [0,0,0]):
+    """Adds an adjustment layer to specified layer to adjust color balance
+
+    Each property highlights, midtones and shadows contains an array of 3 values between
+    -100 and 100 that represent the relative position between two colors.
+
+    First value is between cyan and red
+    The second value is between magenta and green
+    The third value is between yellow and blue
+    """
+    #0.1 to 255
+
+    command = createCommand("addColorBalanceAdjustmentLayer", {
+        "layerName":layer_name,
+        "highlights":highlights,
+        "midtones":midtones,
+        "shadows":shadows
+    })
+
+    sendCommand(command)
+
+@mcp.tool()
 def add_brightness_contrast_adjustment_layer(
     layer_name: str,
     brightness:int = 0,

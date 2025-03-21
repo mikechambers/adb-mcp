@@ -31,6 +31,79 @@ let parseAndRouteCommand = async (command) => {
     f(command);
 }
 
+
+
+let addColorBalanceAdjustmentLayer = async (command) => {
+    console.log("addColorBalanceAdjustmentLayer")
+
+    let options = command.options;
+
+    let layerName = options.layerName
+    let layer = findLayer(layerName)
+
+    if(!layer) {
+        console.log(`addColorBalanceAdjustmentLayer : Could not find layer named : [${layerName}]`)
+        return
+    }
+
+    await execute(
+        async () => {
+            let commands = [
+                // Make adjustment layer
+                {
+                    "_obj": "make",
+                    "_target": [
+                        {
+                            "_ref": "adjustmentLayer"
+                        }
+                    ],
+                    "using": {
+                        "_obj": "adjustmentLayer",
+                        "type": {
+                            "_obj": "colorBalance",
+                            "highlightLevels": [
+                                0,
+                                0,
+                                0
+                            ],
+                            "midtoneLevels": [
+                                0,
+                                0,
+                                0
+                            ],
+                            "preserveLuminosity": true,
+                            "shadowLevels": [
+                                0,
+                                0,
+                                0
+                            ]
+                        }
+                    }
+                },
+                // Set current adjustment layer
+                {
+                    "_obj": "set",
+                    "_target": [
+                        {
+                            "_enum": "ordinal",
+                            "_ref": "adjustmentLayer",
+                            "_value": "targetEnum"
+                        }
+                    ],
+                    "to": {
+                        "_obj": "colorBalance",
+                        "highlightLevels": options.highlights,
+                        "midtoneLevels": options.midtones,
+                        "shadowLevels": options.shadows
+                    }
+                }
+            ];
+            await action.batchPlay(commands, {});
+        }
+    );
+}
+
+
 let translateLayer = async (command) => {
     console.log("translateLayer")
 
@@ -996,4 +1069,5 @@ const commandHandlers = {
     duplicateLayer,
     setLayerProperties,
     translateLayer,
+    addColorBalanceAdjustmentLayer
 }
