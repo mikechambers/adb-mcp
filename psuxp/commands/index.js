@@ -1,5 +1,6 @@
 const { app, constants, core, action } = require("photoshop");
 
+
 let parseAndRouteCommands = async (commands) => {
 
     if (!commands.length) {
@@ -70,7 +71,10 @@ let parseAndRouteCommand = async (command) => {
             break; 
         case "addDropShadowLayerEffect":
             return addDropShadowLayerEffect(command)
-            break;         
+            break;
+        case "flattenAllLayers":
+            return flattenAllLayers(command)
+            break;        
             
         default:
             console.log("Unknown Command", action)
@@ -79,10 +83,34 @@ let parseAndRouteCommand = async (command) => {
 
 }
 
+let flattenAllLayers = async (command) => {
+    console.log("flattenAllLayers")
+    let options = command.options;
 
+    if (!app.activeDocument) {
+        console.log(`flattenAllLayers : Requires an active selection`)
+        return
+    }
+
+    await execute(
+        async () => {
+            await app.activeDocument.flatten()
+
+            let layers = app.activeDocument.layers
+
+            if(!layers.length!= 1) {
+                //something went wrong here
+            }
+
+            let l = layers[0]
+            l.allLocked = false;
+            l.name = options.layerName
+        }
+    );
+}
 
 let addDropShadowLayerEffect = async (command) => {
-    console.log("addBrightnessContrastAdjustmentLayer")
+    console.log("addDropShadowLayerEffect")
 
     let options = command.options
     let layerName = options.layerName
@@ -90,7 +118,7 @@ let addDropShadowLayerEffect = async (command) => {
     let layer = findLayer(layerName)
 
     if(!layer) {
-        console.log(`alignContent : Could not find layer named : [${layerName}]`)
+        console.log(`addDropShadowLayerEffect : Could not find layer named : [${layerName}]`)
         return
     }
 
@@ -189,7 +217,7 @@ let addBrightnessContrastAdjustmentLayer = async (command) => {
     let layer = findLayer(layerName)
 
     if(!layer) {
-        console.log(`alignContent : Could not find layer named : [${layerName}]`)
+        console.log(`addBrightnessContrastAdjustmentLayer : Could not find layer named : [${layerName}]`)
         return
     }
 

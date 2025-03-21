@@ -270,6 +270,19 @@ def add_drop_shadow_layer_effect(
 
     sendCommand(command)
 
+
+@mcp.tool()
+def flatten_all_layers(layer_name:str):
+    """
+    Flatter all layers in the document into a single layer with specified name
+    """
+
+    command = createCommand("flattenAllLayers", {
+        "layerName":layer_name,
+    })
+
+    sendCommand(command)
+
 @mcp.tool()
 def add_brightness_contrast_adjustment_layer(
     layer_name: str,
