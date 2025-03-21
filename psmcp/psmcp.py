@@ -9,7 +9,7 @@ from Cocoa import NSFontManager, NSFont
 mcp = FastMCP("Adobe Photoshop", log_level="ERROR")
 
 APPLICATION = "photoshop"
-
+GENERATE_IMAGE_DELAY = 10 #seconds
 
 #ripple, sphere, twirl, wave, zigzag
 #rotate, scale, skew
@@ -65,7 +65,7 @@ def generate_image(
     #We cant know for sure when the image has been created in Photoshop
     #So we pause here so the images dont back up which can sometimes cause
     #errors
-    time.sleep(5)
+    time.sleep(GENERATE_IMAGE_DELAY)
 
     return
 
