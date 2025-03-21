@@ -67,12 +67,117 @@ let parseAndRouteCommand = async (command) => {
 
         case "addBrightnessContrastAdjustmentLayer":
             return addBrightnessContrastAdjustmentLayer(command)
-            break;   
+            break; 
+        case "addDropShadowLayerEffect":
+            return addDropShadowLayerEffect(command)
+            break;         
+            
         default:
             console.log("Unknown Command", action)
             break;
       }
 
+}
+
+
+
+let addDropShadowLayerEffect = async (command) => {
+    console.log("addBrightnessContrastAdjustmentLayer")
+
+    let options = command.options
+    let layerName = options.layerName
+
+    let layer = findLayer(layerName)
+
+    if(!layer) {
+        console.log(`alignContent : Could not find layer named : [${layerName}]`)
+        return
+    }
+
+    await execute(
+        async () => {
+
+            selectLayer(layer, true)
+
+            let commands = [
+                // Set Layer Styles of current layer
+                {
+                    "_obj": "set",
+                    "_target": [
+                        {
+                            "_property": "layerEffects",
+                            "_ref": "property"
+                        },
+                        {
+                            "_enum": "ordinal",
+                            "_ref": "layer",
+                            "_value": "targetEnum"
+                        }
+                    ],
+                    "to": {
+                        "_obj": "layerEffects",
+                        "dropShadow": {
+                            "_obj": "dropShadow",
+                            "antiAlias": false,
+                            "blur": {
+                                "_unit": "pixelsUnit",
+                                "_value": options.size
+                            },
+                            "chokeMatte": {
+                                "_unit": "pixelsUnit",
+                                "_value": options.spread
+                            },
+                            "color": {
+                                "_obj": "RGBColor",
+                                "blue": options.color.blue,
+                                "grain": options.color.green,
+                                "red": options.color.red
+                            },
+                            "distance": {
+                                "_unit": "pixelsUnit",
+                                "_value": options.distance
+                            },
+                            "enabled": true,
+                            "layerConceals": true,
+                            "localLightingAngle": {
+                                "_unit": "angleUnit",
+                                "_value": options.angle
+                            },
+                            "mode": {
+                                "_enum": "blendMode",
+                                "_value": options.blendMode.toLowerCase()
+                            },
+                            "noise": {
+                                "_unit": "percentUnit",
+                                "_value": 0.0
+                            },
+                            "opacity": {
+                                "_unit": "percentUnit",
+                                "_value": options.opacity
+                            },
+                            "present": true,
+                            "showInDialog": true,
+                            "transferSpec": {
+                                "_obj": "shapeCurveType",
+                                "name": "Linear"
+                            },
+                            "useGlobalAngle": true
+                        },
+                        "globalLightingAngle": {
+                            "_unit": "angleUnit",
+                            "_value": options.angle
+                        },
+                        "scale": {
+                            "_unit": "percentUnit",
+                            "_value": 100.0
+                        }
+                    }
+                }
+            ];
+
+            await action.batchPlay(commands, {});
+        }
+    );
 }
 
 let addBrightnessContrastAdjustmentLayer = async (command) => {

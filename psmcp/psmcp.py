@@ -209,22 +209,6 @@ def select_ellipse(
     anti_alias:bool = True,
     bounds:dict = {"top": 0, "left": 0, "bottom": 100, "right": 100}
     ):
-    """Creates an ellipitcal selection in the Photoshop document """
-
-    command = createCommand("selectEllipse", {
-        "feather":feather,
-        "antiAlias":anti_alias,
-        "bounds":bounds
-    })
-
-    sendCommand(command)
-
-@mcp.tool()
-def select_ellipse(
-    feather:int = 0,
-    anti_alias:bool = True,
-    bounds:dict = {"top": 0, "left": 0, "bottom": 100, "right": 100}
-    ):
     
     """Creates an elliptical selection in the Photoshop document """
 
@@ -249,6 +233,39 @@ def align_content(
     command = createCommand("alignContent", {
         "layerName":layer_name,
         "alignmentMode":alignment_mode
+    })
+
+    sendCommand(command)
+
+@mcp.tool()
+def add_drop_shadow_layer_effect(
+    layer_name: str,
+    blend_mode:str = "MULTIPLY",
+    color:dict = {"red":0, "green":0, "blue":0},
+    opacity:int = 35,
+    angle:int = 160,
+    distance:int = 3,
+    spread:int = 0,
+    size:int = 7
+    ):
+    """Adds a drop shadow layer effect to specified layer
+
+    Valid values for opacity are 0 to 100
+    Valid values for angle are -179 to -180
+    Valid values for distance are 0 to 30000
+    Valid values for spread are 0 to 100
+    Valid values for size are 0 to 250
+    """
+
+    command = createCommand("addDropShadowLayerEffect", {
+        "layerName":layer_name,
+        "blendMode":blend_mode,
+        "color":color,
+        "opacity":opacity,
+        "angle":angle,
+        "distance":distance,
+        "spread":spread,
+        "size":size
     })
 
     sendCommand(command)
