@@ -471,6 +471,17 @@ let generateImage = async (command) => {
                         "_enum": "genWorkflow",
                         "_value": "text_to_image"
                     }
+                },
+                // Rasterize current layer
+                {
+                    "_obj": "rasterizeLayer",
+                    "_target": [
+                        {
+                            "_enum": "ordinal",
+                            "_ref": "layer",
+                            "_value": "targetEnum"
+                        }
+                    ]
                 }
             ];  
             await action.batchPlay(commands, {});
@@ -480,6 +491,9 @@ let generateImage = async (command) => {
 
             l.blendMode = getBlendMode(options.blendMode)
             l.opacity = options.opacity
+
+            //selectLayer(l, true)
+
         }
     );
 }
