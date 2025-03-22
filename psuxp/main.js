@@ -1,12 +1,67 @@
 const { entrypoints, UI } = require("uxp");
 const { parseAndRouteCommands } = require("./commands/index.js");
 
+
+const {io} = require('./socket.io.js');
 const app = require('photoshop').app;
 
 const UPDATE_INTERVAL = 1000 * 2
 const APPLICATION = "photoshop"
+const PROXY_URL = 'http://localhost:3001'
 
 let intervalId = null
+
+
+// Core Socket.IO functions for Photoshop UXP
+let socket = null;
+
+
+function connectToServer(onResponseCallback = null) {
+    // Create new Socket.IO connection
+    socket = io(PROXY_URL, {
+        transports: ['websocket']
+    });
+    
+    socket.on('connect', () => {
+        console.log('Connected to server with ID:', socket.id);
+    });
+    
+    socket.on('json_response', (data) => {
+        console.log('Received response:', data);
+        if (onResponseCallback && typeof onResponseCallback === 'function') {
+            onResponseCallback(data);
+        }
+    });
+    
+    socket.on('connect_error', (error) => {
+        console.error('Connection error:', error);
+    });
+    
+    socket.on('disconnect', (reason) => {
+        console.log('Disconnected from server. Reason:', reason);
+    });
+    
+    return socket;
+}
+
+function disconnectFromServer() {
+    if (socket && socket.connected) {
+        socket.disconnect();
+        console.log('Disconnected from server');
+    }
+}
+
+function sendCommand(command) {
+    if (socket && socket.connected) {
+        socket.emit('app_command', {
+            application: APPLICATION,
+            command: command
+        });
+        return true;
+    }
+    return false;
+}
+
 
 let onInterval = async () => {
 
@@ -77,10 +132,18 @@ document.getElementById("btnStart").addEventListener("click", () => {
   let b = document.getElementById("btnStart")
 
   if (intervalId) {
-    stopInterval()
-    b.textContent = "Start";
+    disconnectFromServer()
+    //stopInterval()
+    b.textContent = "Connect";
   } else {
-    startInterval();
-    b.textContent = "Stop";
+    //startInterval();
+
+    const handleResponse = (data) => {
+      console.log("Response received:", data);
+    };
+  
+    connectToServer(handleResponse);
+
+    b.textContent = "Disconnect";
   }
 });

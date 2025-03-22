@@ -1,1 +1,4 @@
 pyobjc
+python-socketio[client]
+requests
+websocket-client

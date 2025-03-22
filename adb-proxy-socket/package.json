@@ -1,0 +1,16 @@
+{
+  "name": "adb-proxy-socket",
+  "version": "0.85.1",
+  "description": "Proxy socket.io node server for Adobe MCP plugins",
+  "main": "proxy.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mike Chambers",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1"
+  }
+}
