@@ -88,7 +88,53 @@ def create_pixel_layer(
     sendCommand(command)
 
 @mcp.tool()
-def create_text_layer(
+def create_multi_line_text_layer(
+    layer_name:str, 
+    text:str, 
+    font_size:int, 
+    postscript_font_name:str, 
+    opacity:int = 100,
+    blend_mode:str = "NORMAL",
+    text_color:dict = {"red":255, "green":255, "blue":255}, 
+    position:dict = {"x": 100, "y":100},
+    bounds:dict = {"top": 0, "left": 0, "bottom": 250, "right": 300},
+    justification:str = "LEFT"
+    ):
+
+    """
+    Create a new multi-line text layer with the specified name within the current Photoshop document.
+    
+    Parameters:
+        layer_name (str): The name of the layer to be created. Will be used to select in other api calls.
+        text (str): The text to include on the layer.
+        font_size: Font size.
+        postscript_font_name: Postscript Font Name to display the text in. List of available fonts can be retrieved from the get_fonts resource.
+        opacity: Opacity for the layer specified in percent.
+        blend_mode: Blend Mode for the layer. List of available modes can be retried from the get_blend_modes resource
+        text_color: Color of the text expressed in Red, Green, Blue values between 0 and 255
+        position: Position where the text will be placed in the layer. Based on bottom left point of the text.
+        bounds : text bounding box
+        justification: text justification. Options available via justification_modes
+    """
+
+    command = createCommand("createMultiLineTextLayer", {
+        "name":layer_name,
+        "contents":text,
+        "fontSize": font_size,
+        "opacity":opacity,
+        "position":position,
+        "fontName":postscript_font_name,
+        "textColor":text_color,
+        "blendMode":blend_mode,
+        "bounds":bounds,
+        "justification":justification
+    })
+
+    sendCommand(command)
+
+
+@mcp.tool()
+def create_single_line_text_layer(
     layer_name:str, 
     text:str, 
     font_size:int, 
@@ -100,7 +146,7 @@ def create_text_layer(
     ):
 
     """
-    Create a new text layer with the specified name within the current Photoshop document.
+    Create a new single line text layer with the specified name within the current Photoshop document.
     
     Parameters:
         layer_name (str): The name of the layer to be created. Will be used to select in other api calls.
@@ -115,7 +161,7 @@ def create_text_layer(
 
     """
 
-    command = createCommand("createTextLayer", {
+    command = createCommand("createSingleLineTextLayer", {
         "name":layer_name,
         "contents":text,
         "fontSize": font_size,
@@ -473,21 +519,35 @@ def get_instructions() -> str:
     When generating an image, you do not need to first create a pixel layer. A layer will automatically be created when you generate the image.
     """
 
-@mcp.resource("config://get_blend_modes")
-def get_blend_modes() -> list[str]:
-    """Returns font names available to use"""
-    return blend_modes
-
 @mcp.resource("config://get_fonts")
 def get_fonts() -> list[str]:
     """Returns font names available to use"""
     return fonts
+
+@mcp.resource("config://get_blend_modes")
+def get_blend_modes() -> list[str]:
+    """Returns font names available to use"""
+    return blend_modes
 
 @mcp.resource("config://get_alignment_modes")
 def get_alignment_modes() -> list[str]:
     """Returns alignment modes available to use"""
     return alignment_modes
 
+@mcp.resource("config://get_justification_modes")
+def get_justification_modes() -> list[str]:
+    """Returns alignment modes available to use"""
+    return justification_modes
+
+@mcp.resource("config://get_option_info")
+def get_modes() -> dict:
+    """Returns alignment modes available to use"""
+    return {
+        "alignment_modes":alignment_modes,
+        "justification_modes":justification_modes,
+        "blend_modes":blend_modes,
+        "fonts": fonts
+    }
 
 def sendCommand(command:dict):
     url = "http://127.0.0.1:3030/commands/add/"
@@ -535,6 +595,16 @@ def list_all_fonts_postscript():
 
 
 fonts = list_all_fonts_postscript()
+
+justification_modes = [
+    "CENTER",
+    "CENTERJUSTIFIED",
+    "FULLYJUSTIFIED",
+    "LEFT",
+    "LEFTJUSTIFIED",
+    "RIGHT",
+    "RIGHTJUSTIFIED"
+]
 
 alignment_modes = [
     "LEFT",

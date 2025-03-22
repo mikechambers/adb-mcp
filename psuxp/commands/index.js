@@ -815,11 +815,130 @@ async function execute(callback, commandName = "Executing command...") {
     }
 }
 
-let createTextLayer = async (command) => {
+let createMultiLineTextLayer = async (command) => {
     
     let options = command.options
 
-    console.log("createTextLayer", options)
+    console.log("createMultiLineTextLayer", options)
+
+    // Check if there's an active document
+    if (!app.activeDocument) {
+        throw new Error("No active document. Please create or open a document first.");
+    }
+
+    await execute(
+        async () => {
+        
+            let c = parseColor(options.textColor)
+
+            //need to adjust font size is DPI is anything other than 72.
+            //should document as part of createTextLayer call
+            let fontSize = (app.activeDocument.resolution / 72) * options.fontSize;
+
+            let a = await app.activeDocument.createTextLayer({
+                //blendMode: constants.BlendMode.DISSOLVE,//ignored
+                textColor: c,
+                //color:constants.LabelColors.BLUE,//ignored
+                //opacity:50, //ignored 
+                //name: "layer name",//ignored
+                contents: options.contents,
+                fontSize: fontSize,
+                fontName: options.fontName, //"ArialMT",
+                position: options.position//y is the baseline of the text. Not top left
+            })
+
+            //https://developer.adobe.com/photoshop/uxp/2022/ps_reference/classes/layer/
+
+            a.blendMode = getBlendMode(options.blendMode)
+            a.name = options.name
+            a.opacity = options.opacity
+
+            await a.textItem.convertToParagraphText()
+            a.textItem.paragraphStyle.justification = getJustificationMode(options.justification)
+
+            selectLayer(a, true)
+            let commands = [
+                // Set current text layer
+                {
+                    "_obj": "set",
+                    "_target": [
+                        {
+                            "_enum": "ordinal",
+                            "_ref": "textLayer",
+                            "_value": "targetEnum"
+                        }
+                    ],
+                    "to": {
+                        "_obj": "textLayer",
+        
+                        "textShape": [
+                            {
+                                "_obj": "textShape",
+                                "bounds": {
+                                    "_obj": "rectangle",
+                                    "bottom": options.bounds.bottom,
+                                    "left": options.bounds.left,
+                                    "right": options.bounds.right,
+                                    "top": options.bounds.top
+                                },
+                                "char": {
+                                    "_enum": "char",
+                                    "_value": "box"
+                                },
+                                "columnCount": 1,
+                                "columnGutter": {
+                                    "_unit": "pointsUnit",
+                                    "_value": 0.0
+                                },
+                                "firstBaselineMinimum": {
+                                    "_unit": "pointsUnit",
+                                    "_value": 0.0
+                                },
+                                "frameBaselineAlignment": {
+                                    "_enum": "frameBaselineAlignment",
+                                    "_value": "alignByAscent"
+                                },
+                                "orientation": {
+                                    "_enum": "orientation",
+                                    "_value": "horizontal"
+                                },
+                                "rowCount": 1,
+                                "rowGutter": {
+                                    "_unit": "pointsUnit",
+                                    "_value": 0.0
+                                },
+                                "rowMajorOrder": true,
+                                "spacing": {
+                                    "_unit": "pointsUnit",
+                                    "_value": 0.0
+                                },
+                                "transform": {
+                                    "_obj": "transform",
+                                    "tx": 0.0,
+                                    "ty": 0.0,
+                                    "xx": 1.0,
+                                    "xy": 0.0,
+                                    "yx": 0.0,
+                                    "yy": 1.0
+                                }
+                            }
+                        ]
+                    }
+                }
+            ];
+       
+
+            await action.batchPlay(commands, {});
+
+        }
+    );
+}
+
+let createSingleLineTextLayer = async (command) => {
+    
+    let options = command.options
+
+    console.log("createSingleLineTextLayer", options)
 
     // Check if there's an active document
     if (!app.activeDocument) {
@@ -958,6 +1077,10 @@ function getAlignmentMode(mode) {
     }  
 }
 
+function getJustificationMode(mode) {
+    return constants.Justification[mode.toUpperCase()]
+}
+
 function getBlendMode(name) {
     return constants.BlendMode[name.toUpperCase()]
 }
@@ -1049,7 +1172,8 @@ module.exports = {
 
 const commandHandlers = {
     createDocument,
-    createTextLayer,
+    createSingleLineTextLayer,
+    createMultiLineTextLayer,
     createPixelLayer,
     applyGaussianBlur,
     applyMotionBlur,
