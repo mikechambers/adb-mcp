@@ -98,7 +98,7 @@ def remove_background(
     """Automatically removes the background of the image in the layer with the specified name and keeps the main subject"""
     
     command = createCommand("removeBackground", {
-        "name":layer_name
+        "layerName":layer_name
     })
 
     sendCommand(command)
@@ -113,7 +113,7 @@ def create_pixel_layer(
     """Creates a new pixel layer within the current open Photoshop Document with the specified name"""
     
     command = createCommand("createPixelLayer", {
-        "name":layer_name,
+        "layerName":layer_name,
         "opacity":opacity,
         "fillNeutral":fillNeutral,
         "blendMode":blend_mode
@@ -152,7 +152,7 @@ def create_multi_line_text_layer(
     """
 
     command = createCommand("createMultiLineTextLayer", {
-        "name":layer_name,
+        "layerName":layer_name,
         "contents":text,
         "fontSize": font_size,
         "opacity":opacity,
@@ -196,7 +196,7 @@ def create_single_line_text_layer(
     """
 
     command = createCommand("createSingleLineTextLayer", {
-        "name":layer_name,
+        "layerName":layer_name,
         "contents":text,
         "fontSize": font_size,
         "opacity":opacity,

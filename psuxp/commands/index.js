@@ -949,7 +949,7 @@ let createMultiLineTextLayer = async (command) => {
             //https://developer.adobe.com/photoshop/uxp/2022/ps_reference/classes/layer/
 
             a.blendMode = getBlendMode(options.blendMode)
-            a.name = options.name
+            a.name = options.layerName
             a.opacity = options.opacity
 
             await a.textItem.convertToParagraphText()
@@ -1068,7 +1068,7 @@ let createSingleLineTextLayer = async (command) => {
             //https://developer.adobe.com/photoshop/uxp/2022/ps_reference/classes/layer/
 
             a.blendMode = getBlendMode(options.blendMode)
-            a.name = options.name
+            a.name = options.layerName
             a.opacity = options.opacity
         }
     );
@@ -1093,7 +1093,7 @@ let createPixelLayer = async (command) => {
             let b = getBlendMode(options.blendMode)
 
             let a = await app.activeDocument.createPixelLayer({
-                name:options.name,
+                name:options.layerName,
                 opacity:options.opacity,
                 fillNeutral:options.fillNeutral,
                 blendMode:b
