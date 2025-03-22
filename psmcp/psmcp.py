@@ -69,6 +69,40 @@ def generate_image(
 
     return
 
+
+@mcp.tool()
+def move_layer(
+    layer_name:str,
+    position:str
+):
+    """Moves the layer with the specified name to the specified position
+    
+    Valid options for positions are:
+    TOP : Place above all layers
+    BOTTOM : Place below all layers
+    UP : Move up one layer
+    DOWN : Move down one layer
+    """
+    
+    command = createCommand("moveLayer", {
+        "layerName":layer_name,
+        "position":position
+    })
+
+    sendCommand(command)
+
+@mcp.tool()
+def remove_background(
+    layer_name:str
+):
+    """Automatically removes the background of the image in the layer with the specified name and keeps the main subject"""
+    
+    command = createCommand("removeBackground", {
+        "name":layer_name
+    })
+
+    sendCommand(command)
+
 @mcp.tool()
 def create_pixel_layer(
     layer_name:str,

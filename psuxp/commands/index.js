@@ -286,6 +286,37 @@ let addDropShadowLayerEffect = async (command) => {
     );
 }
 
+let removeBackground = async (command) => {
+    console.log("removeBackground")
+
+    let options = command.options
+    let layerName = options.layerName
+
+    let layer = findLayer(layerName)
+
+    if(!layer) {
+        console.log(`removeBackground : Could not find layer named : [${layerName}]`)
+        return
+    }
+
+    await execute(
+        async () => {
+
+            selectLayer(layer, true)
+
+            let commands = [
+                // Remove Background
+                {
+                    "_obj": "removeBackground"
+                }
+            ];
+  
+            await action.batchPlay(commands, {});
+        }
+    );
+}
+
+
 let addBrightnessContrastAdjustmentLayer = async (command) => {
     console.log("addBrightnessContrastAdjustmentLayer")
 
@@ -722,6 +753,74 @@ let selectEllipse = async (command) => {
         }
     );
 }
+
+let moveLayer = async (command) => {
+
+    console.log("moveLayer")
+
+    let options = command.options
+
+    let layerName = options.layerName
+    let layer = findLayer(layerName)
+   
+    if(!layer) {
+        console.log(`moveLayer : Could not find layer named : [${layerName}]`)
+        return
+    }
+
+    let position;
+    switch(options.position) {
+        case "TOP":
+            position = "front";
+            break;
+        case "BOTTOM":
+            position = "back";
+            break;
+        case "UP":
+            position = "next";
+            break;
+        case "DOWN":
+            position = "previous";
+            break;
+        default:
+            console.log(`moveLayer: Unknown placement : ${options.position}`);
+            return
+    }
+
+    await execute(
+        async () => {
+ 
+            selectLayer(layer, true)
+
+            let commands = [
+
+                {
+                    "_obj": "move",
+                    "_target": [
+                        {
+                            "_enum": "ordinal",
+                            "_ref": "layer",
+                            "_value": "targetEnum"
+                        }
+                    ],
+                    "to": {
+                        "_enum": "ordinal",
+                        "_ref": "layer",
+                        "_value": position
+                    }
+                }
+            ];
+
+            await action.batchPlay(commands, {});
+        }
+    );
+}
+
+let getElementPlacement = (placement) => {
+    
+    return constants.ElementPlacement[placement.toUpperCase()]
+}
+
 
 let selectRectangle = async (command) => {
 
@@ -1171,6 +1270,8 @@ module.exports = {
 };
 
 const commandHandlers = {
+    moveLayer,
+    removeBackground,
     createDocument,
     createSingleLineTextLayer,
     createMultiLineTextLayer,
