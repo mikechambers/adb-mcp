@@ -69,6 +69,18 @@ def generate_image(
 
     return
 
+#
+#@mcp.tool()
+#def export_png():
+#    """Moves the layer with the specified name to the specified position
+#    
+#    """
+##    
+#   command = createCommand("exportPng", {
+#
+#    })
+#
+#    sendCommand(command)
 
 @mcp.tool()
 def move_layer(
