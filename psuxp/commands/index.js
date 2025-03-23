@@ -14,10 +14,6 @@ let parseAndRouteCommand = async (command) => {
 
     let action = command.action;
 
-    console.log("parseAndRouteCommand");
-    console.log(command);
-    console.log(action)
-
     let f = commandHandlers[action];
 
     if (typeof f !== "function") {

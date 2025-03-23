@@ -9,7 +9,7 @@ from Cocoa import NSFontManager, NSFont
 mcp = FastMCP("Adobe Photoshop", log_level="ERROR")
 
 APPLICATION = "photoshop"
-GENERATE_IMAGE_DELAY = 10 #seconds
+GENERATE_IMAGE_DELAY = 20 #seconds
 LOG_FILE_PATH = "/Users/mesh/tmp/log/photoshop-mcp.txt"
 
 #ripple, sphere, twirl, wave, zigzag
@@ -93,7 +93,7 @@ import threading
 from queue import Queue
 
 PROXY_URL = 'http://localhost:3001'
-PROXY_TIMEOUT = 5
+PROXY_TIMEOUT = 20
 
 def send_message_blocking(command, timeout=PROXY_TIMEOUT):
     """
@@ -129,7 +129,7 @@ def send_message_blocking(command, timeout=PROXY_TIMEOUT):
         })
     
     @sio.event
-    def json_response(data):
+    def packet_response(data):
         log(f"Received response: {data}")
         response_queue.put(data)
         
@@ -168,7 +168,14 @@ def send_message_blocking(command, timeout=PROXY_TIMEOUT):
     
     try:
         # Wait for a response or timeout
+        log("waiting for response...");
+
         response = response_queue.get(timeout=timeout)
+
+        log("response received...");
+        log(json.dumps(response))
+
+
         return response
     except Exception as e:
         log(f"Error waiting for response: {e}")

@@ -31,6 +31,18 @@ io.on('connection', (socket) => {
     });
   });
 
+  socket.on('command_packet_response', ({ packet }) => {
+    const senderId = packet.senderId;
+  
+    if (senderId) {
+      
+      io.to(senderId).emit('packet_response', packet);
+      console.log(`Sent confirmation to client ${senderId}`);
+    } else {
+      console.log(`No sender ID provided in packet`);
+    }
+  });
+
   socket.on('command_packet', ({ application, command }) => {
     console.log(`Command from ${socket.id} for application ${application}:`, command);
     
@@ -42,7 +54,13 @@ io.on('connection', (socket) => {
     
     // Process the command
 
-    sendToApplication(application, command)
+    let packet = {
+        senderId:socket.id,
+        application:application,
+        command:command
+    }
+
+    sendToApplication(packet)
     
     // Send response back to this client
     //socket.emit('json_response', { from: 'server', command });
@@ -63,17 +81,16 @@ io.on('connection', (socket) => {
 });
 
 // Add a function to send messages to clients by application
-function sendToApplication(application, command) {
+function sendToApplication(packet) {
 
-    console.log("sendToApplication")
-    console.log(typeof command)
-
-  if (applicationClients[application]) {
-    console.log(`Sending to ${applicationClients[application].size} clients for ${application}`);
+    let application = packet.application
+    if (applicationClients[application]) {
+        console.log(`Sending to ${applicationClients[application].size} clients for ${application}`);
     
-    // Loop through all client IDs for this application
-    applicationClients[application].forEach(clientId => {
-      io.to(clientId).emit('command_packet', command);
+        let senderId = packet.senderId
+        // Loop through all client IDs for this application
+        applicationClients[application].forEach(clientId => {
+            io.to(clientId).emit('command_packet', packet);
     });
     return true;
   }
