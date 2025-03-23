@@ -115,20 +115,17 @@ def send_message_blocking(command, timeout=PROXY_TIMEOUT):
 
     # Use a queue to get the response from the event handler
     response_queue = Queue()
-    
-    data = json.dumps(command)
-    log("send_message_blocking")
-    log(data)
 
     @sio.event
     def connect():
         log(f"Connected to server with session ID: {sio.sid}")
         
         # Send the private message
-        log(f"Sending message to {APPLICATION}: {data}")
+        log(f"Sending message to {APPLICATION}: {command}")
         sio.emit('command_packet', {
+            'type':"command",
             'application': APPLICATION,
-            'command': data
+            'command': command
         })
     
     @sio.event
@@ -714,7 +711,7 @@ def get_modes() -> dict:
 def sendCommand(command:dict):
     #url = "http://127.0.0.1:3030/commands/add/"
 
-    data = json.dumps(command)
+    #data = json.dumps(command)
 
     """
     headers = {
@@ -728,7 +725,7 @@ def sendCommand(command:dict):
     print(response.json())"
     """
 
-    response = send_message_blocking(data)
+    response = send_message_blocking(command)
     
     print(f"Final response: {response}")
     return response

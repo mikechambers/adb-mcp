@@ -11,19 +11,21 @@ let parseAndRouteCommands = async (commands) => {
 };
 
 let parseAndRouteCommand = async (command) => {
+
     let action = command.action;
 
     console.log("parseAndRouteCommand");
     console.log(command);
+    console.log(action)
 
-    let f = commandHandlers[command.action];
+    let f = commandHandlers[action];
 
     if (typeof f !== "function") {
-        console.log("Unknown Command", command.action);
+        console.log("Unknown Command", action);
         return;
     }
 
-    f(command);
+    return f(command);
 };
 
 let addColorBalanceAdjustmentLayer = async (command) => {
@@ -1249,10 +1251,6 @@ function findLayer(name, layers) {
     return null;
 }
 
-module.exports = {
-    parseAndRouteCommands,
-};
-
 const commandHandlers = {
     exportPng,
     moveLayer,
@@ -1280,4 +1278,9 @@ const commandHandlers = {
     setLayerProperties,
     translateLayer,
     addColorBalanceAdjustmentLayer,
+};
+
+module.exports = {
+    parseAndRouteCommands,
+    parseAndRouteCommand
 };

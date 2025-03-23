@@ -1,5 +1,5 @@
 const { entrypoints, UI } = require("uxp");
-const { parseAndRouteCommands } = require("./commands/index.js");
+const { parseAndRouteCommands, parseAndRouteCommand } = require("./commands/index.js");
 
 
 const {io} = require('./socket.io.js');
@@ -16,7 +16,7 @@ let intervalId = null
 let socket = null;
 
 
-function connectToServer(onResponseCallback = null) {
+function connectToServer(onCommandPacketCallback = null) {
     // Create new Socket.IO connection
     socket = io(PROXY_URL, {
         transports: ['websocket']
@@ -24,13 +24,20 @@ function connectToServer(onResponseCallback = null) {
     
     socket.on('connect', () => {
         console.log('Connected to server with ID:', socket.id);
+        socket.emit('register', { application: APPLICATION });
     });
     
-    socket.on('json_response', (data) => {
+    socket.on('command_packet', (command) => {
+      console.log('Received command packet:', command);
+      if (onCommandPacketCallback && typeof onCommandPacketCallback === 'function') {
+
+        onCommandPacketCallback(command);
+      }
+    });
+
+    socket.on('registration_response', (data) => {
         console.log('Received response:', data);
-        if (onResponseCallback && typeof onResponseCallback === 'function') {
-            onResponseCallback(data);
-        }
+        //TODO: connect button here
     });
     
     socket.on('connect_error', (error) => {
@@ -39,6 +46,8 @@ function connectToServer(onResponseCallback = null) {
     
     socket.on('disconnect', (reason) => {
         console.log('Disconnected from server. Reason:', reason);
+
+        //TODO:connect button here
     });
     
     return socket;
@@ -138,11 +147,15 @@ document.getElementById("btnStart").addEventListener("click", () => {
   } else {
     //startInterval();
 
-    const handleResponse = (data) => {
-      console.log("Response received:", data);
+    const onCommandPacket = (command) => {
+      
+      
+      console.log("onCommandPacket")
+      console.log(typeof command)
+      parseAndRouteCommand(command)
     };
   
-    connectToServer(handleResponse);
+    connectToServer(onCommandPacket);
 
     b.textContent = "Disconnect";
   }
