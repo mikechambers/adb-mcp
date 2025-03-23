@@ -209,7 +209,7 @@ let copyToClipboard = async (command) => {
         app.activeDocument.selection.selectAll()
 
         //only works if there is an active selection
-        layer.copy(options.copyMerged)
+        await layer.copy(options.copyMerged)
         await clearSelection()
     });
 }
