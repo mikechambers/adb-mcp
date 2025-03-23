@@ -78,6 +78,32 @@ def get_layers() -> list:
     return layers
 
 @mcp.tool()
+def rename_layer(
+    layer_name:str,
+    new_layer_name:str
+
+):
+    """Renames the specified layer.
+
+    Args:
+        layer_name (str): Name of the layer to be renamed.
+        new_layer_name (str): New name for the layer.
+
+    Raises:
+        RuntimeError: If the operation fails or times out
+    """
+    
+    command = createCommand("renameLayer", {
+        "layerName":layer_name,
+        "newLayerName":new_layer_name
+
+    })
+
+    sendCommand(command)
+
+    return
+
+@mcp.tool()
 def scale_layer(
     layer_name:str,
     width:int,
@@ -843,6 +869,8 @@ def get_instructions() -> str:
     When generating an image, you do not need to first create a pixel layer. A layer will automatically be created when you generate the image.
 
     If at anytime you want to see the current state of the document, just copy the document (copy_document()) and ask the user to paste into your context.
+
+    Make sure to clear any selections you make, once you are done with them.
 
     Colors are defined via a dict with red, green and blue properties with values between 0 and 255
     {"red":255, "green":0, "blue":0}

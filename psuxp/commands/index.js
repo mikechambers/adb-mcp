@@ -110,6 +110,28 @@ let deleteLayer = async (command) => {
     });
 };
 
+let renameLayer = async (command) => {
+    console.log("renameLayer");
+
+    let options = command.options;
+
+    let layerName = options.layerName;
+    let layer = findLayer(layerName);
+
+    if (!layer) {
+        console.log(
+            `renameLayer : Could not find layer named : [${layerName}]`
+        );
+        return;
+    }
+
+    await execute(async () => {
+        layer.name = options.newLayerName
+    });
+};
+
+
+
 let getLayers = async (command) => {
     console.log("deleteLayer");
 
@@ -1423,6 +1445,7 @@ function findLayer(name, layers) {
 }
 
 const commandHandlers = {
+    renameLayer,
     getLayers,
     rotateLayer,
     scaleLayer,
