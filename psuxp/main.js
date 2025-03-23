@@ -7,13 +7,9 @@ const {
 const { io } = require("./socket.io.js");
 const app = require("photoshop").app;
 
-const UPDATE_INTERVAL = 1000 * 2;
 const APPLICATION = "photoshop";
 const PROXY_URL = "http://localhost:3001";
 
-let intervalId = null;
-
-// Core Socket.IO functions for Photoshop UXP
 let socket = null;
 
 const onCommandPacket = async (packet) => {
@@ -156,37 +152,11 @@ let updateButton = () => {
 
 //Toggle button to make it start stop
 document.getElementById("btnStart").addEventListener("click", () => {
-    
-
     if(socket && socket.connected) {
-
-      const onCommandPacket = async (packet) => {
-        let command = packet.command;
-
-        let response = await parseAndRouteCommand(command);
-
-        return {
-            senderId: packet.senderId,
-            status: "SUCCESS",
-            response: response,
-        };
-    };
-
-    connectToServer(onCommandPacket);
-
+      disconnectFromServer();
     } else {
-
+      connectToServer();
     }
 
-    if (intervalId) {
-        disconnectFromServer();
-        //stopInterval()
-        b.textContent = "Connect";
-    } else {
-        //startInterval();
-
-        connectToServer();
-
-        b.textContent = "Disconnect";
-    }
+    
 });
