@@ -46,6 +46,22 @@ def create_document(name: str, width: int, height:int, resolution:int, fill_colo
     sendCommand(command)
 
 @mcp.tool()
+def delete_layer(
+    layer_name:str
+):
+    """Deletes the layer with the specified name
+    """
+    
+    command = createCommand("deleteLayer", {
+        "layerName":layer_name
+    })
+
+    sendCommand(command)
+
+    return
+
+
+@mcp.tool()
 def set_layer_visibility(
     layer_name:str,
     visible:bool

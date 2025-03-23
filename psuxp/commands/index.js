@@ -25,6 +25,27 @@ let parseAndRouteCommand = async (command) => {
 };
 
 
+let deleteLayer = async (command) => {
+    console.log("deleteLayer");
+
+    let options = command.options;
+
+    let layerName = options.layerName;
+    let layer = findLayer(layerName);
+
+    if (!layer) {
+        console.log(
+            `setLayerVisibility : Could not find layer named : [${layerName}]`
+        );
+        return;
+    }
+
+    await execute(async () => {
+        layer.delete()
+    });
+};
+
+
 let setLayerVisibility = async (command) => {
     console.log("setLayerVisibility");
 
@@ -1270,6 +1291,7 @@ function findLayer(name, layers) {
 }
 
 const commandHandlers = {
+    deleteLayer,
     setLayerVisibility,
     exportPng,
     moveLayer,
