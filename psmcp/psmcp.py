@@ -46,6 +46,23 @@ def create_document(name: str, width: int, height:int, resolution:int, fill_colo
     sendCommand(command)
 
 @mcp.tool()
+def set_layer_visibility(
+    layer_name:str,
+    visible:bool
+):
+    """Sets the visibility of the layer with the specified name
+    """
+    
+    command = createCommand("setLayerVisibility", {
+        "layerName":layer_name,
+        "visible":visible
+    })
+
+    sendCommand(command)
+
+    return
+
+@mcp.tool()
 def generate_image(
     layer_name:str,
     prompt:str,

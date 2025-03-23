@@ -24,6 +24,28 @@ let parseAndRouteCommand = async (command) => {
     return f(command);
 };
 
+
+let setLayerVisibility = async (command) => {
+    console.log("setLayerVisibility");
+
+    let options = command.options;
+
+    let layerName = options.layerName;
+    let layer = findLayer(layerName);
+
+    if (!layer) {
+        console.log(
+            `setLayerVisibility : Could not find layer named : [${layerName}]`
+        );
+        return;
+    }
+
+    await execute(async () => {
+        layer.visible = options.visible
+    });
+};
+
+
 let addColorBalanceAdjustmentLayer = async (command) => {
     console.log("addColorBalanceAdjustmentLayer");
 
@@ -1248,6 +1270,7 @@ function findLayer(name, layers) {
 }
 
 const commandHandlers = {
+    setLayerVisibility,
     exportPng,
     moveLayer,
     removeBackground,
