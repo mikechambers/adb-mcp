@@ -800,11 +800,6 @@ let generateImage = async (command) => {
 
         let l = findLayer(options.prompt);
         l.name = options.layerName;
-
-        l.blendMode = getBlendMode(options.blendMode);
-        l.opacity = options.opacity;
-
-        //selectLayer(l, true)
     });
 };
 

@@ -26,43 +26,33 @@ socket_client.configure(
 )
 
 @mcp.tool()
-def create_document(name: str, width: int, height:int, resolution:int, fill_color:dict = {"red":0, "green":0, "blue":0}, colorMode:str = "RGB"):
+def create_document(document_name: str, width: int, height:int, resolution:int, fill_color:dict = {"red":0, "green":0, "blue":0}, color_mode:str = "RGB"):
     """Creates a new Photoshop Document
 
         Layer are created from bottom up based on the order they are created in, so create background elements first and then build on top.
 
         New document will contain a layer named "Background" that is filled with the specified fill color
+
+        Args:
+            document_name (str): Name for the new document being created
+            width (int): Width in pixels of the new document
+            height (int): Height in pixels of the new document
+            resolution (int): Resolution (Pixels per Inch) of the new document
+            fill_color (dict): dict defining the background color fill of the new document
+            color_mode (str): Color mode for the new document
     """
     
     command = createCommand("createDocument", {
-        "name":name,
+        "name":document_name,
         "width":width,
         "height":height,
         "resolution":resolution,
         "fillColor":fill_color,
-        "colorMode":colorMode
+        "colorMode":color_mode
     })
 
     sendCommand(command)
 
-
-@mcp.tool()
-def create_rectangle(
-    layer_name:str,
-    bounds:dict = {"top": 0, "left": 0, "bottom": 250, "right": 300},
-    corner_radius:int = 0,
-    fill_color:dict = {"red":255, "green":255, "blue":255}, 
-):
-    """Deletes the layer with the specified name
-    """
-    
-    command = createCommand("deleteLayer", {
-        "layerName":layer_name
-    })
-
-    sendCommand(command)
-
-    return
 
 @mcp.tool()
 def scale_layer(
@@ -147,6 +137,9 @@ def delete_layer(
     layer_name:str
 ):
     """Deletes the layer with the specified name
+
+    Args:
+        layer_name (str): Name of the layer to be deleted
     """
     
     command = createCommand("deleteLayer", {
@@ -164,6 +157,10 @@ def set_layer_visibility(
     visible:bool
 ):
     """Sets the visibility of the layer with the specified name
+
+    Args:
+        layer_name (str): Name of the layer to set visibility
+        visible (bool): Whether the layer is visible
     """
     
     command = createCommand("setLayerVisibility", {
@@ -178,62 +175,35 @@ def set_layer_visibility(
 @mcp.tool()
 def generate_image(
     layer_name:str,
-    prompt:str,
-    opacity:int = 100,
-    blend_mode:str = "NORMAL",
+    prompt:str
 ):
     """Uses Adobe Firefly Generative AI to generate an image on a new layer with the specified layer name
+
+    Args:
+        layer_name (str): Name for the layer that will contain the generated image
+        prompt (str): Prompt describing the image to be generated
+        opacity
     """
     
     command = createCommand("generateImage", {
         "layerName":layer_name,
-        "prompt":prompt,
-        "opacity":opacity,
-        "blendMode":blend_mode
+        "prompt":prompt
     })
 
     sendCommand(command)
 
     return
 
-#
-#@mcp.tool()
-#def export_png():
-#    """Moves the layer with the specified name to the specified position
-#    
-#    """
-##    
-#   command = createCommand("exportPng", {
-#
-#    })
-#
-#    sendCommand(command)
-
-import socketio
-import asyncio
-import time
-
-import socketio
-import time
-import threading
-from queue import Queue
-
-PROXY_URL = 'http://localhost:3001'
-PROXY_TIMEOUT = 20
-
-
 @mcp.tool()
 def move_layer(
     layer_name:str,
     position:str
 ):
-    """Moves the layer with the specified name to the specified position
-    
-    Valid options for positions are:
-    TOP : Place above all layers
-    BOTTOM : Place below all layers
-    UP : Move up one layer
-    DOWN : Move down one layer
+    """Moves the layer within the layer stack based on the specified position
+
+    Args:
+        layer_name (str): Name for the layer that will be moved
+        position (str): How the layer position within the layer stack will be updated. Value values are: TOP (Place above all layers), BOTTOM (Place below all layers), UP (Move up one layer), DOWN (Move down one layer)
     """
 
     command = createCommand("moveLayer", {
@@ -247,7 +217,11 @@ def move_layer(
 def remove_background(
     layer_name:str
 ):
-    """Automatically removes the background of the image in the layer with the specified name and keeps the main subject"""
+    """Automatically removes the background of the image in the layer with the specified name and keeps the main subject
+    
+    Args:
+        layer_name (str): Name of the layer to remove the background from
+    """
     
     command = createCommand("removeBackground", {
         "layerName":layer_name
@@ -745,6 +719,12 @@ def get_instructions() -> str:
     When generating an image, you do not need to first create a pixel layer. A layer will automatically be created when you generate the image.
 
     If at anytime you want to see the current state of the document, just copy the document (copy_document()) and ask the user to paste into your context.
+
+    Colors are defined via a dict with red, green and blue properties with values between 0 and 255
+    {"red":255, "green":0, "blue":0}
+
+    Bounds is defined as a dict with top, left, bottom and right properties
+    {"top": 0, "left": 0, "bottom": 250, "right": 300}
     """
 
 
