@@ -77,11 +77,12 @@ def get_layers() -> list:
 
     return layers
 
+"""
 @mcp.tool()
 def create_mask_from_selection(
     layer_name: str
 ):
-    """Creates a mask from the current selection on the layer with the specified name.
+    Creates a mask from the current selection on the layer with the specified name.
 
     Args:
         layer_name (str): Name of the layer on which the mask will be created and applied.
@@ -91,7 +92,7 @@ def create_mask_from_selection(
         
     Raises:
         RuntimeError: If the operation fails or times out
-    """
+
     
     command = createCommand("createMaskFromSelection", {
         "layerName":layer_name
@@ -100,6 +101,7 @@ def create_mask_from_selection(
     sendCommand(command)
 
     return
+"""
 
 @mcp.tool()
 def rename_layer(
@@ -441,7 +443,8 @@ def translate_layer(
 def set_layer_properties(
     layer_name: str,
     blend_mode:str = "NORMAL",
-    opacity:int = 100
+    opacity:int = 100,
+    is_clipping_mask:bool = False
     ):
 
     """Sets the blend mode and opacity on the layer with the specified name
@@ -450,12 +453,14 @@ def set_layer_properties(
         layer_name (str): The name of the layer whose properties should be updated
         blend_mode (str): The blend mode for the layer
         opacity (int): The opacity for the layer (0 - 100)
+        is_clipping_mask (bool) : A boolean indicating whether this layer will be clipped to (masked by) the layer below it
     """
     
     command = createCommand("setLayerProperties", {
         "layerName":layer_name,
         "blendMode":blend_mode,
-        "opacity":opacity
+        "opacity":opacity,
+        "isClippingMask":is_clipping_mask
     })
 
     sendCommand(command)
@@ -865,13 +870,6 @@ def apply_motion_blur(layer_name: str, angle: int = 0, distance: float = 30):
     sendCommand(command)
 
 
-# Add a dynamic greeting resource
-# Does not work in claud / or in test
-#@mcp.resource("greeting://{name}")
-#def get_greeting(name: str) -> str:
-#    """Get a personalized greeting"""
-#    return f"Hello, {name}!"
-
 @mcp.resource("config://get_instructions")
 def get_instructions() -> str:
     """Read this first! Returns information and instructions on how to use Photoshop and this API"""
@@ -882,7 +880,7 @@ def get_instructions() -> str:
 
     In general, layers are created from bottom up, so keep that in mind as you figure out the order or operations. If you want you have lower layers show through higher ones you must either change the opacity of the higher layers and / or blend modes.
 
-    When using fonts there are a couple of things to keep in mind. First, the font origin is the bottom left of the font, not the top right. You can better align the fonts using the align_content api. 
+    When using fonts there are a couple of things to keep in mind. First, the font origin is the bottom left of the font, not the top right. Always use alignment (align_content()) to position your text. Do not rely on the text position or bounds.
 
     You can get a list of valid alignment modes via get_alignment_modes, and a valid list of blend_modes via get_blend_modes, and a valid list of font names that can be used via get_fonts.
 

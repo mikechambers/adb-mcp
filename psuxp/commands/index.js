@@ -11,7 +11,6 @@ let parseAndRouteCommands = async (commands) => {
 };
 
 let parseAndRouteCommand = async (command) => {
-
     let action = command.action;
 
     let f = commandHandlers[action];
@@ -33,17 +32,17 @@ let scaleLayer = async (command) => {
     let layer = findLayer(layerName);
 
     if (!layer) {
-        console.log(
-            `scaleLayer : Could not find layer named : [${layerName}]`
-        );
+        console.log(`scaleLayer : Could not find layer named : [${layerName}]`);
         return;
     }
 
     await execute(async () => {
-        let anchor = getAnchorPosition(options.anchorPosition)
-        let interpolation = getInterpolationMethod(options.interpolationMethod)
+        let anchor = getAnchorPosition(options.anchorPosition);
+        let interpolation = getInterpolationMethod(options.interpolationMethod);
 
-        await layer.scale(options.width, options.height, anchor, {interpolation:interpolation})
+        await layer.scale(options.width, options.height, anchor, {
+            interpolation: interpolation,
+        });
     });
 };
 
@@ -63,10 +62,12 @@ let rotateLayer = async (command) => {
     }
 
     await execute(async () => {
-        let anchor = getAnchorPosition(options.anchorPosition)
-        let interpolation = getInterpolationMethod(options.interpolationMethod)
-        
-        await layer.rotate(options.angle,  anchor, {interpolation:interpolation})
+        let anchor = getAnchorPosition(options.anchorPosition);
+        let interpolation = getInterpolationMethod(options.interpolationMethod);
+
+        await layer.rotate(options.angle, anchor, {
+            interpolation: interpolation,
+        });
     });
 };
 
@@ -79,14 +80,12 @@ let flipLayer = async (command) => {
     let layer = findLayer(layerName);
 
     if (!layer) {
-        console.log(
-            `flipLayer : Could not find layer named : [${layerName}]`
-        );
+        console.log(`flipLayer : Could not find layer named : [${layerName}]`);
         return;
     }
 
     await execute(async () => {
-        await layer.flip(options.axis)
+        await layer.flip(options.axis);
     });
 };
 
@@ -106,7 +105,7 @@ let deleteLayer = async (command) => {
     }
 
     await execute(async () => {
-        layer.delete()
+        layer.delete();
     });
 };
 
@@ -126,46 +125,45 @@ let renameLayer = async (command) => {
     }
 
     await execute(async () => {
-        layer.name = options.newLayerName
+        layer.name = options.newLayerName;
     });
 };
-
-
 
 let getLayers = async (command) => {
     console.log("deleteLayer");
 
     let out = await execute(async () => {
         let result = [];
-        
+
         // Function to recursively process layers
         const processLayers = (layersList) => {
             let layersArray = [];
-            
+
             for (let i = 0; i < layersList.length; i++) {
                 let layer = layersList[i];
                 let layerInfo = {
-                    name: layer.name
+                    name: layer.name,
+                    isClippingMask: layer.isClippingMask,
                 };
-                
+
                 // Check if this layer has sublayers (is a group)
                 if (layer.layers && layer.layers.length > 0) {
                     layerInfo.layers = processLayers(layer.layers);
                 }
-                
+
                 layersArray.push(layerInfo);
             }
-            
+
             return layersArray;
         };
-        
+
         // Start with the top-level layers
         result = processLayers(app.activeDocument.layers);
-        
+
         return result;
     });
 
-    console.log(out)
+    console.log(out);
 
     return out;
 };
@@ -186,10 +184,9 @@ let setLayerVisibility = async (command) => {
     }
 
     await execute(async () => {
-        layer.visible = options.visible
+        layer.visible = options.visible;
     });
 };
-
 
 let addColorBalanceAdjustmentLayer = async (command) => {
     console.log("addColorBalanceAdjustmentLayer");
@@ -287,6 +284,34 @@ let setLayerProperties = async (command) => {
     await execute(async () => {
         layer.blendMode = getBlendMode(options.blendMode);
         layer.opacity = options.opacity;
+
+        if (layer.isClippingMask != options.isClippingMask) {
+            selectLayer(layer, true);
+            let command = options.isClippingMask
+                ? {
+                      _obj: "groupEvent",
+                      _target: [
+                          {
+                              _enum: "ordinal",
+                              _ref: "layer",
+                              _value: "targetEnum",
+                          },
+                      ],
+                  }
+                : {
+                      _obj: "ungroup",
+                      _target: [
+                          {
+                              _enum: "ordinal",
+                              _ref: "layer",
+                              _value: "targetEnum",
+                          },
+                      ],
+                  };
+
+            console.log(command)
+            await action.batchPlay([command], {});
+        }
     });
 };
 
@@ -309,48 +334,42 @@ let duplicateLayer = async (command) => {
     });
 };
 
-
-
 let copyToClipboard = async (command) => {
-
-    let options = command.options
+    let options = command.options;
 
     await execute(async () => {
-        let layer = null
+        let layer = null;
         if (!options.copyMerged) {
-            layer = findLayer(options.layerName)
+            layer = findLayer(options.layerName);
 
-            if(!layer) {
-                console.log(`copyToClipboard : No layer named ${layerName}:`)
+            if (!layer) {
+                console.log(`copyToClipboard : No layer named ${layerName}:`);
                 //todo throw an error here?
-                return
+                return;
             }
         } else {
-            layer = app.activeDocument.layers[0]
+            layer = app.activeDocument.layers[0];
         }
-        
+
         if (options.copyMerged) {
             //hack since copy merged wont work without an active selection
             app.activeDocument.selection.selectAll();
             await layer.copy(true);
             await clearSelection();
-          } else {
+        } else {
             await layer.copy(false);
-          }
-
-        
+        }
     });
-}
+};
 
 let clearSelection = async () => {
     await app.activeDocument.selection.selectRectangle(
-        {top: 0, left: 0, bottom: 0, right: 0},
+        { top: 0, left: 0, bottom: 0, right: 0 },
         constants.SelectionType.REPLACE,
         0,
         true
-    )
-    
-}
+    );
+};
 
 let flattenAllLayers = async (command) => {
     console.log("flattenAllLayers");
@@ -378,10 +397,9 @@ let exportPng = async (command) => {
     let filename = "foo";
 
     await execute(async () => {
-
         ///Users/mesh/Library/Application Support/Adobe/UXP/PluginsStorage/PHSP/26/Developer/Photoshop MCP Agent/PluginData/foo.png
 
-        let fileName = "foo"
+        let fileName = "foo";
         var saveFolder =
             await require("uxp").storage.localFileSystem.getDataFolder();
         var saveFile = await saveFolder.createFile(fileName + ".png");
@@ -453,25 +471,25 @@ let createMaskFromSelection = async (command) => {
 
         let commands = [
             {
-                "_obj": "make",
-                "at": {
-                    "_enum": "channel",
-                    "_ref": "channel",
-                    "_value": "mask"
+                _obj: "make",
+                at: {
+                    _enum: "channel",
+                    _ref: "channel",
+                    _value: "mask",
                 },
-                "new": {
-                    "_class": "channel"
+                new: {
+                    _class: "channel",
                 },
-                "using": {
-                    "_enum": "userMaskEnabled",
-                    "_value": "revealSelection"
-                }
-            }
+                using: {
+                    _enum: "userMaskEnabled",
+                    _value: "revealSelection",
+                },
+            },
         ];
 
         await action.batchPlay(commands, {});
     });
-}
+};
 
 let addDropShadowLayerEffect = async (command) => {
     console.log("addDropShadowLayerEffect");
@@ -1409,33 +1427,41 @@ function getAlignmentMode(mode) {
 }
 
 function getJustificationMode(value) {
-    return getConstantValue(constants.Justification, value, "Justification")
+    return getConstantValue(constants.Justification, value, "Justification");
 }
 
 function getBlendMode(value) {
-    return getConstantValue(constants.BlendMode, value, "BlendMode")
+    return getConstantValue(constants.BlendMode, value, "BlendMode");
 }
 
 function getInterpolationMethod(value) {
-    return getConstantValue(constants.InterpolationMethod, value, "InterpolationMethod")
+    return getConstantValue(
+        constants.InterpolationMethod,
+        value,
+        "InterpolationMethod"
+    );
 }
 
 function getAnchorPosition(value) {
-    return getConstantValue(constants.AnchorPosition, value, "AnchorPosition")
+    return getConstantValue(constants.AnchorPosition, value, "AnchorPosition");
 }
 
 function getNewDocumentMode(value) {
-    return getConstantValue(constants.NewDocumentMode, value, "NewDocumentMode")
+    return getConstantValue(
+        constants.NewDocumentMode,
+        value,
+        "NewDocumentMode"
+    );
 }
 
 function getConstantValue(c, v, n) {
     let out = c[v.toUpperCase()];
 
-    if(!out) {
-        console.log(`Unknown n : ${v}`)
+    if (!out) {
+        console.log(`Unknown n : ${v}`);
     }
 
-    return out
+    return out;
 }
 
 function selectLayer(layer, exclusive = false) {
@@ -1524,5 +1550,5 @@ const commandHandlers = {
 
 module.exports = {
     parseAndRouteCommands,
-    parseAndRouteCommand
+    parseAndRouteCommand,
 };
