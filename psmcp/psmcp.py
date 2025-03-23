@@ -587,13 +587,14 @@ def add_drop_shadow_layer_effect(
     """Adds a drop shadow layer effect to the layer with the specified name
 
     Args:
-        layer_name (str):
-
-    Valid values for opacity are 0 to 100
-    Valid values for angle are -179 to -180
-    Valid values for distance are 0 to 30000
-    Valid values for spread are 0 to 100
-    Valid values for size are 0 to 250
+        layer_name (str): The layer with the content to add the drop shadow to
+        blend_mode (str): The blend mode for the drop shadow
+        color (dict): The color for the drop shadow
+        opacity (int): The opacity of the drop shadow
+        angle (int): The angle (-179 to -180) of the drop shadow relative to the content
+        distance (int): The distance in pixels of the drop shadow (0 to 30000)
+        spread (int): Defines how gradually the shadow fades out at its edges, with higher values creating a harsher, more defined edge, and lower values a softer, more feathered edge (0 to 100)
+        size (int): Control the blur and spread of the shadow effect (0 to 250)
     """
 
     command = createCommand("addDropShadowLayerEffect", {
@@ -613,6 +614,10 @@ def add_drop_shadow_layer_effect(
 def duplicate_layer(layer_to_duplicate_name:str, duplicate_layer_name:str):
     """
     Duplicates the layer specified by layer_to_duplicate_name, creating a new layer above it with the name specified by duplicate_layer_name
+
+    Args:
+        layer_to_duplicate_name (str): The name of the layer to be duplicated
+        duplicate_layer_name (str): Name of the newly created layer
     """
 
     command = createCommand("duplicateLayer", {
@@ -625,7 +630,10 @@ def duplicate_layer(layer_to_duplicate_name:str, duplicate_layer_name:str):
 @mcp.tool()
 def flatten_all_layers(layer_name:str):
     """
-    Flatter all layers in the document into a single layer with specified name
+    Flatten all layers in the document into a single layer with specified name
+
+    Args:
+        layer_name (str): The name of the merged layer
     """
 
     command = createCommand("flattenAllLayers", {
@@ -647,9 +655,14 @@ def add_color_balance_adjustment_layer(
 
     First value is between cyan and red
     The second value is between magenta and green
-    The third value is between yellow and blue
+    The third value is between yellow and blue    
+
+    Args:
+        layer_name (str): The name of the layer to apply the color balance adjustment layer
+        highlights (list): Relative color values for highlights
+        midtones (list): Relative color values for midtones
+        shadows (list): Relative color values for shadows
     """
-    #0.1 to 255
 
     command = createCommand("addColorBalanceAdjustmentLayer", {
         "layerName":layer_name,
@@ -667,10 +680,11 @@ def add_brightness_contrast_adjustment_layer(
     contrast:int = 0):
     """Adds an adjustment layer to the layer with the specified name to adjust brightness and contrast
 
-    Valid values for brightness are from -150 to 150
-    Valid values for contrast are -50 to 100
+    Args:
+        layer_name (str): The name of the layer to apply the brightness and contrast adjustment layer
+        brightness (int): The brightness value (-150 to 150)
+        contrasts (int): The contrast value (-50 to 100)
     """
-    #0.1 to 255
 
     command = createCommand("addBrightnessContrastAdjustmentLayer", {
         "layerName":layer_name,
@@ -686,8 +700,11 @@ def add_vibrance_adjustment_layer(
     vibrance:int = 0,
     saturation:int = 0):
     """Adds an adjustment layer to layer with the specified name to adjust vibrance and saturation
-
-    Valid values are from -100 to 100
+    
+    Args:
+        layer_name (str): The name of the layer to apply the vibrance and saturation adjustment layer
+        vibrance (int): Controls the intensity of less-saturated colors while preventing oversaturation of already-saturated colors. Range -100 to 100.
+        saturation (int): Controls the intensity of all colors equally. Range -100 to 100.
     """
     #0.1 to 255
 
@@ -702,10 +719,18 @@ def add_vibrance_adjustment_layer(
 @mcp.tool()
 def add_black_and_white_adjustment_layer(
     layer_name: str,
-    colors:dict = {"blue":20, "cyan":60, "green":40, "magenta":80, "red":40, "yellow":60}):
+    colors: dict = {"blue": 20, "cyan": 60, "green": 40, "magenta": 80, "red": 40, "yellow": 60}):
     """Adds an adjustment layer to the layer with the specified name to change it to black and white
-
-    Valid color values are from -200 to 300
+    
+    Args:
+        layer_name (str): The name of the layer to apply the black and white adjustment layer
+        colors (dict): Dictionary controlling how each color converts to grayscale. Valid color values are from -200 to 300. Higher values make that color appear lighter in the black and white conversion. Keys must include: red, yellow, green, cyan, blue, magenta.
+    
+    Returns:
+        dict: Response from the Photoshop operation
+        
+    Raises:
+        RuntimeError: If the operation fails or times out
     """
     #0.1 to 255
 
@@ -719,7 +744,7 @@ def add_black_and_white_adjustment_layer(
 @mcp.tool()
 def apply_gaussian_blur(layer_name: str, radius: float = 2.5):
     """Applies a Gaussian Blur to the layer with the specified name"""
-    #0.1 to 255
+
 
     command = createCommand("applyGaussianBlur", {
         "layerName":layer_name,
