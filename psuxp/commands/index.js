@@ -24,6 +24,71 @@ let parseAndRouteCommand = async (command) => {
     return f(command);
 };
 
+let scaleLayer = async (command) => {
+    console.log("scaleLayer");
+
+    let options = command.options;
+
+    let layerName = options.layerName;
+    let layer = findLayer(layerName);
+
+    if (!layer) {
+        console.log(
+            `scaleLayer : Could not find layer named : [${layerName}]`
+        );
+        return;
+    }
+
+    await execute(async () => {
+        let anchor = getAnchorPosition(options.anchorPosition)
+        let interpolation = getInterpolationMethod(options.interpolationMethod)
+
+        await layer.scale(options.width, options.height, anchor, {interpolation:interpolation})
+    });
+};
+
+let rotateLayer = async (command) => {
+    console.log("rotateLayer");
+
+    let options = command.options;
+
+    let layerName = options.layerName;
+    let layer = findLayer(layerName);
+
+    if (!layer) {
+        console.log(
+            `rotateLayer : Could not find layer named : [${layerName}]`
+        );
+        return;
+    }
+
+    await execute(async () => {
+        let anchor = getAnchorPosition(options.anchorPosition)
+        let interpolation = getInterpolationMethod(options.interpolationMethod)
+        
+        await layer.rotate(options.angle,  anchor, {interpolation:interpolation})
+    });
+};
+
+let flipLayer = async (command) => {
+    console.log("flipLayer");
+
+    let options = command.options;
+
+    let layerName = options.layerName;
+    let layer = findLayer(layerName);
+
+    if (!layer) {
+        console.log(
+            `flipLayer : Could not find layer named : [${layerName}]`
+        );
+        return;
+    }
+
+    await execute(async () => {
+        await layer.flip(options.axis)
+    });
+};
 
 let deleteLayer = async (command) => {
     console.log("deleteLayer");
@@ -44,7 +109,6 @@ let deleteLayer = async (command) => {
         layer.delete()
     });
 };
-
 
 let setLayerVisibility = async (command) => {
     console.log("setLayerVisibility");
@@ -1249,42 +1313,34 @@ function getAlignmentMode(mode) {
     }
 }
 
-function getJustificationMode(mode) {
-    return constants.Justification[mode.toUpperCase()];
+function getJustificationMode(value) {
+    return getConstantValue(constants.Justification, value, "Justification")
 }
 
-function getBlendMode(name) {
-    return constants.BlendMode[name.toUpperCase()];
+function getBlendMode(value) {
+    return getConstantValue(constants.BlendMode, value, "BlendMode")
 }
 
-function getNewDocumentMode(mode) {
-    let out = null;
+function getInterpolationMethod(value) {
+    return getConstantValue(constants.InterpolationMethod, value, "InterpolationMethod")
+}
 
-    console.log("getNewDocumentMode", mode);
+function getAnchorPosition(value) {
+    return getConstantValue(constants.AnchorPosition, value, "AnchorPosition")
+}
 
-    switch (mode) {
-        case "BITMAP":
-            out = constants.NewDocumentMode.BITMAP;
-            break;
-        case "CMYK":
-            out = constants.NewDocumentMode.CMYK;
-            break;
-        case "GRAYSCALE":
-            out = constants.NewDocumentMode.GRAYSCALE;
-            break;
-        case "LAB":
-            out = constants.NewDocumentMode.LAB;
-            break;
-        case "RGB":
-            out = constants.NewDocumentMode.RGB;
-            break;
-        default:
-            // Optionally handle an unrecognized mode
-            console.warn(`Unknown mode: ${mode}`);
-            break;
+function getNewDocumentMode(value) {
+    return getConstantValue(constants.NewDocumentMode, value, "NewDocumentMode")
+}
+
+function getConstantValue(c, v, n) {
+    let out = c[v.toUpperCase()];
+
+    if(!out) {
+        console.log(`Unknown n : ${v}`)
     }
 
-    return out;
+    return out
 }
 
 function selectLayer(layer, exclusive = false) {
@@ -1334,6 +1390,9 @@ function findLayer(name, layers) {
 }
 
 const commandHandlers = {
+    rotateLayer,
+    scaleLayer,
+    flipLayer,
     copyToClipboard,
     deleteLayer,
     setLayerVisibility,

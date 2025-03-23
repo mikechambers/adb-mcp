@@ -64,6 +64,83 @@ def create_rectangle(
 
     return
 
+@mcp.tool()
+def scale_layer(
+    layer_name:str,
+    width:int,
+    height:int,
+    anchor_position:str,
+    interpolation_method:str = "AUTOMATIC"
+):
+    """Scales the layer with the specified name.
+
+    Args:
+        layer_name (str): Name of layer to be scaled.
+        width (int): Percentage to scale horizontally.
+        height (int): Percentage to scale vertically.
+        anchor_position (str): The anchor position to rotate around,
+        interpolation_method (str): Interpolation method to use when resampling the image
+    """
+    
+    command = createCommand("scaleLayer", {
+        "layerName":layer_name,
+        "width":width,
+        "height":height,
+        "anchorPosition":anchor_position,
+        "interpolationMethod":interpolation_method
+    })
+
+    sendCommand(command)
+
+    return
+
+@mcp.tool()
+def rotate_layer(
+    layer_name:str,
+    angle:int,
+    anchor_position:str,
+    interpolation_method:str = "AUTOMATIC"
+):
+    """Rotates the layer with the specified name.
+
+    Args:
+        layer_name (str): Name of layer to be scaled.
+        angle (int): Angle (-359 to 359) to rotate the layer by in degrees
+        anchor_position (str): The anchor position to rotate around,
+        interpolation_method (str): Interpolation method to use when resampling the image
+    """
+    
+    command = createCommand("rotateLayer", {
+        "layerName":layer_name,
+        "angle":angle,
+        "anchorPosition":anchor_position,
+        "interpolationMethod":interpolation_method
+    })
+
+    sendCommand(command)
+
+    return
+
+@mcp.tool()
+def flip_layer(
+    layer_name:str,
+    axis:str
+):
+    """Flips the layer with the specified name on the specified axis.
+
+    Args:
+        layer_name (str): Name of layer to be scaled.
+        axis (str): The axis on which to flip the layer. Valid values are "horizontal", "vertical" or "both"
+    """
+    
+    command = createCommand("flipLayer", {
+        "layerName":layer_name,
+        "axis":axis
+    })
+
+    sendCommand(command)
+
+    return
 
 @mcp.tool()
 def delete_layer(
@@ -670,35 +747,7 @@ def get_instructions() -> str:
     If at anytime you want to see the current state of the document, just copy the document (copy_document()) and ask the user to paste into your context.
     """
 
-@mcp.resource("config://get_fonts")
-def get_fonts() -> list[str]:
-    """Returns font names available to use"""
-    return fonts
 
-@mcp.resource("config://get_blend_modes")
-def get_blend_modes() -> list[str]:
-    """Returns font names available to use"""
-    return blend_modes
-
-@mcp.resource("config://get_alignment_modes")
-def get_alignment_modes() -> list[str]:
-    """Returns alignment modes available to use"""
-    return alignment_modes
-
-@mcp.resource("config://get_justification_modes")
-def get_justification_modes() -> list[str]:
-    """Returns alignment modes available to use"""
-    return justification_modes
-
-@mcp.resource("config://get_option_info")
-def get_modes() -> dict:
-    """Returns alignment modes available to use"""
-    return {
-        "alignment_modes":alignment_modes,
-        "justification_modes":justification_modes,
-        "blend_modes":blend_modes,
-        "fonts": fonts
-    }
 
 def sendCommand(command:dict):
     #url = "http://127.0.0.1:3030/commands/add/"
@@ -751,8 +800,40 @@ def list_all_fonts_postscript():
 
     return sorted(ps_names)
 
+@mcp.resource("config://get_option_info")
+def get_modes() -> dict:
+    """Returns alignment modes available to use"""
+    return {
+        "alignment_modes":alignment_modes,
+        "justification_modes":justification_modes,
+        "blend_modes":blend_modes,
+        "fonts": fonts,
+        "anchor_positions":anchor_positions,
+        "interpolation_methods":interpolation_methods
+    }
 
 fonts = list_all_fonts_postscript()
+
+interpolation_methods = [
+   "AUTOMATIC",
+   "BICUBIC",
+   "BICUBICSHARPER",
+   "BICUBICSMOOTHER",
+   "BILINEAR",
+   "NEARESTNEIGHBOR"
+]
+
+anchor_positions = [
+   "BOTTOMCENTER",
+   "BOTTOMLEFT", 
+   "BOTTOMRIGHT", 
+   "MIDDLECENTER", 
+   "MIDDLELEFT", 
+   "MIDDLERIGHT", 
+   "TOPCENTER", 
+   "TOPLEFT", 
+   "TOPRIGHT"
+]
 
 justification_modes = [
     "CENTER",
