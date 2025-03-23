@@ -4,20 +4,27 @@ import requests
 import json
 import time
 from Cocoa import NSFontManager, NSFont
+import socket_client
+import logger
 
 # Create an MCP server
 mcp = FastMCP("Adobe Photoshop", log_level="ERROR")
 
 APPLICATION = "photoshop"
+PROXY_URL = 'http://localhost:3001'
+PROXY_TIMEOUT = 20
+
 GENERATE_IMAGE_DELAY = 20 #seconds
 LOG_FILE_PATH = "/Users/mesh/tmp/log/photoshop-mcp.txt"
 
-#ripple, sphere, twirl, wave, zigzag
-#rotate, scale, skew
-#select, fill
-#more options for text (paragraph, alignment)
-#add path
-#select subject
+logger.configure(log_file_path = LOG_FILE_PATH)
+
+socket_client.configure(
+    app=APPLICATION, 
+    url=PROXY_URL,
+    timeout=PROXY_TIMEOUT,
+    log_file_path = LOG_FILE_PATH
+)
 
 @mcp.prompt()
 def start_project(project_type: str, background_color:str) -> str:
@@ -95,112 +102,6 @@ from queue import Queue
 PROXY_URL = 'http://localhost:3001'
 PROXY_TIMEOUT = 20
 
-def send_message_blocking(command, timeout=PROXY_TIMEOUT):
-    """
-    Blocking function that connects to a Socket.IO server, sends a message,
-    waits for a response, then disconnects.
-    
-    Args:
-        target_id (str): The target ID to send the private message to
-        message (str): The message content to send
-        server_url (str): The URL of the Socket.IO server
-        timeout (int): Maximum time to wait for response in seconds
-        
-    Returns:
-        dict: The response received from the server, or None if no response
-    """
-    # Create a standard (non-async) SocketIO client with WebSocket transport only
-    sio = socketio.Client(logger=False)
-
-
-    # Use a queue to get the response from the event handler
-    response_queue = Queue()
-
-    @sio.event
-    def connect():
-        log(f"Connected to server with session ID: {sio.sid}")
-        
-        # Send the private message
-        log(f"Sending message to {APPLICATION}: {command}")
-        sio.emit('command_packet', {
-            'type':"command",
-            'application': APPLICATION,
-            'command': command
-        })
-    
-    @sio.event
-    def packet_response(data):
-        log(f"Received response: {data}")
-        response_queue.put(data)
-        
-        # Disconnect after receiving the response
-        sio.disconnect()
-    
-    @sio.event
-    def disconnect():
-        log("Disconnected from server")
-        # If we disconnect without response, put None in the queue
-        if response_queue.empty():
-            response_queue.put(None)
-    
-    @sio.event
-    def connect_error(error):
-        log(f"Connection error: {error}")
-        response_queue.put(None)
-    
-    # Connect in a separate thread to avoid blocking the main thread during connection
-    def connect_and_wait():
-        try:
-            sio.connect(PROXY_URL, transports=['websocket'])
-            # Keep the client running until disconnect is called
-            sio.wait()
-        except Exception as e:
-            log(f"Error: {e}")
-            if response_queue.empty():
-                response_queue.put(None)
-            if sio.connected:
-                sio.disconnect()
-    
-    # Start the client in a separate thread
-    client_thread = threading.Thread(target=connect_and_wait)
-    client_thread.daemon = True
-    client_thread.start()
-    
-    try:
-        # Wait for a response or timeout
-        log("waiting for response...");
-
-        response = response_queue.get(timeout=timeout)
-
-        log("response received...");
-        log(json.dumps(response))
-
-
-        return response
-    except Exception as e:
-        log(f"Error waiting for response: {e}")
-        if sio.connected:
-            sio.disconnect()
-        return None
-    finally:
-        # Make sure client is disconnected
-        if sio.connected:
-            sio.disconnect()
-        
-        # Wait for the thread to finish (should be quick after disconnect)
-        client_thread.join(timeout=1)
-
-
-@mcp.tool()
-def test_socket():
-    response = send_message_blocking(
-        target_id="server",  # Or another client's ID
-        message="Hello from Python blocking client!",
-        server_url="http://localhost:3001",
-        timeout=5
-    )
-    
-    print(f"Final response: {response}")
 
 @mcp.tool()
 def move_layer(
@@ -732,7 +633,7 @@ def sendCommand(command:dict):
     print(response.json())"
     """
 
-    response = send_message_blocking(command)
+    response = socket_client.send_message_blocking(command)
     
     print(f"Final response: {response}")
     return response
@@ -818,28 +719,3 @@ blend_modes = [
     "SUBTRACT",
     "VIVIDLIGHT"
 ]
-
-import os
-import datetime
-def log(message):
-
-    log_file_path = LOG_FILE_PATH
-
-    # Expand user directory if path contains ~
-    log_file_path = os.path.expanduser(log_file_path)
-    
-    # Create the directory if it doesn't exist
-    log_dir = os.path.dirname(log_file_path)
-    if log_dir and not os.path.exists(log_dir):
-        os.makedirs(log_dir)
-    
-    # Get current timestamp
-    #timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
-    
-    # Format the log entry
-    #log_entry = f"[{timestamp}] {message}\n"
-    log_entry = f"{message}\n"
-    
-    # Append to the log file
-    with open(log_file_path, "a") as log_file:
-        log_file.write(log_entry)
