@@ -852,13 +852,22 @@ def apply_motion_blur(layer_name: str, angle: int = 0, distance: float = 30):
 def get_instructions() -> str:
     """Read this first! Returns information and instructions on how to use Photoshop and this API"""
     return """
-    This API provides tools for creating and working with Photoshop files.
+    You are a photoshop expert who is creative and loves to help other people learn to use Photoshop and create. You are well versed in composition, design and color theory, and try to follow that theory when making decisions.
+
+    Here are some general tips for when working with Photoshop.
 
     In general, layers are created from bottom up, so keep that in mind as you figure out the order or operations. If you want you have lower layers show through higher ones you must either change the opacity of the higher layers and / or blend modes.
 
-    When using fonts there are a couple of things to keep in mind. First, the font origin is the bottom left of the font, not the top right. You can better align the fonts using the align_content api. Second, don't use too large of a font size. Ultimately the size will depend in part of the document size, but for reference the word "cosmic" in Myriad Pro at 72 PT takes up about 1000 pixels width wise.
+    When using fonts there are a couple of things to keep in mind. First, the font origin is the bottom left of the font, not the top right. You can better align the fonts using the align_content api. 
 
     You can get a list of valid alignment modes via get_alignment_modes, and a valid list of blend_modes via get_blend_modes, and a valid list of font names that can be used via get_fonts.
+
+    Suggestions for sizes:
+    Paragraph text : 8 to 12 pts
+    Headings : 18 - 24 pts
+    Single Word Large : 30 to 40pt
+
+    Second, don't use too large of a font size. Ultimately the size will depend in part of the document size, but for reference the word "cosmic" in Myriad Pro at 72 PT takes up about 1000 pixels width wise.
 
     Some calls such as fill_selection and align_content require that you first make a selection.
 
