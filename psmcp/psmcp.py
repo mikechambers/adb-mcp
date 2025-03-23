@@ -45,6 +45,26 @@ def create_document(name: str, width: int, height:int, resolution:int, fill_colo
 
     sendCommand(command)
 
+
+@mcp.tool()
+def create_rectangle(
+    layer_name:str,
+    bounds:dict = {"top": 0, "left": 0, "bottom": 250, "right": 300},
+    corner_radius:int = 0,
+    fill_color:dict = {"red":255, "green":255, "blue":255}, 
+):
+    """Deletes the layer with the specified name
+    """
+    
+    command = createCommand("deleteLayer", {
+        "layerName":layer_name
+    })
+
+    sendCommand(command)
+
+    return
+
+
 @mcp.tool()
 def delete_layer(
     layer_name:str
@@ -344,6 +364,20 @@ def invert_selection():
     """Inverts the current selection in the Photoshop document"""
 
     command = createCommand("invertSelection", {})
+    sendCommand(command)
+
+
+@mcp.tool()
+def clear_selection():
+    
+    """Clears / deselects the current selection"""
+
+    command = createCommand("selectRectangle", {
+        "feather":0,
+        "antiAlias":True,
+        "bounds":{"top": 0, "left": 0, "bottom": 0, "right": 0}
+    })
+
     sendCommand(command)
 
 @mcp.tool()
