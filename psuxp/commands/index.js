@@ -433,6 +433,46 @@ async function saveFileToFolder(userFolder, fileName = "test") {
     return activeDocument.save(file);
 }
 
+let createMaskFromSelection = async (command) => {
+    console.log("createMaskFromSelection");
+
+    let options = command.options;
+    let layerName = options.layerName;
+
+    let layer = findLayer(layerName);
+
+    if (!layer) {
+        console.log(
+            `createMaskFromSelection : Could not find layer named : [${layerName}]`
+        );
+        return;
+    }
+
+    await execute(async () => {
+        selectLayer(layer, true);
+
+        let commands = [
+            {
+                "_obj": "make",
+                "at": {
+                    "_enum": "channel",
+                    "_ref": "channel",
+                    "_value": "mask"
+                },
+                "new": {
+                    "_class": "channel"
+                },
+                "using": {
+                    "_enum": "userMaskEnabled",
+                    "_value": "revealSelection"
+                }
+            }
+        ];
+
+        await action.batchPlay(commands, {});
+    });
+}
+
 let addDropShadowLayerEffect = async (command) => {
     console.log("addDropShadowLayerEffect");
 
@@ -1445,6 +1485,7 @@ function findLayer(name, layers) {
 }
 
 const commandHandlers = {
+    createMaskFromSelection,
     renameLayer,
     getLayers,
     rotateLayer,
