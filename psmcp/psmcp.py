@@ -232,16 +232,23 @@ def remove_background(
 @mcp.tool()
 def create_pixel_layer(
     layer_name:str,
-    fillNeutral:bool,
+    fill_neutral:bool,
     opacity:int = 100,
     blend_mode:str = "NORMAL",
 ):
-    """Creates a new pixel layer within the current open Photoshop Document with the specified name"""
+    """Creates a new pixel layer with the specified name
+    
+    Args:
+        layer_name (str): Name of the new layer being created
+        fill_neutral (bool): Whether to fill the layer with a neutral color when applying Blend Mode.
+        opacity (int): Opacity of the newly created layer
+        blend_mode (str): Blend mode of the newly created layer
+    """
     
     command = createCommand("createPixelLayer", {
         "layerName":layer_name,
         "opacity":opacity,
-        "fillNeutral":fillNeutral,
+        "fillNeutral":fill_neutral,
         "blendMode":blend_mode
     })
 
@@ -262,19 +269,19 @@ def create_multi_line_text_layer(
     ):
 
     """
-    Create a new multi-line text layer with the specified name within the current Photoshop document.
+    Creates a new multi-line text layer with the specified name within the current Photoshop document.
     
-    Parameters:
-        layer_name (str): The name of the layer to be created. Will be used to select in other api calls.
+    Args:
+        layer_name (str): The name of the layer to be created. Can be used to select in other api calls.
         text (str): The text to include on the layer.
-        font_size: Font size.
-        postscript_font_name: Postscript Font Name to display the text in. List of available fonts can be retrieved from the get_fonts resource.
-        opacity: Opacity for the layer specified in percent.
-        blend_mode: Blend Mode for the layer. List of available modes can be retried from the get_blend_modes resource
-        text_color: Color of the text expressed in Red, Green, Blue values between 0 and 255
-        position: Position where the text will be placed in the layer. Based on bottom left point of the text.
-        bounds : text bounding box
-        justification: text justification. Options available via justification_modes
+        font_size (int): Font size.
+        postscript_font_name (string): Postscript Font Name to display the text in. Valid list available via get_option_info.
+        opacity (int): Opacity for the layer specified in percent.
+        blend_mode (str): Blend Mode for the layer. Valid list available via get_option_info
+        text_color (dict): Color of the text expressed in Red, Green, Blue values between 0 and 255
+        position (dict): Position (dict with x, y values) where the text will be placed in the layer. Based on bottom left point of the text.
+        bounds (dict): text bounding box
+        justification (str): text justification. Valid list available via get_option_info.
     """
 
     command = createCommand("createMultiLineTextLayer", {
@@ -308,17 +315,15 @@ def create_single_line_text_layer(
     """
     Create a new single line text layer with the specified name within the current Photoshop document.
     
-    Parameters:
-        layer_name (str): The name of the layer to be created. Will be used to select in other api calls.
+     Args:
+        layer_name (str): The name of the layer to be created. Can be used to select in other api calls.
         text (str): The text to include on the layer.
-        font_size: Font size.
-        postscript_font_name: Postscript Font Name to display the text in. List of available fonts can be retrieved from the get_fonts resource.
-        opacity: Opacity for the layer specified in percent.
-        blend_mode: Blend Mode for the layer. List of available modes can be retried from the get_blend_modes resource
-        text_color: Color of the text expressed in Red, Green, Blue values between 0 and 255
-        position: Position where the text will be placed in the layer. Based on bottom left point of the text.
-
-
+        font_size (int): Font size.
+        postscript_font_name (string): Postscript Font Name to display the text in. Valid list available via get_option_info.
+        opacity (int): Opacity for the layer specified in percent.
+        blend_mode (str): Blend Mode for the layer. Valid list available via get_option_info
+        text_color (dict): Color of the text expressed in Red, Green, Blue values between 0 and 255
+        position (dict): Position (dict with x, y values) where the text will be placed in the layer. Based on bottom left point of the text.
     """
 
     command = createCommand("createSingleLineTextLayer", {
@@ -345,8 +350,10 @@ def translate_layer(
     """
         Moves the layer with the specified name on the X and Y axis by the specified number of pixels.
 
-        x_offset: negative values move the layer left, positive values right
-        y_offset: negative values move the layer down, positive values up
+    Args:
+        layer_name (str): The name of the layer that should be moved.
+        x_offset (int): Amount to move on the horizontal axis. Negative values move the layer left, positive values right
+        y_offset (int): Amount to move on the vertical axis. Negative values move the layer down, positive values up
     """
     
     command = createCommand("translateLayer", {
@@ -364,8 +371,12 @@ def set_layer_properties(
     opacity:int = 100
     ):
 
-    """
-        Sets the blend mode and opacity on the layer with the specified name
+    """Sets the blend mode and opacity on the layer with the specified name
+
+    Args:
+        layer_name (str): The name of the layer whose properties should be updated
+        blend_mode (str): The blend mode for the layer
+        opacity (int): The opacity for the layer (0 - 100)
     """
     
     command = createCommand("setLayerProperties", {
@@ -384,7 +395,14 @@ def fill_selection(
     opacity:int = 100,
     ):
 
-    """Fills the selection on the pixel layer with the specified name"""
+    """Fills the selection on the pixel layer with the specified name
+    
+    Args:
+        layer_name (str): The existing pixel layer to add the fill
+        color (dict): The color of the fill
+        blend_mode (dict): The blend mode for the fill
+        opacity (int) : The opacity of the color for the fill
+    """
     
     command = createCommand("fillSelection", {
         "layerName":layer_name,
@@ -411,7 +429,11 @@ def copy_layer(
     layer_name: str
     ):
 
-    """Copies the layer with the specified name to the system clipboard"""
+    """Copies the layer with the specified name to the system clipboard
+    
+    Args:
+        layer_name: the name of the layer to be copied to the clipboard
+    """
     
     command = createCommand("copyToClipboard", {
         "layerName":layer_name,
@@ -426,7 +448,11 @@ def delete_selection(
     layer_name: str
     ):
 
-    """Removes the pixels within the selection on the pixel layer with the specified name"""
+    """Removes the pixels within the selection on the pixel layer with the specified name
+    
+    Args:
+        layer_name (str): The layer from which the content of the selection should be deleted
+    """
     
     command = createCommand("deleteSelection", {
         "layerName":layer_name
@@ -464,7 +490,13 @@ def select_rectangle(
     bounds:dict = {"top": 0, "left": 0, "bottom": 100, "right": 100}
     ):
     
-    """Creates a rectangular selection in the Photoshop document """
+    """Creates a rectangular selection in the Photoshop document
+    
+    Args:
+        feather (int): The amount of feathering in pixels to apply to the selection (0 - 1000)
+        anti_alias (bool): Whether anti-aliases is applied to the selection
+        bounds (dict): The bounds for the rectangle selection
+    """
 
     command = createCommand("selectRectangle", {
         "feather":feather,
@@ -481,7 +513,13 @@ def select_polygon(
     points:list[dict[str, int]] = [{"x": 50, "y": 10}, {"x": 100, "y": 90}, {"x": 10, "y": 40}]
     ):
     
-    """Creates an n-sided polygon selection in the Photoshop document """
+    """Creates an n-sided polygon selection in the Photoshop document
+    
+    Args:
+        feather (int): The amount of feathering in pixels to apply to the selection (0 - 1000)
+        anti_alias (bool): Whether anti-aliases is applied to the selection
+        points (list): The points that define the sides of the selection, defined via a list of dicts with x, y values.
+    """
 
     command = createCommand("selectPolygon", {
         "feather":feather,
@@ -498,7 +536,13 @@ def select_ellipse(
     bounds:dict = {"top": 0, "left": 0, "bottom": 100, "right": 100}
     ):
     
-    """Creates an elliptical selection in the Photoshop document """
+    """Creates an elliptical selection
+    
+    Args:
+        feather (int): The amount of feathering in pixels to apply to the selection (0 - 1000)
+        anti_alias (bool): Whether anti-aliases is applied to the selection
+        bounds (dict): The bounds that will define the elliptical selection.
+    """
 
     command = createCommand("selectEllipse", {
         "feather":feather,
@@ -516,6 +560,10 @@ def align_content(
     
     """
     Aligns content on layer with the specified name to the current selection.
+
+    Args:
+        layer_name (str): The name of the layer in which to align the content
+        alignment_mode (str): How the content should be aligned. Available options via alignment_modes
     """
 
     command = createCommand("alignContent", {
@@ -537,6 +585,9 @@ def add_drop_shadow_layer_effect(
     size:int = 7
     ):
     """Adds a drop shadow layer effect to the layer with the specified name
+
+    Args:
+        layer_name (str):
 
     Valid values for opacity are 0 to 100
     Valid values for angle are -179 to -180
@@ -781,8 +832,8 @@ def list_all_fonts_postscript():
     return sorted(ps_names)
 
 @mcp.resource("config://get_option_info")
-def get_modes() -> dict:
-    """Returns alignment modes available to use"""
+def get_option_info() -> dict:
+    """Returns valid options for API calls"""
     return {
         "alignment_modes":alignment_modes,
         "justification_modes":justification_modes,
