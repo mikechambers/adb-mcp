@@ -55,6 +55,29 @@ def create_document(document_name: str, width: int, height:int, resolution:int, 
 
 
 @mcp.tool()
+def get_layers() -> list:
+    """Returns a nested list of dicts that contain layer info and the order they are arranged in.
+
+    Args:
+        None
+        
+    Returns:
+        list: A nested list of dictionaries containing layer information and hierarchy.
+            Each dict has at minimum a 'name' key with the layer name.
+            If a layer has sublayers, they will be contained in a 'layers' key which contains another list of layer dicts.
+            Example: [{'name': 'Group 1', 'layers': [{'name': 'Layer 1'}, {'name': 'Layer 2'}]}, {'name': 'Background'}]
+            
+    Raises:
+        RuntimeError: If the operation fails or times out
+    """
+
+    command = createCommand("getLayers", {})
+
+    layers = sendCommand(command)
+
+    return layers
+
+@mcp.tool()
 def scale_layer(
     layer_name:str,
     width:int,
@@ -732,7 +755,6 @@ def add_black_and_white_adjustment_layer(
     Raises:
         RuntimeError: If the operation fails or times out
     """
-    #0.1 to 255
 
     command = createCommand("addAdjustmentLayerBlackAndWhite", {
         "layerName":layer_name,
@@ -743,7 +765,20 @@ def add_black_and_white_adjustment_layer(
 
 @mcp.tool()
 def apply_gaussian_blur(layer_name: str, radius: float = 2.5):
-    """Applies a Gaussian Blur to the layer with the specified name"""
+    """Applies a Gaussian Blur to the layer with the specified name
+    
+    Args:
+        layer_name (str): Name of layer to be blurred
+        radius (float): The blur radius in pixels determining the intensity of the blur effect. Default is 2.5.
+        Valid values range from 0.1 (subtle blur) to 10000 (extreme blur).
+
+    Returns:
+        dict: Response from the Photoshop operation
+        
+    Raises:
+        RuntimeError: If the operation fails or times out
+    """
+
 
 
     command = createCommand("applyGaussianBlur", {
@@ -755,7 +790,20 @@ def apply_gaussian_blur(layer_name: str, radius: float = 2.5):
 
 @mcp.tool()
 def apply_motion_blur(layer_name: str, angle: int = 0, distance: float = 30):
-    """Applies a Motion Blur to the layer with the specified name"""
+    """Applies a Motion Blur to the layer with the specified name
+
+    Args:
+    layer_name (str): Name of layer to be blurred
+    angle (int): The angle in degrees (0 to 360) that determines the direction of the motion blur effect. Default is 0.
+    distance (float): The distance in pixels that controls the length/strength of the motion blur. Default is 30.
+        Higher values create a more pronounced motion effect.
+
+    Returns:
+        dict: Response from the Photoshop operation
+        
+    Raises:
+        RuntimeError: If the operation fails or times out
+    """
 
 
     command = createCommand("applyMotionBlur", {

@@ -110,6 +110,44 @@ let deleteLayer = async (command) => {
     });
 };
 
+let getLayers = async (command) => {
+    console.log("deleteLayer");
+
+    let out = await execute(async () => {
+        let result = [];
+        
+        // Function to recursively process layers
+        const processLayers = (layersList) => {
+            let layersArray = [];
+            
+            for (let i = 0; i < layersList.length; i++) {
+                let layer = layersList[i];
+                let layerInfo = {
+                    name: layer.name
+                };
+                
+                // Check if this layer has sublayers (is a group)
+                if (layer.layers && layer.layers.length > 0) {
+                    layerInfo.layers = processLayers(layer.layers);
+                }
+                
+                layersArray.push(layerInfo);
+            }
+            
+            return layersArray;
+        };
+        
+        // Start with the top-level layers
+        result = processLayers(app.activeDocument.layers);
+        
+        return result;
+    });
+
+    console.log(out)
+
+    return out;
+};
+
 let setLayerVisibility = async (command) => {
     console.log("setLayerVisibility");
 
@@ -1385,6 +1423,7 @@ function findLayer(name, layers) {
 }
 
 const commandHandlers = {
+    getLayers,
     rotateLayer,
     scaleLayer,
     flipLayer,
