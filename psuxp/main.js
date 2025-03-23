@@ -16,13 +16,27 @@ let intervalId = null;
 // Core Socket.IO functions for Photoshop UXP
 let socket = null;
 
-function connectToServer(onCommandPacketCallback = null) {
+const onCommandPacket = async (packet) => {
+  let command = packet.command;
+
+  let response = await parseAndRouteCommand(command);
+
+  return {
+      senderId: packet.senderId,
+      status: "SUCCESS",
+      response: response,
+  };
+};
+
+function connectToServer() {
+
     // Create new Socket.IO connection
     socket = io(PROXY_URL, {
         transports: ["websocket"],
     });
 
     socket.on("connect", () => {
+        updateButton()
         console.log("Connected to server with ID:", socket.id);
         socket.emit("register", { application: APPLICATION });
     });
@@ -44,10 +58,12 @@ function connectToServer(onCommandPacketCallback = null) {
     });
 
     socket.on("connect_error", (error) => {
+        updateButton()
         console.error("Connection error:", error);
     });
 
     socket.on("disconnect", (reason) => {
+        updateButton()
         console.log("Disconnected from server. Reason:", reason);
 
         //TODO:connect button here
@@ -90,14 +106,6 @@ let onInterval = async () => {
     await parseAndRouteCommands(commands);
 };
 
-let startInterval = () => {
-    intervalId = setInterval(onInterval, UPDATE_INTERVAL);
-};
-
-let stopInterval = () => {
-    clearInterval(intervalId);
-    intervalId = null;
-};
 
 let fetchCommands = async () => {
     try {
@@ -140,9 +148,35 @@ entrypoints.setup({
     },
 });
 
+let updateButton = () => {
+  let b = document.getElementById("btnStart");
+
+  b.textContent = (socket && socket.connected)? "Disconnect" : "Connect";
+}
+
 //Toggle button to make it start stop
 document.getElementById("btnStart").addEventListener("click", () => {
-    let b = document.getElementById("btnStart");
+    
+
+    if(socket && socket.connected) {
+
+      const onCommandPacket = async (packet) => {
+        let command = packet.command;
+
+        let response = await parseAndRouteCommand(command);
+
+        return {
+            senderId: packet.senderId,
+            status: "SUCCESS",
+            response: response,
+        };
+    };
+
+    connectToServer(onCommandPacket);
+
+    } else {
+
+    }
 
     if (intervalId) {
         disconnectFromServer();
@@ -151,19 +185,7 @@ document.getElementById("btnStart").addEventListener("click", () => {
     } else {
         //startInterval();
 
-        const onCommandPacket = async (packet) => {
-            let command = packet.command;
-
-            let response = await parseAndRouteCommand(command);
-
-            return {
-                senderId: packet.senderId,
-                status: "SUCCESS",
-                response: response,
-            };
-        };
-
-        connectToServer(onCommandPacket);
+        connectToServer();
 
         b.textContent = "Disconnect";
     }
