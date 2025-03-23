@@ -624,7 +624,7 @@ def sendCommand(command:dict):
 
     response = socket_client.send_message_blocking(command)
     
-    print(f"Final response: {response}")
+    logger.log(f"Final response: {response}")
     return response
 
 def createCommand(action:str, options:dict) -> str:

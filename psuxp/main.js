@@ -39,13 +39,10 @@ function connectToServer() {
 
     socket.on("command_packet", async (packet) => {
         console.log("Received command packet:", packet);
-        if (
-            onCommandPacketCallback &&
-            typeof onCommandPacketCallback === "function"
-        ) {
-            let response = await onCommandPacketCallback(packet);
-            sendResponsePacket(response);
-        }
+
+        let response = await onCommandPacket(packet);
+        sendResponsePacket(response);
+ 
     });
 
     socket.on("registration_response", (data) => {

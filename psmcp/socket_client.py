@@ -39,6 +39,8 @@ def send_message_blocking(command, timeout=None):
     # Use a queue to get the response from the event handler
     response_queue = Queue()
     
+    connection_failed = [False]         
+
     @sio.event
     def connect():
         logger.log(f"Connected to server with session ID: {sio.sid}")
@@ -68,6 +70,7 @@ def send_message_blocking(command, timeout=None):
     @sio.event
     def connect_error(error):
         logger.log(f"Connection error: {error}")
+        connection_failed[0] = True
         response_queue.put(None)
     
     # Connect in a separate thread to avoid blocking the main thread during connection
@@ -78,6 +81,7 @@ def send_message_blocking(command, timeout=None):
             sio.wait()
         except Exception as e:
             logger.log(f"Error: {e}")
+            connection_failed[0] = True
             if response_queue.empty():
                 response_queue.put(None)
             if sio.connected:
@@ -92,6 +96,10 @@ def send_message_blocking(command, timeout=None):
         # Wait for a response or timeout
         logger.log("waiting for response...")
         response = response_queue.get(timeout=wait_timeout)
+
+        if connection_failed[0]:
+            raise RuntimeError(f"Error: Could not connect to Photoshop command proxy server. Make sure that the proxy server is running listening on the correct url {proxy_url}.")
+
         if response:
             logger.log("response received...")
             try:
@@ -103,7 +111,8 @@ def send_message_blocking(command, timeout=None):
         logger.log(f"Error waiting for response: {e}")
         if sio.connected:
             sio.disconnect()
-        return None
+  
+        raise RuntimeError(f"Error: Could not connect to {application}. Connection Timed Out. Make sure that Photoshop is running and that the MCP Plugin is connected. Original error: {e}")
     finally:
         # Make sure client is disconnected
         if sio.connected:
