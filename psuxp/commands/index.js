@@ -185,6 +185,45 @@ let duplicateLayer = async (command) => {
     });
 };
 
+
+
+let copyToClipboard = async (command) => {
+
+    let options = command.options
+
+    await execute(async () => {
+        let layer = null
+        if (!options.copyMerged) {
+            layer = findLayer(options.layerName)
+
+            if(!layer) {
+                console.log(`copyToClipboard : No layer named ${layerName}:`)
+                //todo throw an error here?
+                return
+            }
+        } else {
+            layer = app.activeDocument.layers[0]
+        }
+        
+        //this is a bit of a bad hack. 
+        app.activeDocument.selection.selectAll()
+
+        //only works if there is an active selection
+        layer.copy(options.copyMerged)
+        await clearSelection()
+    });
+}
+
+let clearSelection = async () => {
+    await app.activeDocument.selection.selectRectangle(
+        {top: 0, left: 0, bottom: 0, right: 0},
+        constants.SelectionType.REPLACE,
+        0,
+        true
+    )
+    
+}
+
 let flattenAllLayers = async (command) => {
     console.log("flattenAllLayers");
     let options = command.options;
@@ -1291,6 +1330,7 @@ function findLayer(name, layers) {
 }
 
 const commandHandlers = {
+    copyToClipboard,
     deleteLayer,
     setLayerVisibility,
     exportPng,

@@ -345,6 +345,32 @@ def fill_selection(
     sendCommand(command)
 
 @mcp.tool()
+def copy_document():
+
+    """Copies all visible layers from the document to the system clipboard"""
+    
+    command = createCommand("copyToClipboard", {
+        "copyMerged":True
+    })
+
+    sendCommand(command)
+
+@mcp.tool()
+def copy_layer(
+    layer_name: str
+    ):
+
+    """Copies the layer with the specified name to the system clipboard"""
+    
+    command = createCommand("copyToClipboard", {
+        "layerName":layer_name,
+        "copyMerged":False
+    })
+
+    sendCommand(command)
+
+
+@mcp.tool()
 def delete_selection(
     layer_name: str
     ):
@@ -640,6 +666,8 @@ def get_instructions() -> str:
     As a general rule, you should not flatten files unless asked to do so, or its necessary to apply an effect or look.
 
     When generating an image, you do not need to first create a pixel layer. A layer will automatically be created when you generate the image.
+
+    If at anytime you want to see the current state of the document, just copy the document (copy_document()) and ask the user to paste into your context.
     """
 
 @mcp.resource("config://get_fonts")
