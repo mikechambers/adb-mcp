@@ -555,6 +555,30 @@ const addDropShadowLayerEffect = async (command) => {
     });
 };
 
+
+const getDocumentInfo = async (command) => {
+    console.log("getDocumentInfo")
+
+
+    return await execute(async () => {
+        let doc = app.activeDocument
+        let path = doc.path
+
+        let out =  {
+            "height":doc.height,
+            "width":doc.width,
+            "colorMode":doc.mode.toString(),
+            "pixelAspectRatio":doc.pixelAspectRatio,
+            "resolution":doc.resolution,
+            "path":path,
+            "saved":(path.length > 0),
+            "hasUnsavedChanges":!doc.saved
+        }
+
+        return out
+    });
+}
+
 const cropDocument = async (command) => {
     console.log("cropDocument")
 
@@ -1513,16 +1537,6 @@ const getAlignmentMode = (mode) => {
 }
 
 
-const checkRequiresActiveDocument = (command) => {
-    if(command.action == "createDocument") {
-        return
-    }
-
-    if(!app.activeDocument) {
-        throw new Error(`${command.action} : Requires as open Photoshop document`);
-    }
-}
-
 const getJustificationMode = (value) => {
     return getConstantValue(constants.Justification, value, "Justification");
 }
@@ -1612,6 +1626,7 @@ const hasActiveSelection = () => {
 }
 
 const commandHandlers = {
+    getDocumentInfo,
     cropDocument,
     cutSelectionToClipboard,
     copySelectionToClipboard,
@@ -1655,7 +1670,22 @@ const commandHandlers = {
     addColorBalanceAdjustmentLayer,
 };
 
+const checkRequiresActiveDocument = (command) => {
+    if(!requiresActiveDocument(command)) {
+        return
+    }
+
+    if(!app.activeDocument) {
+        throw new Error(`${command.action} : Requires as open Photoshop document`);
+    }
+}
+
+const requiresActiveDocument = (command) => {
+    return !["createDocument"].includes(command.action);
+};
+
 module.exports = {
+    requiresActiveDocument,
     hasActiveSelection,
     getLayers,
     checkRequiresActiveDocument,

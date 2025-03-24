@@ -279,6 +279,29 @@ def move_layer(
     return sendCommand(command)
 
 @mcp.tool()
+def get_document_info():
+    """Retrieves information about the currently active document.
+
+    Returns:
+        response : An object containing the following document properties:
+            - height (int): The height of the document in pixels.
+            - width (int): The width of the document in pixels.
+            - colorMode (str): The document's color mode as a string.
+            - pixelAspectRatio (float): The pixel aspect ratio of the document.
+            - resolution (float): The document's resolution (DPI).
+            - path (str): The file path of the document, if saved.
+            - saved (bool): Whether the document has been saved (True if it has a valid file path).
+            - hasUnsavedChanges (bool): Whether the document contains unsaved changes.
+
+    Raises:
+        RuntimeError: If the operation fails or times out or if there is not currently and active document
+    """
+
+    command = createCommand("getDocumentInfo", {})
+
+    return sendCommand(command)
+
+@mcp.tool()
 def crop_document():
     """Crops the document to the active selection.
 

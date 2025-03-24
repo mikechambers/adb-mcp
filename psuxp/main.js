@@ -22,6 +22,8 @@ const onCommandPacket = async (packet) => {
     };
 
     try {
+      
+      //this will throw if an active document is required and not open
       checkRequiresActiveDocument(command)
 
       let response = await parseAndRouteCommand(command);
