@@ -279,6 +279,44 @@ def move_layer(
     return sendCommand(command)
 
 @mcp.tool()
+def select_subject(layer_name: str):
+    """Automatically selects the subject in the specified layer.
+
+    This function identifies and selects the subject in the given image layer. 
+    It returns an object containing a property named `hasActiveSelection`, 
+    which indicates whether any pixels were selected (e.g., if no subject was detected).
+
+    Args:
+        layer_name (str): The name of that contains the image to select the subject from.
+    """
+
+    
+    command = createCommand("selectSubject", {
+        "layerName":layer_name
+    })
+
+    return sendCommand(command)
+
+@mcp.tool()
+def select_sky(layer_name: str):
+    """Automatically selects the sky in the specified layer.
+
+    This function identifies and selects the sky in the given image layer. 
+    It returns an object containing a property named `hasActiveSelection`, 
+    which indicates whether any pixels were selected (e.g., if no sky was detected).
+
+    Args:
+        layer_name (str): The name of that contains the image to select the sky from.
+    """
+
+    
+    command = createCommand("selectSky", {
+        "layerName":layer_name
+    })
+
+    return sendCommand(command)
+
+@mcp.tool()
 def remove_background(
     layer_name:str
 ):

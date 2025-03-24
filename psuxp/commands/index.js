@@ -555,6 +555,66 @@ const addDropShadowLayerEffect = async (command) => {
     });
 };
 
+const selectSubject = async (command) => {
+    console.log("selectSubject")
+
+    let options = command.options
+    let layerName = options.layerName
+
+    let layer = findLayer(layerName)
+
+    if(!layer) {
+        throw new Error(`selectSubject : Could not find layerName : ${layerName}`)
+    }
+
+    return await execute(async () => {
+
+        selectLayer(layer, true)
+
+        let commands = [
+            // Select Subject
+            {
+                "_obj": "autoCutout",
+                "sampleAllLayers": false
+            }
+        ];
+
+        await action.batchPlay(commands, {});
+
+        return {hasActiveSelection:hasActiveSelection()}
+    });
+}
+
+const selectSky = async (command) => {
+    console.log("selectSky")
+
+    let options = command.options
+    let layerName = options.layerName
+
+    let layer = findLayer(layerName)
+
+    if(!layer) {
+        throw new Error(`selectSky : Could not find layerName : ${layerName}`)
+    }
+
+    return await execute(async () => {
+
+        selectLayer(layer, true)
+        
+        let commands = [
+            // Select Sky
+            {
+                "_obj": "selectSky",
+                "sampleAllLayers": false
+            }
+        ];
+
+        await action.batchPlay(commands, {});
+
+        return {hasActiveSelection:hasActiveSelection()}
+    });
+}
+
 const removeBackground = async (command) => {
     console.log("removeBackground");
 
@@ -1427,7 +1487,13 @@ const findLayer = (name, layers) => {
     return null;
 }
 
+const hasActiveSelection = () => {
+    return app.activeDocument.selection.bounds != null
+}
+
 const commandHandlers = {
+    selectSubject,
+    selectSky,
     createMaskFromSelection,
     renameLayer,
     getLayers,
@@ -1466,6 +1532,7 @@ const commandHandlers = {
 };
 
 module.exports = {
+    hasActiveSelection,
     getLayers,
     checkRequiresActiveDocument,
     parseAndRouteCommands,
