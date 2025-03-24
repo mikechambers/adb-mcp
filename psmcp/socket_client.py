@@ -106,7 +106,13 @@ def send_message_blocking(command, timeout=None):
                 logger.log(json.dumps(response))
             except:
                 logger.log(f"Response (not JSON-serializable): {response}")
+
+            if response["status"] == "FAILURE":
+                raise PhotoShopError(f"Error returned from Photoshop: {response['message']}")
+            
         return response
+    except PhotoShopError:
+        raise
     except Exception as e:
         logger.log(f"Error waiting for response: {e}")
         if sio.connected:
@@ -119,6 +125,9 @@ def send_message_blocking(command, timeout=None):
             sio.disconnect()
         # Wait for the thread to finish (should be quick after disconnect)
         client_thread.join(timeout=1)
+
+class PhotoShopError(Exception):
+    pass
 
 def configure(app=None, url=None, timeout=None, log_file_path=None):
     

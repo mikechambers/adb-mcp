@@ -51,7 +51,7 @@ def create_document(document_name: str, width: int, height:int, resolution:int, 
         "colorMode":color_mode
     })
 
-    sendCommand(command)
+    return sendCommand(command)
 
 
 @mcp.tool()
@@ -73,9 +73,7 @@ def get_layers() -> list:
 
     command = createCommand("getLayers", {})
 
-    layers = sendCommand(command)
-
-    return layers
+    return sendCommand(command)
 
 """
 @mcp.tool()
@@ -98,9 +96,8 @@ def create_mask_from_selection(
         "layerName":layer_name
     })
 
-    sendCommand(command)
+    return sendCommand(command)
 
-    return
 """
 
 @mcp.tool()
@@ -125,9 +122,8 @@ def rename_layer(
 
     })
 
-    sendCommand(command)
+    return sendCommand(command)
 
-    return
 
 @mcp.tool()
 def scale_layer(
@@ -155,9 +151,8 @@ def scale_layer(
         "interpolationMethod":interpolation_method
     })
 
-    sendCommand(command)
+    return sendCommand(command)
 
-    return
 
 @mcp.tool()
 def rotate_layer(
@@ -182,9 +177,8 @@ def rotate_layer(
         "interpolationMethod":interpolation_method
     })
 
-    sendCommand(command)
+    return sendCommand(command)
 
-    return
 
 @mcp.tool()
 def flip_layer(
@@ -203,9 +197,8 @@ def flip_layer(
         "axis":axis
     })
 
-    sendCommand(command)
+    return sendCommand(command)
 
-    return
 
 @mcp.tool()
 def delete_layer(
@@ -221,9 +214,8 @@ def delete_layer(
         "layerName":layer_name
     })
 
-    sendCommand(command)
+    return sendCommand(command)
 
-    return
 
 
 @mcp.tool()
@@ -243,9 +235,8 @@ def set_layer_visibility(
         "visible":visible
     })
 
-    sendCommand(command)
+    return sendCommand(command)
 
-    return
 
 @mcp.tool()
 def generate_image(
@@ -265,9 +256,8 @@ def generate_image(
         "prompt":prompt
     })
 
-    sendCommand(command)
+    return sendCommand(command)
 
-    return
 
 @mcp.tool()
 def move_layer(
@@ -286,7 +276,7 @@ def move_layer(
         "position":position
     })
 
-    sendCommand(command)
+    return sendCommand(command)
 
 @mcp.tool()
 def remove_background(
@@ -302,7 +292,7 @@ def remove_background(
         "layerName":layer_name
     })
 
-    sendCommand(command)
+    return sendCommand(command)
 
 @mcp.tool()
 def create_pixel_layer(
@@ -327,7 +317,7 @@ def create_pixel_layer(
         "blendMode":blend_mode
     })
 
-    sendCommand(command)
+    return sendCommand(command)
 
 @mcp.tool()
 def create_multi_line_text_layer(
@@ -372,7 +362,7 @@ def create_multi_line_text_layer(
         "justification":justification
     })
 
-    sendCommand(command)
+    return sendCommand(command)
 
 
 @mcp.tool()
@@ -412,7 +402,7 @@ def create_single_line_text_layer(
         "blendMode":blend_mode
     })
 
-    sendCommand(command)
+    return sendCommand(command)
 
 
 @mcp.tool()
@@ -437,7 +427,7 @@ def translate_layer(
         "yOffset":y_offset
     })
 
-    sendCommand(command)
+    return sendCommand(command)
 
 @mcp.tool()
 def set_layer_properties(
@@ -463,7 +453,7 @@ def set_layer_properties(
         "isClippingMask":is_clipping_mask
     })
 
-    sendCommand(command)
+    return sendCommand(command)
 
 @mcp.tool()
 def fill_selection(
@@ -489,7 +479,7 @@ def fill_selection(
         "opacity":opacity
     })
 
-    sendCommand(command)
+    return sendCommand(command)
 
 @mcp.tool()
 def copy_document():
@@ -500,7 +490,7 @@ def copy_document():
         "copyMerged":True
     })
 
-    sendCommand(command)
+    return sendCommand(command)
 
 @mcp.tool()
 def copy_layer(
@@ -518,7 +508,7 @@ def copy_layer(
         "copyMerged":False
     })
 
-    sendCommand(command)
+    return sendCommand(command)
 
 
 @mcp.tool()
@@ -536,7 +526,7 @@ def delete_selection(
         "layerName":layer_name
     })
 
-    sendCommand(command)
+    return sendCommand(command)
 
 
 @mcp.tool()
@@ -545,7 +535,7 @@ def invert_selection():
     """Inverts the current selection in the Photoshop document"""
 
     command = createCommand("invertSelection", {})
-    sendCommand(command)
+    return sendCommand(command)
 
 
 @mcp.tool()
@@ -559,7 +549,7 @@ def clear_selection():
         "bounds":{"top": 0, "left": 0, "bottom": 0, "right": 0}
     })
 
-    sendCommand(command)
+    return sendCommand(command)
 
 @mcp.tool()
 def select_rectangle(
@@ -582,7 +572,7 @@ def select_rectangle(
         "bounds":bounds
     })
 
-    sendCommand(command)
+    return sendCommand(command)
 
 @mcp.tool()
 def select_polygon(
@@ -605,7 +595,7 @@ def select_polygon(
         "points":points
     })
 
-    sendCommand(command)
+    return sendCommand(command)
 
 @mcp.tool()
 def select_ellipse(
@@ -628,7 +618,7 @@ def select_ellipse(
         "bounds":bounds
     })
 
-    sendCommand(command)
+    return sendCommand(command)
 
 @mcp.tool()
 def align_content(
@@ -649,7 +639,7 @@ def align_content(
         "alignmentMode":alignment_mode
     })
 
-    sendCommand(command)
+    return sendCommand(command)
 
 @mcp.tool()
 def add_drop_shadow_layer_effect(
@@ -686,7 +676,7 @@ def add_drop_shadow_layer_effect(
         "size":size
     })
 
-    sendCommand(command)
+    return sendCommand(command)
 
 @mcp.tool()
 def duplicate_layer(layer_to_duplicate_name:str, duplicate_layer_name:str):
@@ -703,7 +693,7 @@ def duplicate_layer(layer_to_duplicate_name:str, duplicate_layer_name:str):
         "duplicateLayerName":duplicate_layer_name,
     })
 
-    sendCommand(command)
+    return sendCommand(command)
 
 @mcp.tool()
 def flatten_all_layers(layer_name:str):
@@ -718,7 +708,7 @@ def flatten_all_layers(layer_name:str):
         "layerName":layer_name,
     })
 
-    sendCommand(command)
+    return sendCommand(command)
 
 @mcp.tool()
 def add_color_balance_adjustment_layer(
@@ -749,7 +739,7 @@ def add_color_balance_adjustment_layer(
         "shadows":shadows
     })
 
-    sendCommand(command)
+    return sendCommand(command)
 
 @mcp.tool()
 def add_brightness_contrast_adjustment_layer(
@@ -770,7 +760,7 @@ def add_brightness_contrast_adjustment_layer(
         "contrast":contrast
     })
 
-    sendCommand(command)
+    return sendCommand(command)
 
 @mcp.tool()
 def add_vibrance_adjustment_layer(
@@ -792,7 +782,7 @@ def add_vibrance_adjustment_layer(
         "vibrance":vibrance
     })
 
-    sendCommand(command)
+    return sendCommand(command)
 
 @mcp.tool()
 def add_black_and_white_adjustment_layer(
@@ -816,7 +806,7 @@ def add_black_and_white_adjustment_layer(
         "colors":colors,
     })
 
-    sendCommand(command)
+    return sendCommand(command)
 
 @mcp.tool()
 def apply_gaussian_blur(layer_name: str, radius: float = 2.5):
@@ -841,7 +831,7 @@ def apply_gaussian_blur(layer_name: str, radius: float = 2.5):
         "radius":radius,
     })
 
-    sendCommand(command)
+    return sendCommand(command)
 
 @mcp.tool()
 def apply_motion_blur(layer_name: str, angle: int = 0, distance: float = 30):
@@ -867,7 +857,7 @@ def apply_motion_blur(layer_name: str, angle: int = 0, distance: float = 30):
         "distance":distance
     })
 
-    sendCommand(command)
+    return sendCommand(command)
 
 
 @mcp.resource("config://get_instructions")
@@ -929,7 +919,7 @@ def sendCommand(command:dict):
 
     response = socket_client.send_message_blocking(command)
     
-    logger.log(f"Final response: {response}")
+    logger.log(f"Final response: {response.status}")
     return response
 
 def createCommand(action:str, options:dict) -> str:

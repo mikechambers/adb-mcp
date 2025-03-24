@@ -1,6 +1,6 @@
 const { entrypoints, UI } = require("uxp");
 const {
-    parseAndRouteCommands,
+    checkRequiresActiveDocument,
     parseAndRouteCommand,
 } = require("./commands/index.js");
 
@@ -13,15 +13,26 @@ const PROXY_URL = "http://localhost:3001";
 let socket = null;
 
 const onCommandPacket = async (packet) => {
-  let command = packet.command;
+    let command = packet.command;
 
-  let response = await parseAndRouteCommand(command);
+    let out = {
+        senderId: packet.senderId,
+    };
 
-  return {
-      senderId: packet.senderId,
-      status: "SUCCESS",
-      response: response,
-  };
+    try {
+      checkRequiresActiveDocument(command)
+
+      let response = await parseAndRouteCommand(command);
+
+      out.response = response;
+      out.status = "SUCCESS";
+
+    } catch (e) {
+        out.status = "FAILURE";
+        out.message = `Error calling ${command.action} : ${e}`;
+    }
+
+    return out;
 };
 
 function connectToServer() {
