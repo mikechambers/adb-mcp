@@ -133,6 +133,7 @@ const getLayers = async (command) => {
                 let layer = layersList[i];
                 let layerInfo = {
                     name: layer.name,
+                    type: layer.kind.toUpperCase().toString(),
                     isClippingMask: layer.isClippingMask,
                 };
 
