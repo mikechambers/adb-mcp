@@ -560,24 +560,21 @@ const addDropShadowLayerEffect = async (command) => {
 const getDocumentInfo = async (command) => {
     console.log("getDocumentInfo")
 
+    let doc = app.activeDocument
+    let path = doc.path
 
-    return await execute(async () => {
-        let doc = app.activeDocument
-        let path = doc.path
+    let out =  {
+        "height":doc.height,
+        "width":doc.width,
+        "colorMode":doc.mode.toString(),
+        "pixelAspectRatio":doc.pixelAspectRatio,
+        "resolution":doc.resolution,
+        "path":path,
+        "saved":(path.length > 0),
+        "hasUnsavedChanges":!doc.saved
+    }
 
-        let out =  {
-            "height":doc.height,
-            "width":doc.width,
-            "colorMode":doc.mode.toString(),
-            "pixelAspectRatio":doc.pixelAspectRatio,
-            "resolution":doc.resolution,
-            "path":path,
-            "saved":(path.length > 0),
-            "hasUnsavedChanges":!doc.saved
-        }
-
-        return out
-    });
+    return out
 }
 
 const cropDocument = async (command) => {
