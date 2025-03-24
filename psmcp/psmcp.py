@@ -279,6 +279,20 @@ def move_layer(
     return sendCommand(command)
 
 @mcp.tool()
+def crop_document():
+    """Crops the document to the active selection.
+
+    This function removes all content outside the selection area and resizes the document 
+    so that the selection becomes the new canvas size.
+
+    An active selection is required.
+    """
+
+    command = createCommand("cropDocument", {})
+
+    return sendCommand(command)
+
+@mcp.tool()
 def paste_from_clipboard(layer_name: str, paste_in_place: bool = True):
     """Pastes the current clipboard contents onto the specified layer.
 

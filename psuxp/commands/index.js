@@ -555,6 +555,29 @@ const addDropShadowLayerEffect = async (command) => {
     });
 };
 
+const cropDocument = async (command) => {
+    console.log("cropDocument")
+
+    let options = command.options
+
+    if(!hasActiveSelection()) {
+        throw new Error("cropDocument : Requires an active selection")
+    }
+
+    return await execute(async () => {
+
+        let commands = [
+            // Crop
+            {
+                "_obj": "crop",
+                "delete": true
+            }
+        ];
+
+        await action.batchPlay(commands, {});
+    });
+}
+
 const selectSubject = async (command) => {
     console.log("selectSubject")
 
@@ -1589,6 +1612,7 @@ const hasActiveSelection = () => {
 }
 
 const commandHandlers = {
+    cropDocument,
     cutSelectionToClipboard,
     copySelectionToClipboard,
     pasteFromClipboard,
