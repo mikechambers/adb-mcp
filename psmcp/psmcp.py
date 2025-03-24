@@ -279,6 +279,59 @@ def move_layer(
     return sendCommand(command)
 
 @mcp.tool()
+def paste_from_clipboard(layer_name: str, paste_in_place: bool = True):
+    """Pastes the current clipboard contents onto the specified layer.
+
+    If `paste_in_place` is True, the content will be positioned exactly where it was cut or copied from.
+    If False and an active selection exists, the content will be centered within the selection.
+    If no selection is active, the content will be placed at the center of the layer.
+
+    Args:
+        layer_name (str): The name of the layer where the clipboard contents will be pasted.
+        paste_in_place (bool): Whether to paste at the original location (True) or adjust based on selection/layer center (False).
+    """
+
+
+    command = createCommand("pasteFromClipboard", {
+        "layerName":layer_name,
+        "pasteInPlace":paste_in_place
+    })
+
+    return sendCommand(command)
+
+@mcp.tool()
+def cut_selection_to_clipboard(layer_name: str):
+    """Copies and removes (cuts) the selected pixels from the specified layer to the system clipboard.
+
+    This function requires an active selection.
+
+    Args:
+        layer_name (str): The name of the layer that contains the pixels to copy and remove.
+    """
+
+    command = createCommand("cutSelectionToClipboard", {
+        "layerName":layer_name
+    })
+
+    return sendCommand(command)
+
+@mcp.tool()
+def copy_selection_to_clipboard(layer_name: str):
+    """Copies the selected pixels from the specified layer to the system clipboard.
+
+    This function requires an active selection.
+
+    Args:
+        layer_name (str): The name of the layer that contains the pixels to copy.
+    """
+
+    command = createCommand("copySelectionToClipboard", {
+        "layerName":layer_name
+    })
+
+    return sendCommand(command)
+
+@mcp.tool()
 def select_subject(layer_name: str):
     """Automatically selects the subject in the specified layer.
 

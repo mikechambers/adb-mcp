@@ -600,7 +600,7 @@ const selectSky = async (command) => {
     return await execute(async () => {
 
         selectLayer(layer, true)
-        
+
         let commands = [
             // Select Sky
             {
@@ -612,6 +612,103 @@ const selectSky = async (command) => {
         await action.batchPlay(commands, {});
 
         return {hasActiveSelection:hasActiveSelection()}
+    });
+}
+
+const cutSelectionToClipboard = async (command) => {
+    console.log("cutSelectionToClipboard")
+
+    let options = command.options
+    let layerName = options.layerName
+
+    let layer = findLayer(layerName)
+
+    if(!layer) {
+        throw new Error(`cutSelectionToClipboard : Could not find layerName : ${layerName}`)
+    }
+
+    if(!hasActiveSelection()) {
+        throw new Error("cutSelectionToClipboard : Requires an active selection")
+    }
+
+    return await execute(async () => {
+
+        selectLayer(layer, true)
+        
+        let commands = [
+            {
+                "_obj": "cut"
+            },
+        ];
+
+        await action.batchPlay(commands, {});
+    });
+}
+
+const copySelectionToClipboard = async (command) => {
+    console.log("copySelectionToClipboard")
+
+    let options = command.options
+    let layerName = options.layerName
+
+    let layer = findLayer(layerName)
+
+    if(!layer) {
+        throw new Error(`copySelectionToClipboard : Could not find layerName : ${layerName}`)
+    }
+
+    if(!hasActiveSelection()) {
+        throw new Error("copySelectionToClipboard : Requires an active selection")
+    }
+
+    return await execute(async () => {
+
+        selectLayer(layer, true)
+        
+        let commands = [
+            {
+                "_obj": "copyEvent",
+                "copyHint": "pixels"
+            }
+        ];
+
+        await action.batchPlay(commands, {});
+    });
+}
+
+const pasteFromClipboard = async (command) => {
+    console.log("pasteFromClipboard")
+
+    let options = command.options
+    let layerName = options.layerName
+
+    let layer = findLayer(layerName)
+
+    if(!layer) {
+        throw new Error(`pasteFromClipboard : Could not find layerName : ${layerName}`)
+    }
+
+    return await execute(async () => {
+
+        selectLayer(layer, true)
+
+        let pasteInPlace = options.pasteInPlace
+        
+        let commands = [
+            {
+                "_obj": "paste",
+                "antiAlias": {
+                    "_enum": "antiAliasType",
+                    "_value": "antiAliasNone"
+                },
+                "as": {
+                    "_class": "pixel"
+                },
+                "inPlace": pasteInPlace
+            }
+        ];
+
+        await action.batchPlay(commands, {});
     });
 }
 
@@ -1492,6 +1589,9 @@ const hasActiveSelection = () => {
 }
 
 const commandHandlers = {
+    cutSelectionToClipboard,
+    copySelectionToClipboard,
+    pasteFromClipboard,
     selectSubject,
     selectSky,
     createMaskFromSelection,
