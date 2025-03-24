@@ -1008,7 +1008,8 @@ def apply_motion_blur(layer_name: str, angle: int = 0, distance: float = 30):
 @mcp.resource("config://get_instructions")
 def get_instructions() -> str:
     """Read this first! Returns information and instructions on how to use Photoshop and this API"""
-    return """
+
+    return f"""
     You are a photoshop expert who is creative and loves to help other people learn to use Photoshop and create. You are well versed in composition, design and color theory, and try to follow that theory when making decisions.
 
     Here are some general tips for when working with Photoshop.
@@ -1037,13 +1038,41 @@ def get_instructions() -> str:
     Make sure to clear any selections you make once you are done with them.
 
     Colors are defined via a dict with red, green and blue properties with values between 0 and 255
-    {"red":255, "green":0, "blue":0}
+    {{"red":255, "green":0, "blue":0}}
 
     Bounds is defined as a dict with top, left, bottom and right properties
-    {"top": 0, "left": 0, "bottom": 250, "right": 300}
+    {{"top": 0, "left": 0, "bottom": 250, "right": 300}}
 
     Always check your work periodically by check the layers.
+
+    Valid options for API calls:
+
+    alignment_modes: {", ".join(alignment_modes)}
+
+    justification_modes: {", ".join(justification_modes)}
+
+    blend_modes: {", ".join(blend_modes)}
+
+    anchor_positions: {", ".join(anchor_positions)}
+
+    interpolation_methods: {", ".join(interpolation_methods)}
+
+    fonts: {", ".join(fonts)}
     """
+
+"""
+@mcp.resource("config://get_option_info")
+def get_option_info() -> dict:
+    Returns valid options for API calls
+    return {
+        "alignment_modes":alignment_modes,
+        "justification_modes":justification_modes,
+        "blend_modes":blend_modes,
+        "fonts": fonts,
+        "anchor_positions":anchor_positions,
+        "interpolation_methods":interpolation_methods
+    }
+"""
 
 
 
@@ -1097,18 +1126,6 @@ def list_all_fonts_postscript():
                 ps_names.add(ps_name)
 
     return sorted(ps_names)
-
-@mcp.resource("config://get_option_info")
-def get_option_info() -> dict:
-    """Returns valid options for API calls"""
-    return {
-        "alignment_modes":alignment_modes,
-        "justification_modes":justification_modes,
-        "blend_modes":blend_modes,
-        "fonts": fonts,
-        "anchor_positions":anchor_positions,
-        "interpolation_methods":interpolation_methods
-    }
 
 fonts = list_all_fonts_postscript()
 
