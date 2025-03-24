@@ -2,6 +2,7 @@ const { entrypoints, UI } = require("uxp");
 const {
     checkRequiresActiveDocument,
     parseAndRouteCommand,
+    getLayers
 } = require("./commands/index.js");
 
 const { io } = require("./socket.io.js");
@@ -26,6 +27,8 @@ const onCommandPacket = async (packet) => {
 
       out.response = response;
       out.status = "SUCCESS";
+
+      out.layers = await getLayers()
 
     } catch (e) {
         out.status = "FAILURE";

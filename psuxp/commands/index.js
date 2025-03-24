@@ -57,6 +57,8 @@ const rotateLayer = async (command) => {
     }
 
     await execute(async () => {
+        selectLayer(layer, true)
+
         let anchor = getAnchorPosition(options.anchorPosition);
         let interpolation = getInterpolationMethod(options.interpolationMethod);
 
@@ -1116,13 +1118,15 @@ const createMultiLineTextLayer = async (command) => {
         //should document as part of createTextLayer call
         let fontSize = (app.activeDocument.resolution / 72) * options.fontSize;
 
+        let contents = options.contents.replace(/\\n/g, '\n')
+
         let a = await app.activeDocument.createTextLayer({
             //blendMode: constants.BlendMode.DISSOLVE,//ignored
             textColor: c,
             //color:constants.LabelColors.BLUE,//ignored
             //opacity:50, //ignored
             //name: "layer name",//ignored
-            contents: options.contents,
+            contents: contents,
             fontSize: fontSize,
             fontName: options.fontName, //"ArialMT",
             position: options.position, //y is the baseline of the text. Not top left
@@ -1210,6 +1214,7 @@ const createMultiLineTextLayer = async (command) => {
             },
         ];
 
+        a.textItem.contents = contents
         await action.batchPlay(commands, {});
     });
 };
@@ -1461,6 +1466,7 @@ const commandHandlers = {
 };
 
 module.exports = {
+    getLayers,
     checkRequiresActiveDocument,
     parseAndRouteCommands,
     parseAndRouteCommand,

@@ -896,6 +896,8 @@ def get_instructions() -> str:
 
     Bounds is defined as a dict with top, left, bottom and right properties
     {"top": 0, "left": 0, "bottom": 250, "right": 300}
+
+    Always check your work periodically by check the layers.
     """
 
 
@@ -919,7 +921,7 @@ def sendCommand(command:dict):
 
     response = socket_client.send_message_blocking(command)
     
-    logger.log(f"Final response: {response.status}")
+    logger.log(f"Final response: {response["status"]}")
     return response
 
 def createCommand(action:str, options:dict) -> str:
