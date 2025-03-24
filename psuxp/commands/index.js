@@ -461,6 +461,23 @@ const createMaskFromSelection = async (command) => {
     });
 };
 
+const rasterizeLayer = async (command) => {
+    console.log("rasterizeLayer");
+
+    let options = command.options;
+    let layerName = options.layerName;
+
+    let layer = findLayer(layerName);
+
+    if (!layer) {
+        throw new Error(`rasterizeLayer : Could not find layerName : ${layerName}`);
+    }
+
+    await execute(async () => {
+        layer.rasterize(constants.RasterizeType.ENTIRELAYER)
+    });
+};
+
 const addDropShadowLayerEffect = async (command) => {
     console.log("addDropShadowLayerEffect");
 
@@ -1624,6 +1641,7 @@ const hasActiveSelection = () => {
 }
 
 const commandHandlers = {
+    rasterizeLayer,
     getDocumentInfo,
     cropDocument,
     cutSelectionToClipboard,

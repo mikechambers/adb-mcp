@@ -337,6 +337,23 @@ def paste_from_clipboard(layer_name: str, paste_in_place: bool = True):
     return sendCommand(command)
 
 @mcp.tool()
+def rasterize_layer(layer_name: str):
+    """Converts the specified layer into a rasterized (flat) image.
+
+    This process removes any vector, text, or smart object properties, turning the layer 
+    into pixel-based content.
+
+    Args:
+        layer_name (str): The name of the layer to rasterize.
+    """
+
+    command = createCommand("rasterizeLayer", {
+        "layerName":layer_name
+    })
+
+    return sendCommand(command)
+
+@mcp.tool()
 def cut_selection_to_clipboard(layer_name: str):
     """Copies and removes (cuts) the selected pixels from the specified layer to the system clipboard.
 
