@@ -26,6 +26,69 @@ socket_client.configure(
 )
 
 @mcp.tool()
+def create__gradient_adjustment_layer(
+    layer_name: str,
+    angle: int,
+    type:str,
+    color_stops: list,
+    opacity_stops: list):
+    """
+    Creates a gradient on the specified layer.
+
+    The gradient is applied either within the active selection or across the entire layer if no selection exists.
+
+    Color stops define specific points along the gradient where colors transition, with the first stop at location 0, the last at 100, and any additional stops in between determining how the gradient blends between colors.
+
+    Opacity stops work the same way, specifying points along the gradient where transparency levels change, controlling how smoothly or sharply the opacity transitions from one stop to another.
+
+    Args:
+        layer_name (str): Name of the layer to apply the gradient to.
+        angle (int): The angle (-180 to 180) at which the gradient is applied.
+        type (str): The type of gradient. LINEAR or RADIAL.
+        color_stops (list): A list of dictionaries defining color stops.
+            Each dictionary contains:
+                - location (int): Position of the color stop (0 to 100) along the gradient.
+                - color (dict): RGB values defining the color at this stop.
+                    - red (int): 0-255
+                    - green (int): 0-255
+                    - blue (int): 0-255
+                - midpoint (int): Defines the bias of the transition between adjacent color stops (0-100, default is 50).
+        opacity_stops (list): A list of dictionaries defining opacity stops.
+            Each dictionary contains:
+                - location (int): Position of the opacity stop (0 to 100) along the gradient.
+                - opacity (int): Opacity level (0 = fully transparent, 100 = fully opaque).
+                - midpoint (int): Defines the transition bias between opacity stops (0-100, default is 50).
+
+    Example:
+        color_stops = [
+            {"location": 0, "color": {"red": 0, "green": 0, "blue": 0}, "midpoint": 50},
+            {"location": 100, "color": {"red": 255, "green": 255, "blue": 255}, "midpoint": 50}
+        ]
+
+        opacity_stops = [
+            {"location": 0, "opacity": 0, "midpoint": 50},
+            {"location": 100, "opacity": 100, "midpoint": 50}
+        ]
+ 
+    Returns:
+        dict: Response from the Photoshop operation
+        
+    Raises:
+        RuntimeError: If the operation fails or times out
+    """
+
+    command = createCommand("createGradientAdjustmentLayer", {
+        "layerName":layer_name,
+        "angle":angle,
+        "colorStops":color_stops,
+        "type":type,
+        "opacityStops":opacity_stops
+    })
+
+    return sendCommand(command)
+
+
+@mcp.tool()
 def create_document(document_name: str, width: int, height:int, resolution:int, fill_color:dict = {"red":0, "green":0, "blue":0}, color_mode:str = "RGB"):
     """Creates a new Photoshop Document
 
@@ -804,7 +867,7 @@ def add_drop_shadow_layer_effect(
         blend_mode (str): The blend mode for the drop shadow
         color (dict): The color for the drop shadow
         opacity (int): The opacity of the drop shadow
-        angle (int): The angle (-179 to -180) of the drop shadow relative to the content
+        angle (int): The angle (-180 to 180) of the drop shadow relative to the content
         distance (int): The distance in pixels of the drop shadow (0 to 30000)
         spread (int): Defines how gradually the shadow fades out at its edges, with higher values creating a harsher, more defined edge, and lower values a softer, more feathered edge (0 to 100)
         size (int): Control the blur and spread of the shadow effect (0 to 250)
@@ -977,6 +1040,9 @@ def apply_gaussian_blur(layer_name: str, radius: float = 2.5):
     })
 
     return sendCommand(command)
+
+
+
 
 @mcp.tool()
 def apply_motion_blur(layer_name: str, angle: int = 0, distance: float = 30):
