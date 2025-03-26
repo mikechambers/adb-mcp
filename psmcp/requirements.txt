@@ -1,4 +1,4 @@
-pyobjc
-python-socketio[client]
+fonttools
+python-socketio
+mcp
 requests
-websocket-client
