@@ -3,7 +3,7 @@ from mcp.server.fastmcp import FastMCP
 import requests
 import json
 import time
-from Cocoa import NSFontManager, NSFont
+#from Cocoa import NSFontManager, NSFont
 import socket_client
 import logger
 
@@ -1173,7 +1173,7 @@ def createCommand(action:str, options:dict) -> str:
 
     return command
 
-
+"""
 def list_all_fonts_postscript():
     manager = NSFontManager.sharedFontManager()
     # This returns a list of all known face names (e.g., 'Arial-BoldMT', 'Helvetica', etc.)
@@ -1192,6 +1192,92 @@ def list_all_fonts_postscript():
                 ps_names.add(ps_name)
 
     return sorted(ps_names)
+
+fonts = list_all_fonts_postscript()
+"""
+
+import os
+import sys
+import glob
+from fontTools.ttLib import TTFont
+def list_all_fonts_postscript():
+    """
+    Returns a list of PostScript names for all fonts installed on the system.
+    Works on both Windows and macOS.
+    
+    Returns:
+        list: A list of PostScript font names as strings
+    """
+    postscript_names = []
+    
+    # Get font directories based on platform
+    font_dirs = []
+    
+    if sys.platform == 'win32':  # Windows
+        # Windows font directory
+        if 'WINDIR' in os.environ:
+            font_dirs.append(os.path.join(os.environ['WINDIR'], 'Fonts'))
+    
+    elif sys.platform == 'darwin':  # macOS
+        # macOS system font directories
+        font_dirs.extend([
+            '/System/Library/Fonts',
+            '/Library/Fonts',
+            os.path.expanduser('~/Library/Fonts')
+        ])
+    
+    else:
+        print(f"Unsupported platform: {sys.platform}")
+        return []
+    
+    # Get all font files from all directories
+    font_extensions = ['*.ttf', '*.ttc', '*.otf']
+    font_files = []
+    
+    for font_dir in font_dirs:
+        if os.path.exists(font_dir):
+            for ext in font_extensions:
+                font_files.extend(glob.glob(os.path.join(font_dir, ext)))
+                # Also check subdirectories on macOS
+                if sys.platform == 'darwin':
+                    font_files.extend(glob.glob(os.path.join(font_dir, '**', ext), recursive=True))
+    
+    # Process each font file
+    for font_path in font_files:
+        try:
+            # TrueType Collections (.ttc files) can contain multiple fonts
+            if font_path.lower().endswith('.ttc'):
+                try:
+                    ttc = TTFont(font_path, fontNumber=0)
+                    num_fonts = ttc.reader.numFonts
+                    ttc.close()
+                    
+                    # Extract PostScript name from each font in the collection
+                    for i in range(num_fonts):
+                        try:
+                            font = TTFont(font_path, fontNumber=i)
+                            ps_name = _extract_postscript_name(font)
+                            if ps_name:
+                                postscript_names.append(ps_name)
+                            font.close()
+                        except Exception as e:
+                            print(f"Error processing font {i} in collection {font_path}: {e}")
+                except Exception as e:
+                    print(f"Error determining number of fonts in collection {font_path}: {e}")
+            else:
+                # Regular TTF/OTF file
+                try:
+                    font = TTFont(font_path)
+                    ps_name = _extract_postscript_name(font)
+                    if ps_name:
+                        postscript_names.append(ps_name)
+                    font.close()
+                except Exception as e:
+                    print(f"Error processing font {font_path}: {e}")
+        except Exception as e:
+            print(f"Error with font file {font_path}: {e}")
+    
+    return postscript_names
 
 fonts = list_all_fonts_postscript()
 
