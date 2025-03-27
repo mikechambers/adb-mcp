@@ -101,10 +101,10 @@ def _extract_postscript_name(font):
             if record.nameID == 6:
                 # Try to decode the name
                 try:
-                    if record.isUnicode():
-                        return record.string.decode('utf-16-be').encode('utf-8').decode('utf-8')
-                    else:
-                        return record.string.decode('latin-1')
+                    return (
+                        record.string.decode('utf-16-be').encode('utf-8').decode('utf-8')
+                        if record.isUnicode() else record.string.decode('latin-1')
+                    )
                 except Exception:
                     pass
     
@@ -116,50 +116,5 @@ def _extract_postscript_name(font):
                 return cff.cff.fontNames[0]
         except Exception:
             pass
-    
-    # Method 3: Try to construct a name from the family and subfamily
-    try:
-        family = None
-        subfamily = None
-        
-        if 'name' in font:
-            name_table = font['name']
-            
-            # Family name is nameID 1, subfamily is nameID 2
-            for record in name_table.names:
-                if record.nameID == 1 and not family:
-                    try:
-                        if record.isUnicode():
-                            family = record.string.decode('utf-16-be').encode('utf-8').decode('utf-8')
-                        else:
-                            family = record.string.decode('latin-1')
-                    except Exception:
-                        pass
-                        
-                if record.nameID == 2 and not subfamily:
-                    try:
-                        if record.isUnicode():
-                            subfamily = record.string.decode('utf-16-be').encode('utf-8').decode('utf-8')
-                        else:
-                            subfamily = record.string.decode('latin-1')
-                    except Exception:
-                        pass
-            
-            if family:
-                # Create a PostScript-like name
-                ps_name = family.replace(' ', '')
-                if subfamily and subfamily.lower() not in ['regular', 'normal', 'standard']:
-                    ps_name += '-' + subfamily.replace(' ', '')
-                return ps_name
-    except Exception:
-        pass
-    
-    # If all else fails, try to get the filename without extension
-    try:
-        if hasattr(font, 'reader') and hasattr(font.reader, 'file') and hasattr(font.reader.file, 'name'):
-            filename = os.path.basename(font.reader.file.name)
-            return os.path.splitext(filename)[0].replace(' ', '')
-    except Exception:
-        pass
     
     return None
