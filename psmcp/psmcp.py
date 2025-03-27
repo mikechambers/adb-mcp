@@ -5,6 +5,15 @@ import json
 import time
 import socket_client
 import logger
+import sys
+import os
+
+
+logger.log(f"Python path: {sys.executable}", file=sys.stderr)
+logger.log(f"PYTHONPATH: {os.environ.get('PYTHONPATH')}", file=sys.stderr)
+logger.log(f"Current working directory: {os.getcwd()}", file=sys.stderr)
+logger.log(f"Sys.path: {sys.path}", file=sys.stderr)
+
 
 # Create an MCP server
 mcp = FastMCP("Adobe Photoshop", log_level="ERROR")
@@ -14,8 +23,6 @@ PROXY_URL = 'http://localhost:3001'
 PROXY_TIMEOUT = 20
 
 LOG_FILE_PATH = "/Users/mesh/tmp/log/photoshop-mcp.txt"
-
-logger.configure(log_file_path = LOG_FILE_PATH)
 
 socket_client.configure(
     app=APPLICATION, 

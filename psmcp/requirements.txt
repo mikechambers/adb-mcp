@@ -2,3 +2,4 @@ fonttools
 python-socketio
 mcp
 requests
+websocket-client
