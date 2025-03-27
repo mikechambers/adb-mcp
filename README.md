@@ -4,35 +4,50 @@ adb-mcp is a proof of concept project to create an Adobe Photoshop AI Agent by p
 
 The project is not endorsed by nor supported by Adobe.
 
-It has been tested with Claud desktop (Mac and Windows) from Anthropic, and allows Claud to control Adobe Photoshop. Theoretically, it should work with any AI App / LLM that supports the MCP protocol.
+It has been tested with Claude desktop (Mac and Windows) from Anthropic, and allows Claude to control Adobe Photoshop. Theoretically, it should work with any AI App / LLM that supports the MCP protocol.
 
 Example use cases include:
 
-* Giving Claud step by step instruction on what to do in Photoshop, providing a conversational based interface (particularly useful if you new to Photoshop or lazy)
-* Giving Claud a task (create an instagram post that looks like a Polariod image, create a double exposure) and letting it create it from start to finish
-* Asking Claud to generate custom Photoshop tutorials for you, by creating an example file, then step by step instructions on how to recreate
-* As a Photoshop utility tool (have claud rename all of your into a consitent format)
+* Giving Claude step by step instruction on what to do in Photoshop, providing a conversational based interface (particularly useful if you new to Photoshop or lazy)
+* Giving Claude a task (create an instagram post that looks like a Polariod image, create a double exposure) and letting it create it from start to finish
+* Asking Claude to generate custom Photoshop tutorials for you, by creating an example file, then step by step instructions on how to recreate
+* As a Photoshop utility tool (have Claude rename all of your into a consitent format)
 
-Currently, the AI agent can get some information back from Photoshop which enables it to check its work. However, it cannot get automatically see its work (i.e. get images from Photoshop). This should be possible, but is not yet implimented. In the meantime, you can copy and past from Photoshop into Claud desktop.
+Currently, the AI agent can get some information back from Photoshop which enables it to check its work. However, it cannot get automatically see its work (i.e. get images from Photoshop). This should be possible, but is not yet implimented. In the meantime, you can copy and past from Photoshop into Claude desktop.
 
 ## How it works
 
-AI <-> MCP Server (Python) <-> Command Proxy Server (Node) <-> Photoshop UXP Plugin <-> Photoshop
+The proof of concept works by providing:
+* A MCP Server that provides an itnerface to functionality within Adobe Photoshop to the AI / LLM
+* A Node based command proxy server to sit between the MCP server and Photosohp plugin
+* A Photoshop plugin that listens for commands, and drives Photoshop
+
+**AI** <-> **MCP Server** <-> **Command Proxy Server** <-> **Photoshop UXP Plugin** <-> **Photoshop**
+
+The proxy server is required because the UXP Based JavaScript plugin cannot open a socket connection (as a server) for the MCP Server to connect to (it can only connect to a socket as a client).
 
 ## Requirements
 
 In order to run this, the following is required:
 
-*   AI LLM with support for MCP Protocol (tested with Claud desktop on Mac & Windows)
+*   AI LLM with support for MCP Protocol (tested with Claude desktop on Mac & Windows)
 *   Python 3, which is used to run the MCP server provided with this project
 *   NodeJS, used to provide a proxy between the MCP server and Photoshop
 *   Adobe UXP Developer tool (avaliable via Creative Cloud) used to install and debug the Photoshop plugin used to connect to the proxy
 *   Adobe Photoshop (26.4) with the MCP Plugin installed.
 
-This has been tested with Claud Desktop on Mac and Windows
+This has been tested with Claude Desktop on Mac and Windows
 
 
 ## Installation
+
+This project has been developed and tested with Claude Desktop, and assumes that is what is being used. It should be possible to use other AI apps that support MCP.
+
+### Claude Desktop
+
+Download and install [Claude Desktop](https://Claudee.ai/download). Once you have done this, launch to make sure everything works.
+
+By default, Claude provides a number of free messages a day, which will work with this project.
 
 ### MCP Server
 
@@ -59,6 +74,16 @@ $mcp dev psmcp.py
 
 You can now load the dev interface at http://localhost:5173, click "connect", and then under "Resources" click "config://get_instructions". This should list out a bunch of JSON info. If it does, everything is working and configured.
 
+Now we can install and configure for Claude Desktop.
+
+Make sure you activate the virtual environent you setup and then install the Photoshop MCP server into Claude and start it.
+
+```
+source .venv/bin/activate
+mcp install psmcp.py
+```
+
+
 ### Command Proxy Node Sever
 
 Make sure you have [NodeJS](https://nodejs.org/en) installed and configured in your system PATH.
@@ -76,6 +101,12 @@ $npm install
 $node proxy.js
 ```
 
+You should see a message similar to *WebSocket server running on ws://localhost:3001*.
+
+### Photoshop Plugin
+
+
+
 
 
 
@@ -84,7 +115,7 @@ $node proxy.js
 
 The project requires an AI client that support the MCP protocol.
 
-#### Claud
+#### Claude
 
 
 
