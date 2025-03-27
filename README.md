@@ -51,37 +51,28 @@ By default, Claude provides a number of free messages a day, which will work wit
 
 ### MCP Server
 
-Make sure you have Python3 installed and configured on your system, and in your system PATH.
+Make sure you have Python3 installed and configured on your system, and in your system PATH. This assumes you are using [uv](https://github.com/astral-sh/uv) and have it setup and configured on your system.
 
-
-Install [FastMCP](https://github.com/modelcontextprotocol/python-sdk)
-
-This assumes you are using [uv](https://pypi.org/project/uv/)
+Change to the directory and start the dev server
 
 ```
 $cd psmcp
-$uv venv
-$source .venv/bin/activate
-$uv add "mcp[cli]"
-$uv pip install -r requirements.txt
-```
-
-You can now run the dev server to make sure everything is working:
-
-```
-$mcp dev psmcp.py
+$uv run mcp dev psmcp.py
 ```
 
 You can now load the dev interface at http://localhost:5173, click "connect", and then under "Resources" click "config://get_instructions". This should list out a bunch of JSON info. If it does, everything is working and configured.
 
 Now we can install and configure for Claude Desktop.
 
-Make sure you activate the virtual environent you setup and then install the Photoshop MCP server into Claude and start it.
+Now we can install and configure for Claude Desktop.
 
 ```
-source .venv/bin/activate
-mcp install psmcp.py
+uv run mcp install --with fonttools --with python-socketio --with mcp --with requests --with websocket-client psmcp.py
 ```
+
+If you have Claude desktop running, close it (make sure its not running in the background) and restart it. If it starts without any errors, you are good to go.
+
+At this point, you still need to install a few more things.
 
 
 ### Command Proxy Node Sever
@@ -104,6 +95,25 @@ $node proxy.js
 You should see a message similar to *WebSocket server running on ws://localhost:3001*.
 
 ### Photoshop Plugin
+
+Enabled developer mode in Photoshop
+1. Launch Photoshop (26.0 or greater)
+2. Settings > Plugins and check "Enable Developer Mode"
+3. Restart Photoshop
+
+From Creative Cloud Desktop, install and launch "UXP Developer Tools". When prompted, enabled developer mode.
+
+Install the plugin:
+
+1. Select File > Add Plugin
+2. Navigate to the psuxp directory, and select the manifest.json file.
+3. Once the plugin is listed, then click the "Load" button.
+
+This should load the plugin in Photoshop. If you dont see it, you can open it via the plugins menu in Photoshop.
+
+
+
+## Using the plugin
 
 
 
