@@ -133,9 +133,6 @@ def configure(app=None, url=None, timeout=None, log_file_path=None):
     
     global application, proxy_url, proxy_timeout
     
-    if log_file_path:
-        logger.configure(log_file_path=log_file_path)
-    
     if app:
         application = app
     if url:

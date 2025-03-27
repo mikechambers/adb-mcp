@@ -9,10 +9,10 @@ import sys
 import os
 
 
-logger.log(f"Python path: {sys.executable}", file=sys.stderr)
-logger.log(f"PYTHONPATH: {os.environ.get('PYTHONPATH')}", file=sys.stderr)
-logger.log(f"Current working directory: {os.getcwd()}", file=sys.stderr)
-logger.log(f"Sys.path: {sys.path}", file=sys.stderr)
+logger.log(f"Python path: {sys.executable}")
+logger.log(f"PYTHONPATH: {os.environ.get('PYTHONPATH')}")
+logger.log(f"Current working directory: {os.getcwd()}")
+logger.log(f"Sys.path: {sys.path}")
 
 
 # Create an MCP server
