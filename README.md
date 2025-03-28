@@ -20,7 +20,7 @@ Currently, the AI agent can get some information back from Photoshop which enabl
 The proof of concept works by providing:
 
 -   A MCP Server that provides an interface to functionality within Adobe Photoshop to the AI / LLM
--   A Node based command proxy server that sits between the MCP server and Photosohp plugin
+-   A Node based command proxy server that sits between the MCP server and Photoshop plugin
 -   A Photoshop plugin that listens for commands, and drives Photoshop
 
 **AI** <-> **MCP Server** <-> **Command Proxy Server** <-> **Photoshop UXP Plugin** <-> **Photoshop**
@@ -88,13 +88,13 @@ This proxy must be running in order to Claude to communicate with the plugin
 
 ### Photoshop Plugin
 
-Enabled developer mode in Photoshop
+Enable developer mode in Photoshop
 
 1. Launch Photoshop (26.0 or greater)
 2. Settings > Plugins and check "Enable Developer Mode"
 3. Restart Photoshop
 
-From Creative Cloud Desktop, install and launch "UXP Developer Tools". When prompted, enabled developer mode.
+From Creative Cloud Desktop, install and launch "UXP Developer Tools". When prompted, enable developer mode.
 
 Install the plugin:
 
@@ -116,6 +116,8 @@ Launch the following:
 6. Click connect in the agent panel in Photoshop
 
 Now you can switch over the Claude desktop. Before you start a session, you should load the instructions resource which will provide guidance and info the Claude.
+
+Note, you must reload the plugin via the UCP Developer app every time you restart Photoshop.
 
 ### Setting up session
 
@@ -140,10 +142,8 @@ For example:
 Create a new Photoshop file with a blue background, that is 1080 width by 720 height at 300 dpi
 ```
 
-or
-
 ```
-Create a new photoshop file for an instagram post
+Create a new Photoshop file for an instagram post
 ```
 
 ```
@@ -154,12 +154,24 @@ Create a double exposure image in Photoshop of a woman and a forest
 Generate an image of a forest, and then add a clipping mask to only show the center in a circle
 ```
 
+
 ### Tips
 
 * When prompting, ask the AI to think about and check its work
 * The more advanced the models, or the more resources given to the models the better and more creative the AI is
 * As a general rule, don't make changes in Photoshop while the AI is doing work. If you do make changes, make sure to tell the AI about it.
 * You can copy and paste images from Photoshop into the AI to give it more information on what is going on.
+
+### Troubleshooting
+
+* If something fails on the AI side, it will usually tell you the issue, and if you click the command / code box, you can see the error.
+* First thing to check if there is an issue is to make sure the plugin in Photoshop is connected, and that the node proxy server is running
+
+## Questions, Feature Requests, Feedback
+
+If you have any questions, feature requests, need help, or just want to chat, join the [discord](https://discord.gg/fgxw9t37D7).
+
+You can also log bugs and feature requests on the [issues page](https://github.com/mikechambers/adb-mcp/issues).
 
 ## License
 
