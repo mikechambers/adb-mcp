@@ -565,6 +565,23 @@ const createMaskFromSelection = async (command) => {
     });
 };
 
+
+const getLayerBounds = async (command) => {
+    console.log("getLayerBounds");
+
+    let options = command.options;
+    let layerName = options.layerName;
+
+    let layer = findLayer(layerName);
+
+    if (!layer) {
+        throw new Error(`rasterizeLayer : Could not find layerName : ${layerName}`);
+    }
+
+    let b = layer.bounds
+    return {left:b.left, top:b.top, bottom:b.bottom, right:b.right}
+};
+
 const rasterizeLayer = async (command) => {
     console.log("rasterizeLayer");
 
@@ -1843,6 +1860,7 @@ const createGradientAdjustmentLayer = async (command) => {
 
 
 const commandHandlers = {
+    getLayerBounds,
     placeImage,
     createGradientAdjustmentLayer,
     rasterizeLayer,

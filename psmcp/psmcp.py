@@ -537,6 +537,33 @@ def select_sky(layer_name: str):
 
     return sendCommand(command)
 
+
+@mcp.tool()
+def get_layer_bounds(
+    layer_name: str
+):
+    """Returns the pixel bounds for the layer with the specified name
+    
+    Args:
+        layer_name (str): Name of the layer to get the bounds information from
+
+    Returns:
+        dict: A dictionary containing the layer bounds with the following properties:
+            - left (int): The x-coordinate of the left edge of the layer
+            - top (int): The y-coordinate of the top edge of the layer
+            - right (int): The x-coordinate of the right edge of the layer
+            - bottom (int): The y-coordinate of the bottom edge of the layer
+            
+    Raises:
+        RuntimeError: If the layer doesn't exist or if the operation fails
+    """
+    
+    command = createCommand("getLayerBounds", {
+        "layerName":layer_name
+    })
+
+    return sendCommand(command)
+
 @mcp.tool()
 def remove_background(
     layer_name:str
@@ -622,6 +649,8 @@ def create_multi_line_text_layer(
     })
 
     return sendCommand(command)
+
+
 
 
 @mcp.tool()
