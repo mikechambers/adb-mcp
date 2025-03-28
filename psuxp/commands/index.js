@@ -345,16 +345,19 @@ const placeImage = async (command) => {
         throw new Error(`placeImage : Could not find layerName : ${layerName}`);
     }
 
+    let tokenify = async (url) => {
+        let out = await fs.createSessionToken(await fs.getEntryWithUrl("file:" + url));
+        return out
+     }
+
     await execute(async () => {
         selectLayer(layer, true)
-        console.log("layer", layer)
         let layerId = layer.id
-        console.log("a")
-    console.log(fs)
-        let pathToken = await tokenify(options.imagePath)
 
-        console.log("pathToken", pathToken)
-        console.log(layerId)
+        let imagePath = await tokenify(options.imagePath)
+  
+        //console.log("pathimagePathToken", imagePath)
+
         let commands = [
             // Place
             {
@@ -364,27 +367,19 @@ const placeImage = async (command) => {
                     "_enum": "quadCenterState",
                     "_value": "QCSAverage"
                 },
-                "height": {
-                    "_unit": "percentUnit",
-                    "_value": 100
-                },
-                "width": {
-                    "_unit": "percentUnit",
-                    "_value": 100
-                },
                 "null": {
                     "_kind": "local",
-                    "_path": pathToken
+                    "_path": imagePath
                 },
                 "offset": {
                     "_obj": "offset",
                     "horizontal": {
                         "_unit": "pixelsUnit",
-                        "_value": options.position.x
+                        "_value": 0.0
                     },
                     "vertical": {
                         "_unit": "pixelsUnit",
-                        "_value": options.position.y
+                        "_value": 0.0
                     }
                 },
                 "replaceLayer": {
@@ -394,12 +389,25 @@ const placeImage = async (command) => {
                         "_ref": "layer"
                     }
                 }
+            },
+            {
+                "_obj": "set",
+                "_target": [
+                    {
+                        "_enum": "ordinal",
+                        "_ref": "layer",
+                        "_value": "targetEnum"
+                    }
+                ],
+                "to": {
+                    "_obj": "layer",
+                    "name": layerName
+                }
             }
         ];
-
-        console.log(commands)
+     
         await action.batchPlay(commands, {});
-
+        await rasterizeLayer(command)
     });
 };
 
