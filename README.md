@@ -153,6 +153,9 @@ Create a double exposure image in Photoshop of a woman and a forest
 ```
 Generate an image of a forest, and then add a clipping mask to only show the center in a circle
 ```
+```
+Make something cool with photoshop
+```
 
 
 ### Tips
@@ -161,11 +164,23 @@ Generate an image of a forest, and then add a clipping mask to only show the cen
 * The more advanced the models, or the more resources given to the models the better and more creative the AI is
 * As a general rule, don't make changes in Photoshop while the AI is doing work. If you do make changes, make sure to tell the AI about it.
 * You can copy and paste images from Photoshop into the AI to give it more information on what is going on.
+* The AI has issue sizing and positioning text correctly, so giving it guidelines on font sizes to use will help, as well as telling it to align the text relative to the canvas.
+* The AI has access to all of the Postscript fonts on the system. If you want to specify a font, you must use its Postscript name (you may be able to ask the AI for it)
+* You can ask the AI for suggestions. It comes up with really useful ideas / feedback sometimes
 
 ### Troubleshooting
 
 * If something fails on the AI side, it will usually tell you the issue, and if you click the command / code box, you can see the error.
 * First thing to check if there is an issue is to make sure the plugin in Photoshop is connected, and that the node proxy server is running
+
+## Development
+
+Adding new functionality is relatively easy, and requires:
+
+1. Adding the API and parameters in the *psmcp/psmcp.py* file (which is used by the AI)
+2. Implementing the API in the *psuxp/commands/index.js* file.
+
+TO BE COMPLETED
 
 ## Questions, Feature Requests, Feedback
 
