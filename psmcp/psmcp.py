@@ -191,6 +191,32 @@ def create_mask_from_selection(
 """
 
 @mcp.tool()
+def place_image(
+    layer_name: str,
+    image_path: str,
+    position: dict = {"x": 0, "y": 0}
+):
+    """Places the image at the specified path on the existing pixel layer with the specified name.
+
+    Args:
+        layer_name (str): The name of the layer where the image will be placed.
+        image_path (str): The file path to the image that will be placed on the layer.
+        position (dict): A dictionary with x and y coordinates specifying where to place the image.
+                         Default is {"x": 0, "y": 0} (top-left corner).
+
+    Raises:
+        RuntimeError: If the operation fails or times out
+    """
+    
+    command = createCommand("placeImage", {
+        "layerName":layer_name,
+        "imagePath":image_path,
+        "position":position
+    })
+
+    return sendCommand(command)
+
+@mcp.tool()
 def rename_layer(
     layer_name:str,
     new_layer_name:str

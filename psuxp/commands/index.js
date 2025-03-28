@@ -22,6 +22,7 @@
  */
 
 const { app, constants, core, action } = require("photoshop");
+const {localFileSystem: fs} = require("uxp").storage;
 
 const parseAndRouteCommands = async (commands) => {
     if (!commands.length) {
@@ -327,6 +328,78 @@ const duplicateLayer = async (command) => {
 
         let d = await layer.duplicate();
         d.name = options.duplicateLayerName;
+    });
+};
+
+async function tokenify(url){
+    return await fs.createSessionToken(url);
+ }
+
+const placeImage = async (command) => {
+    console.log("placeImage")
+    let options = command.options;
+    let layerName = options.layerName
+    let layer = findLayer(layerName)
+
+    if (!layer) {
+        throw new Error(`placeImage : Could not find layerName : ${layerName}`);
+    }
+
+    await execute(async () => {
+        selectLayer(layer, true)
+        console.log("layer", layer)
+        let layerId = layer.id
+        console.log("a")
+    console.log(fs)
+        let pathToken = await tokenify(options.imagePath)
+
+        console.log("pathToken", pathToken)
+        console.log(layerId)
+        let commands = [
+            // Place
+            {
+                "ID": layerId,
+                "_obj": "placeEvent",
+                "freeTransformCenterState": {
+                    "_enum": "quadCenterState",
+                    "_value": "QCSAverage"
+                },
+                "height": {
+                    "_unit": "percentUnit",
+                    "_value": 100
+                },
+                "width": {
+                    "_unit": "percentUnit",
+                    "_value": 100
+                },
+                "null": {
+                    "_kind": "local",
+                    "_path": pathToken
+                },
+                "offset": {
+                    "_obj": "offset",
+                    "horizontal": {
+                        "_unit": "pixelsUnit",
+                        "_value": options.position.x
+                    },
+                    "vertical": {
+                        "_unit": "pixelsUnit",
+                        "_value": options.position.y
+                    }
+                },
+                "replaceLayer": {
+                    "_obj": "placeEvent",
+                    "to": {
+                        "_id": layerId,
+                        "_ref": "layer"
+                    }
+                }
+            }
+        ];
+
+        console.log(commands)
+        await action.batchPlay(commands, {});
+
     });
 };
 
@@ -1619,7 +1692,6 @@ const selectLayer = (layer, exclusive = false) => {
         clearLayerSelections();
     }
 
-    console.log(layer);
     layer.selected = true;
 }
 
@@ -1763,6 +1835,7 @@ const createGradientAdjustmentLayer = async (command) => {
 
 
 const commandHandlers = {
+    placeImage,
     createGradientAdjustmentLayer,
     rasterizeLayer,
     getDocumentInfo,
