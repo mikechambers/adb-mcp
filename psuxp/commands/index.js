@@ -22,7 +22,8 @@
  */
 
 const { app, constants, core, action } = require("photoshop");
-const { localFileSystem: fs } = require("uxp").storage;
+//const { localFileSystem: fs } = require("uxp").storage;
+const fs = require("uxp").storage.localFileSystem;
 
 const parseAndRouteCommands = async (commands) => {
     if (!commands.length) {
@@ -1489,7 +1490,7 @@ const execute = async (callback, commandName = "Executing command...") => {
             commandName: commandName,
         });
     } catch (e) {
-        throw new Error(`Error executing command [modal] : ${e.message}`);
+        throw new Error(`Error executing command [modal] : ${e}`);
     }
 };
 
@@ -1904,7 +1905,30 @@ const createGradientAdjustmentLayer = async (command) => {
     });
 };
 
+const openFile = async (command) => {
+
+    console.log("openFile")
+
+    let options = command.options    
+
+    await execute(async () => {
+
+        let entry = null
+        try {
+            console.log("a")
+            entry = await fs.getEntryWithUrl("file:" + options.filePath)
+            console.log("b")
+        } catch (e) {
+            console.log("c")
+            throw new Error("openFile: Could not create file entry. File probably does not exist.");
+        }
+     
+        await app.open(entry)
+    });
+}
+
 const commandHandlers = {
+    openFile,
     getLayerBounds,
     placeImage,
     createGradientAdjustmentLayer,

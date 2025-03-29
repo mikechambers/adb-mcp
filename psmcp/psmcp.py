@@ -468,6 +468,29 @@ def rasterize_layer(layer_name: str):
     return sendCommand(command)
 
 @mcp.tool()
+def open_photoshop_file(file_path: str):
+    """Opens the specified Photoshop-compatible file within Photoshop.
+
+    This function attempts to open a file in Adobe Photoshop. The file must be in a 
+    format compatible with Photoshop, such as PSD, TIFF, JPEG, PNG, etc.
+
+    Args:
+        file_path (str): Complete absolute path to the file to be opened, including filename and extension.
+
+    Returns:
+        dict: Response from the Photoshop operation indicating success status.
+        
+    Raises:
+        RuntimeError: If the file doesn't exist, is not accessible, or is in an unsupported format.
+    """
+
+    command = createCommand("openFile", {
+        "filePath":file_path
+    })
+
+    return sendCommand(command)
+
+@mcp.tool()
 def cut_selection_to_clipboard(layer_name: str):
     """Copies and removes (cuts) the selected pixels from the specified layer to the system clipboard.
 

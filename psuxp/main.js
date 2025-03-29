@@ -195,6 +195,9 @@ document.getElementById("btnStart").addEventListener("click", () => {
     } else {
       connectToServer();
     }
+});
 
-    
+
+window.addEventListener("load", (event) => {
+    connectToServer()
 });
