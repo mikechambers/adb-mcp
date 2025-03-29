@@ -151,7 +151,7 @@ def send_message_blocking(command, timeout=None):
 class PhotoShopError(Exception):
     pass
 
-def configure(app=None, url=None, timeout=None, log_file_path=None):
+def configure(app=None, url=None, timeout=None):
     
     global application, proxy_url, proxy_timeout
     
