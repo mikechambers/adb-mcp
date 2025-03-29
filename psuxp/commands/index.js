@@ -22,7 +22,7 @@
  */
 
 const { app, constants, core, action } = require("photoshop");
-const {localFileSystem: fs} = require("uxp").storage;
+const { localFileSystem: fs } = require("uxp").storage;
 
 const parseAndRouteCommands = async (commands) => {
     if (!commands.length) {
@@ -55,7 +55,9 @@ const scaleLayer = async (command) => {
     let layer = findLayer(layerName);
 
     if (!layer) {
-        throw new Error(`scaleLayer : Could not find layer named : [${layerName}]`);
+        throw new Error(
+            `scaleLayer : Could not find layer named : [${layerName}]`
+        );
     }
 
     await execute(async () => {
@@ -77,11 +79,13 @@ const rotateLayer = async (command) => {
     let layer = findLayer(layerName);
 
     if (!layer) {
-        throw new Error(`rotateLayer : Could not find layer named : [${layerName}]`);
+        throw new Error(
+            `rotateLayer : Could not find layer named : [${layerName}]`
+        );
     }
 
     await execute(async () => {
-        selectLayer(layer, true)
+        selectLayer(layer, true);
 
         let anchor = getAnchorPosition(options.anchorPosition);
         let interpolation = getInterpolationMethod(options.interpolationMethod);
@@ -101,7 +105,9 @@ const flipLayer = async (command) => {
     let layer = findLayer(layerName);
 
     if (!layer) {
-        throw new Error(`flipLayer : Could not find layer named : [${layerName}]`);
+        throw new Error(
+            `flipLayer : Could not find layer named : [${layerName}]`
+        );
     }
 
     await execute(async () => {
@@ -118,7 +124,9 @@ const deleteLayer = async (command) => {
     let layer = findLayer(layerName);
 
     if (!layer) {
-        throw new Error(`setLayerVisibility : Could not find layer named : [${layerName}]`);
+        throw new Error(
+            `setLayerVisibility : Could not find layer named : [${layerName}]`
+        );
     }
 
     await execute(async () => {
@@ -135,7 +143,9 @@ const renameLayer = async (command) => {
     let layer = findLayer(layerName);
 
     if (!layer) {
-        throw new Error(`renameLayer : Could not find layer named : [${layerName}]`);
+        throw new Error(
+            `renameLayer : Could not find layer named : [${layerName}]`
+        );
     }
 
     await execute(async () => {
@@ -190,7 +200,9 @@ const setLayerVisibility = async (command) => {
     let layer = findLayer(layerName);
 
     if (!layer) {
-        throw new Error(`setLayerVisibility : Could not find layer named : [${layerName}]`);
+        throw new Error(
+            `setLayerVisibility : Could not find layer named : [${layerName}]`
+        );
     }
 
     await execute(async () => {
@@ -207,7 +219,9 @@ const addColorBalanceAdjustmentLayer = async (command) => {
     let layer = findLayer(layerName);
 
     if (!layer) {
-        throw new Error(`addColorBalanceAdjustmentLayer : Could not find layer named : [${layerName}]`);
+        throw new Error(
+            `addColorBalanceAdjustmentLayer : Could not find layer named : [${layerName}]`
+        );
     }
 
     await execute(async () => {
@@ -262,7 +276,9 @@ const translateLayer = async (command) => {
     let layer = findLayer(layerName);
 
     if (!layer) {
-        throw new Error(`translateLayer : Could not find layer named : [${layerName}]`);
+        throw new Error(
+            `translateLayer : Could not find layer named : [${layerName}]`
+        );
     }
 
     await execute(async () => {
@@ -279,7 +295,9 @@ const setLayerProperties = async (command) => {
     let layer = findLayer(layerName);
 
     if (!layer) {
-        throw new Error(`setLayerProperties : Could not find layer named : [${layerName}]`);
+        throw new Error(
+            `setLayerProperties : Could not find layer named : [${layerName}]`
+        );
     }
 
     await execute(async () => {
@@ -323,7 +341,9 @@ const duplicateLayer = async (command) => {
         let layer = findLayer(options.sourceLayerName);
 
         if (!layer) {
-            throw new Error(`duplicateLayer : Could not find sourceLayerName : ${options.sourceLayerName}`);
+            throw new Error(
+                `duplicateLayer : Could not find sourceLayerName : ${options.sourceLayerName}`
+            );
         }
 
         let d = await layer.duplicate();
@@ -331,112 +351,89 @@ const duplicateLayer = async (command) => {
     });
 };
 
-async function tokenify(url){
+async function tokenify(url) {
     return await fs.createSessionToken(url);
- }
+}
 
 const placeImage = async (command) => {
-    console.log("placeImage")
+    console.log("placeImage");
     let options = command.options;
-    let layerName = options.layerName
-    let layer = findLayer(layerName)
+    let layerName = options.layerName;
+    let layer = findLayer(layerName);
 
     if (!layer) {
         throw new Error(`placeImage : Could not find layerName : ${layerName}`);
     }
 
     let tokenify = async (url) => {
-        let out = await fs.createSessionToken(await fs.getEntryWithUrl("file:" + url));
-        return out
-     }
+        let out = await fs.createSessionToken(
+            await fs.getEntryWithUrl("file:" + url)
+        );
+        return out;
+    };
 
     await execute(async () => {
-        selectLayer(layer, true)
-        let layerId = layer.id
+        selectLayer(layer, true);
+        let layerId = layer.id;
 
-        let imagePath = await tokenify(options.imagePath)
-  
+        let imagePath = await tokenify(options.imagePath);
+
         //console.log("pathimagePathToken", imagePath)
 
         let commands = [
             // Place
             {
-                "ID": layerId,
-                "_obj": "placeEvent",
-                "freeTransformCenterState": {
-                    "_enum": "quadCenterState",
-                    "_value": "QCSAverage"
+                ID: layerId,
+                _obj: "placeEvent",
+                freeTransformCenterState: {
+                    _enum: "quadCenterState",
+                    _value: "QCSAverage",
                 },
-                "null": {
-                    "_kind": "local",
-                    "_path": imagePath
+                null: {
+                    _kind: "local",
+                    _path: imagePath,
                 },
-                "offset": {
-                    "_obj": "offset",
-                    "horizontal": {
-                        "_unit": "pixelsUnit",
-                        "_value": 0.0
+                offset: {
+                    _obj: "offset",
+                    horizontal: {
+                        _unit: "pixelsUnit",
+                        _value: 0.0,
                     },
-                    "vertical": {
-                        "_unit": "pixelsUnit",
-                        "_value": 0.0
-                    }
+                    vertical: {
+                        _unit: "pixelsUnit",
+                        _value: 0.0,
+                    },
                 },
-                "replaceLayer": {
-                    "_obj": "placeEvent",
-                    "to": {
-                        "_id": layerId,
-                        "_ref": "layer"
-                    }
-                }
+                replaceLayer: {
+                    _obj: "placeEvent",
+                    to: {
+                        _id: layerId,
+                        _ref: "layer",
+                    },
+                },
             },
             {
-                "_obj": "set",
-                "_target": [
+                _obj: "set",
+                _target: [
                     {
-                        "_enum": "ordinal",
-                        "_ref": "layer",
-                        "_value": "targetEnum"
-                    }
+                        _enum: "ordinal",
+                        _ref: "layer",
+                        _value: "targetEnum",
+                    },
                 ],
-                "to": {
-                    "_obj": "layer",
-                    "name": layerName
-                }
-            }
+                to: {
+                    _obj: "layer",
+                    name: layerName,
+                },
+            },
         ];
-     
+
         await action.batchPlay(commands, {});
-        await rasterizeLayer(command)
+        await rasterizeLayer(command);
     });
 };
 
-const copyToClipboard = async (command) => {
-    let options = command.options;
-    let layerName = options.layerName
 
-    await execute(async () => {
-        let layer = null;
-        if (!options.copyMerged) {
-            layer = findLayer(layerName);
-
-            if (!layer) {
-                throw new Error(`copyToClipboard : Could not find layerName : ${layerName}`);
-            }
-        } else {
-            layer = app.activeDocument.layers[0];
-        }
-
-        if (options.copyMerged) {
-            //hack since copy merged wont work without an active selection
-            app.activeDocument.selection.selectAll();
-            await layer.copy(true);
-            await clearSelection();
-        } else {
-            await layer.copy(false);
-        }
-    });
-};
 
 const clearSelection = async () => {
     await app.activeDocument.selection.selectRectangle(
@@ -537,7 +534,9 @@ const createMaskFromSelection = async (command) => {
     let layer = findLayer(layerName);
 
     if (!layer) {
-        throw new Error(`createMaskFromSelection : Could not find layerName : ${layerName}`);
+        throw new Error(
+            `createMaskFromSelection : Could not find layerName : ${layerName}`
+        );
     }
 
     await execute(async () => {
@@ -565,7 +564,6 @@ const createMaskFromSelection = async (command) => {
     });
 };
 
-
 const getLayerBounds = async (command) => {
     console.log("getLayerBounds");
 
@@ -575,11 +573,13 @@ const getLayerBounds = async (command) => {
     let layer = findLayer(layerName);
 
     if (!layer) {
-        throw new Error(`rasterizeLayer : Could not find layerName : ${layerName}`);
+        throw new Error(
+            `rasterizeLayer : Could not find layerName : ${layerName}`
+        );
     }
 
-    let b = layer.bounds
-    return {left:b.left, top:b.top, bottom:b.bottom, right:b.right}
+    let b = layer.bounds;
+    return { left: b.left, top: b.top, bottom: b.bottom, right: b.right };
 };
 
 const rasterizeLayer = async (command) => {
@@ -591,11 +591,13 @@ const rasterizeLayer = async (command) => {
     let layer = findLayer(layerName);
 
     if (!layer) {
-        throw new Error(`rasterizeLayer : Could not find layerName : ${layerName}`);
+        throw new Error(
+            `rasterizeLayer : Could not find layerName : ${layerName}`
+        );
     }
 
     await execute(async () => {
-        layer.rasterize(constants.RasterizeType.ENTIRELAYER)
+        layer.rasterize(constants.RasterizeType.ENTIRELAYER);
     });
 };
 
@@ -608,7 +610,9 @@ const addDropShadowLayerEffect = async (command) => {
     let layer = findLayer(layerName);
 
     if (!layer) {
-        throw new Error(`addDropShadowLayerEffect : Could not find layerName : ${layerName}`);
+        throw new Error(
+            `addDropShadowLayerEffect : Could not find layerName : ${layerName}`
+        );
     }
 
     await execute(async () => {
@@ -694,206 +698,229 @@ const addDropShadowLayerEffect = async (command) => {
     });
 };
 
-
 const getDocumentInfo = async (command) => {
-    console.log("getDocumentInfo")
+    console.log("getDocumentInfo");
 
-    let doc = app.activeDocument
-    let path = doc.path
+    let doc = app.activeDocument;
+    let path = doc.path;
 
-    let out =  {
-        "height":doc.height,
-        "width":doc.width,
-        "colorMode":doc.mode.toString(),
-        "pixelAspectRatio":doc.pixelAspectRatio,
-        "resolution":doc.resolution,
-        "path":path,
-        "saved":(path.length > 0),
-        "hasUnsavedChanges":!doc.saved
-    }
+    let out = {
+        height: doc.height,
+        width: doc.width,
+        colorMode: doc.mode.toString(),
+        pixelAspectRatio: doc.pixelAspectRatio,
+        resolution: doc.resolution,
+        path: path,
+        saved: path.length > 0,
+        hasUnsavedChanges: !doc.saved,
+    };
 
-    return out
-}
+    return out;
+};
 
 const cropDocument = async (command) => {
-    console.log("cropDocument")
+    console.log("cropDocument");
 
-    let options = command.options
+    let options = command.options;
 
-    if(!hasActiveSelection()) {
-        throw new Error("cropDocument : Requires an active selection")
+    if (!hasActiveSelection()) {
+        throw new Error("cropDocument : Requires an active selection");
     }
 
     return await execute(async () => {
-
         let commands = [
             // Crop
             {
-                "_obj": "crop",
-                "delete": true
-            }
-        ];
-
-        await action.batchPlay(commands, {});
-    });
-}
-
-const selectSubject = async (command) => {
-    console.log("selectSubject")
-
-    let options = command.options
-    let layerName = options.layerName
-
-    let layer = findLayer(layerName)
-
-    if(!layer) {
-        throw new Error(`selectSubject : Could not find layerName : ${layerName}`)
-    }
-
-    return await execute(async () => {
-
-        selectLayer(layer, true)
-
-        let commands = [
-            // Select Subject
-            {
-                "_obj": "autoCutout",
-                "sampleAllLayers": false
-            }
-        ];
-
-        await action.batchPlay(commands, {});
-
-        return {hasActiveSelection:hasActiveSelection()}
-    });
-}
-
-const selectSky = async (command) => {
-    console.log("selectSky")
-
-    let options = command.options
-    let layerName = options.layerName
-
-    let layer = findLayer(layerName)
-
-    if(!layer) {
-        throw new Error(`selectSky : Could not find layerName : ${layerName}`)
-    }
-
-    return await execute(async () => {
-
-        selectLayer(layer, true)
-
-        let commands = [
-            // Select Sky
-            {
-                "_obj": "selectSky",
-                "sampleAllLayers": false
-            }
-        ];
-
-        await action.batchPlay(commands, {});
-
-        return {hasActiveSelection:hasActiveSelection()}
-    });
-}
-
-const cutSelectionToClipboard = async (command) => {
-    console.log("cutSelectionToClipboard")
-
-    let options = command.options
-    let layerName = options.layerName
-
-    let layer = findLayer(layerName)
-
-    if(!layer) {
-        throw new Error(`cutSelectionToClipboard : Could not find layerName : ${layerName}`)
-    }
-
-    if(!hasActiveSelection()) {
-        throw new Error("cutSelectionToClipboard : Requires an active selection")
-    }
-
-    return await execute(async () => {
-
-        selectLayer(layer, true)
-        
-        let commands = [
-            {
-                "_obj": "cut"
+                _obj: "crop",
+                delete: true,
             },
         ];
 
         await action.batchPlay(commands, {});
     });
-}
+};
+
+const selectSubject = async (command) => {
+    console.log("selectSubject");
+
+    let options = command.options;
+    let layerName = options.layerName;
+
+    let layer = findLayer(layerName);
+
+    if (!layer) {
+        throw new Error(
+            `selectSubject : Could not find layerName : ${layerName}`
+        );
+    }
+
+    return await execute(async () => {
+        selectLayer(layer, true);
+
+        let commands = [
+            // Select Subject
+            {
+                _obj: "autoCutout",
+                sampleAllLayers: false,
+            },
+        ];
+
+        await action.batchPlay(commands, {});
+
+        return { hasActiveSelection: hasActiveSelection() };
+    });
+};
+
+const selectSky = async (command) => {
+    console.log("selectSky");
+
+    let options = command.options;
+    let layerName = options.layerName;
+
+    let layer = findLayer(layerName);
+
+    if (!layer) {
+        throw new Error(`selectSky : Could not find layerName : ${layerName}`);
+    }
+
+    return await execute(async () => {
+        selectLayer(layer, true);
+
+        let commands = [
+            // Select Sky
+            {
+                _obj: "selectSky",
+                sampleAllLayers: false,
+            },
+        ];
+
+        await action.batchPlay(commands, {});
+
+        return { hasActiveSelection: hasActiveSelection() };
+    });
+};
+
+const cutSelectionToClipboard = async (command) => {
+    console.log("cutSelectionToClipboard");
+
+    let options = command.options;
+    let layerName = options.layerName;
+
+    let layer = findLayer(layerName);
+
+    if (!layer) {
+        throw new Error(
+            `cutSelectionToClipboard : Could not find layerName : ${layerName}`
+        );
+    }
+
+    if (!hasActiveSelection()) {
+        throw new Error(
+            "cutSelectionToClipboard : Requires an active selection"
+        );
+    }
+
+    return await execute(async () => {
+        selectLayer(layer, true);
+
+        let commands = [
+            {
+                _obj: "cut",
+            },
+        ];
+
+        await action.batchPlay(commands, {});
+    });
+};
+
+const copyMergedSelectionToClipboard = async (command) => {
+    console.log("copyMergedSelectionToClipboard");
+
+    let options = command.options;
+
+    if (!hasActiveSelection()) {
+        throw new Error(
+            "copySelectionToClipboard : Requires an active selection"
+        );
+    }
+
+    return await execute(async () => {
+        let commands = [{
+            _obj: "copyMerged",
+        }];
+
+        await action.batchPlay(commands, {});
+    });
+};
 
 const copySelectionToClipboard = async (command) => {
-    console.log("copySelectionToClipboard")
+    console.log("copySelectionToClipboard");
 
-    let options = command.options
-    let layerName = options.layerName
+    let options = command.options;
+    let layerName = options.layerName;
 
-    let layer = findLayer(layerName)
+    let layer = findLayer(layerName);
 
-    if(!layer) {
-        throw new Error(`copySelectionToClipboard : Could not find layerName : ${layerName}`)
+    if (!layer) {
+        throw new Error(
+            `copySelectionToClipboard : Could not find layerName : ${layerName}`
+        );
     }
 
-    if(!hasActiveSelection()) {
-        throw new Error("copySelectionToClipboard : Requires an active selection")
+    if (!hasActiveSelection()) {
+        throw new Error(
+            "copySelectionToClipboard : Requires an active selection"
+        );
     }
 
     return await execute(async () => {
+        selectLayer(layer, true);
 
-        selectLayer(layer, true)
-        
-        let commands = [
-            {
-                "_obj": "copyEvent",
-                "copyHint": "pixels"
-            }
-        ];
+        let commands = [{
+            _obj: "copyEvent",
+            copyHint: "pixels",
+        }];
 
         await action.batchPlay(commands, {});
     });
-}
+};
 
 const pasteFromClipboard = async (command) => {
-    console.log("pasteFromClipboard")
+    console.log("pasteFromClipboard");
 
-    let options = command.options
-    let layerName = options.layerName
+    let options = command.options;
+    let layerName = options.layerName;
 
-    let layer = findLayer(layerName)
+    let layer = findLayer(layerName);
 
-    if(!layer) {
-        throw new Error(`pasteFromClipboard : Could not find layerName : ${layerName}`)
+    if (!layer) {
+        throw new Error(
+            `pasteFromClipboard : Could not find layerName : ${layerName}`
+        );
     }
 
     return await execute(async () => {
+        selectLayer(layer, true);
 
-        selectLayer(layer, true)
+        let pasteInPlace = options.pasteInPlace;
 
-        let pasteInPlace = options.pasteInPlace
-        
         let commands = [
             {
-                "_obj": "paste",
-                "antiAlias": {
-                    "_enum": "antiAliasType",
-                    "_value": "antiAliasNone"
+                _obj: "paste",
+                antiAlias: {
+                    _enum: "antiAliasType",
+                    _value: "antiAliasNone",
                 },
-                "as": {
-                    "_class": "pixel"
+                as: {
+                    _class: "pixel",
                 },
-                "inPlace": pasteInPlace
-            }
+                inPlace: pasteInPlace,
+            },
         ];
 
         await action.batchPlay(commands, {});
     });
-}
+};
 
 const removeBackground = async (command) => {
     console.log("removeBackground");
@@ -904,7 +931,9 @@ const removeBackground = async (command) => {
     let layer = findLayer(layerName);
 
     if (!layer) {
-        throw new Error(`removeBackground : Could not find layerName : ${layerName}`);
+        throw new Error(
+            `removeBackground : Could not find layerName : ${layerName}`
+        );
     }
 
     await execute(async () => {
@@ -930,7 +959,9 @@ const addBrightnessContrastAdjustmentLayer = async (command) => {
     let layer = findLayer(layerName);
 
     if (!layer) {
-        throw new Error(`addBrightnessContrastAdjustmentLayer : Could not find layerName : ${layerName}`);
+        throw new Error(
+            `addBrightnessContrastAdjustmentLayer : Could not find layerName : ${layerName}`
+        );
     }
 
     await execute(async () => {
@@ -985,7 +1016,9 @@ const addAdjustmentLayerVibrance = async (command) => {
     let layer = findLayer(layerName);
 
     if (!layer) {
-        throw new Error(`addAdjustmentLayerVibrance : Could not find layerName : ${layerName}`);
+        throw new Error(
+            `addAdjustmentLayerVibrance : Could not find layerName : ${layerName}`
+        );
     }
 
     let colors = options.colors;
@@ -1040,7 +1073,9 @@ const addAdjustmentLayerBlackAndWhite = async (command) => {
     let layer = findLayer(layerName);
 
     if (!layer) {
-        throw new Error(`addAdjustmentLayerBlackAndWhite : Could not find layerName : ${layerName}`);
+        throw new Error(
+            `addAdjustmentLayerBlackAndWhite : Could not find layerName : ${layerName}`
+        );
     }
 
     let colors = options.colors;
@@ -1096,7 +1131,9 @@ const alignContent = async (command) => {
     let layer = findLayer(layerName);
 
     if (!layer) {
-        throw new Error(`alignContent : Could not find layerName : ${layerName}`);
+        throw new Error(
+            `alignContent : Could not find layerName : ${layerName}`
+        );
     }
 
     //console.log(app.activeDocument.selection)
@@ -1216,7 +1253,9 @@ const deleteSelection = async (command) => {
     let layer = findLayer(layerName);
 
     if (!layer) {
-        throw new Error(`deleteSelection : Could not find layerName : ${layerName}`);
+        throw new Error(
+            `deleteSelection : Could not find layerName : ${layerName}`
+        );
     }
 
     if (!app.activeDocument.selection.bounds) {
@@ -1242,7 +1281,9 @@ const fillSelection = async (command) => {
     let layer = findLayer(layerName);
 
     if (!layer) {
-        throw new Error(`fillSelection : Could not find layerName : ${layerName}`);
+        throw new Error(
+            `fillSelection : Could not find layerName : ${layerName}`
+        );
     }
 
     if (!app.activeDocument.selection.bounds) {
@@ -1338,7 +1379,9 @@ const moveLayer = async (command) => {
             position = "previous";
             break;
         default:
-            throw new Error(`moveLayer: Unknown placement : ${options.position}`);
+            throw new Error(
+                `moveLayer: Unknown placement : ${options.position}`
+            );
     }
 
     await execute(async () => {
@@ -1411,7 +1454,9 @@ const applyMotionBlur = async (command) => {
     let layer = findLayer(layerName);
 
     if (!layer) {
-        throw new Error(`applyMotionBlur : Could not find layerName : ${layerName}`);
+        throw new Error(
+            `applyMotionBlur : Could not find layerName : ${layerName}`
+        );
     }
 
     await execute(async () => {
@@ -1428,7 +1473,9 @@ const applyGaussianBlur = async (command) => {
     let layer = findLayer(layerName);
 
     if (!layer) {
-        throw new Error(`applyGaussianBlur : Could not find layerName : ${layerName}`);
+        throw new Error(
+            `applyGaussianBlur : Could not find layerName : ${layerName}`
+        );
     }
 
     await execute(async () => {
@@ -1444,7 +1491,7 @@ const execute = async (callback, commandName = "Executing command...") => {
     } catch (e) {
         throw new Error(`Error executing command [modal] : ${e.message}`);
     }
-}
+};
 
 const createMultiLineTextLayer = async (command) => {
     let options = command.options;
@@ -1458,7 +1505,7 @@ const createMultiLineTextLayer = async (command) => {
         //should document as part of createTextLayer call
         let fontSize = (app.activeDocument.resolution / 72) * options.fontSize;
 
-        let contents = options.contents.replace(/\\n/g, '\n')
+        let contents = options.contents.replace(/\\n/g, "\n");
 
         let a = await app.activeDocument.createTextLayer({
             //blendMode: constants.BlendMode.DISSOLVE,//ignored
@@ -1554,7 +1601,7 @@ const createMultiLineTextLayer = async (command) => {
             },
         ];
 
-        a.textItem.contents = contents
+        a.textItem.contents = contents;
         await action.batchPlay(commands, {});
     });
 };
@@ -1592,7 +1639,7 @@ const createSingleLineTextLayer = async (command) => {
 };
 
 const createPixelLayer = async (command) => {
-    console.log("createPixelLayer")
+    console.log("createPixelLayer");
     let options = command.options;
 
     await execute(async () => {
@@ -1651,7 +1698,7 @@ const parseColor = (color) => {
     } catch (e) {
         throw new Error(`Invalid color values: ${JSON.stringify(color)}`);
     }
-}
+};
 
 const getAlignmentMode = (mode) => {
     switch (mode) {
@@ -1668,18 +1715,19 @@ const getAlignmentMode = (mode) => {
         case "BOTTOM":
             return "ADSBottoms";
         default:
-            throw new Error(`getAlignmentMode : Unknown alignment mode : ${mode}`);
+            throw new Error(
+                `getAlignmentMode : Unknown alignment mode : ${mode}`
+            );
     }
-}
-
+};
 
 const getJustificationMode = (value) => {
     return getConstantValue(constants.Justification, value, "Justification");
-}
+};
 
 const getBlendMode = (value) => {
     return getConstantValue(constants.BlendMode, value, "BlendMode");
-}
+};
 
 const getInterpolationMethod = (value) => {
     return getConstantValue(
@@ -1687,11 +1735,11 @@ const getInterpolationMethod = (value) => {
         value,
         "InterpolationMethod"
     );
-}
+};
 
 const getAnchorPosition = (value) => {
     return getConstantValue(constants.AnchorPosition, value, "AnchorPosition");
-}
+};
 
 const getNewDocumentMode = (value) => {
     return getConstantValue(
@@ -1699,7 +1747,7 @@ const getNewDocumentMode = (value) => {
         value,
         "NewDocumentMode"
     );
-}
+};
 
 const getConstantValue = (c, v, n) => {
     let out = c[v.toUpperCase()];
@@ -1709,7 +1757,7 @@ const getConstantValue = (c, v, n) => {
     }
 
     return out;
-}
+};
 
 const selectLayer = (layer, exclusive = false) => {
     console.log("selectLayer");
@@ -1718,7 +1766,7 @@ const selectLayer = (layer, exclusive = false) => {
     }
 
     layer.selected = true;
-}
+};
 
 const clearLayerSelections = (layers) => {
     if (!layers) {
@@ -1732,7 +1780,7 @@ const clearLayerSelections = (layers) => {
             clearLayerSelections(layer.layers);
         }
     }
-}
+};
 
 const findLayer = (name, layers) => {
     if (!layers) {
@@ -1754,110 +1802,107 @@ const findLayer = (name, layers) => {
     }
 
     return null;
-}
+};
 
 const hasActiveSelection = () => {
-    return app.activeDocument.selection.bounds != null
-}
-
+    return app.activeDocument.selection.bounds != null;
+};
 
 const createGradientAdjustmentLayer = async (command) => {
+    let options = command.options;
+    let layerName = options.layerName;
 
-    let options = command.options
-    let layerName = options.layerName
-
-    let layer = findLayer(layerName)
+    let layer = findLayer(layerName);
 
     if (!layer) {
-        throw new Error(`createGradientAdjustmentLayer : Could not find layerName : ${layerName}`);
+        throw new Error(
+            `createGradientAdjustmentLayer : Could not find layerName : ${layerName}`
+        );
     }
 
     await execute(async () => {
         selectLayer(layer, true);
 
-        let angle = options.angle
-        let colorStops = options.colorStops
-        let opacityStops = options.opacityStops
+        let angle = options.angle;
+        let colorStops = options.colorStops;
+        let opacityStops = options.opacityStops;
 
-        let colors = []
-        for(let c of colorStops) {
-            colors.push(                                {
-                "_obj": "colorStop",
-                "color": {
-                    "_obj": "RGBColor",
-                    "blue": c.color.blue,
-                    "grain": c.color.green,
-                    "red": c.color.red
+        let colors = [];
+        for (let c of colorStops) {
+            colors.push({
+                _obj: "colorStop",
+                color: {
+                    _obj: "RGBColor",
+                    blue: c.color.blue,
+                    grain: c.color.green,
+                    red: c.color.red,
                 },
-                "location": Math.round((c.location / 100) * 4096),
-                "midpoint": c.midpoint,
-                "type": {
-                    "_enum": "colorStopType",
-                    "_value": "userStop"
-                }
-            })
+                location: Math.round((c.location / 100) * 4096),
+                midpoint: c.midpoint,
+                type: {
+                    _enum: "colorStopType",
+                    _value: "userStop",
+                },
+            });
         }
 
-        let opacities = []
-        for(let o of opacityStops) {
-            opacities.push(                                {
-                "_obj": "transferSpec",
-                "location": Math.round((o.location / 100) * 4096),
-                "midpoint": o.midpoint,
-                "opacity": {
-                    "_unit": "percentUnit",
-                    "_value": o.opacity
-                }
-            },)
+        let opacities = [];
+        for (let o of opacityStops) {
+            opacities.push({
+                _obj: "transferSpec",
+                location: Math.round((o.location / 100) * 4096),
+                midpoint: o.midpoint,
+                opacity: {
+                    _unit: "percentUnit",
+                    _value: o.opacity,
+                },
+            });
         }
 
         let commands = [
             // Make fill layer
             {
-                "_obj": "make",
-                "_target": [
+                _obj: "make",
+                _target: [
                     {
-                        "_ref": "contentLayer"
-                    }
+                        _ref: "contentLayer",
+                    },
                 ],
-                "using": {
-                    "_obj": "contentLayer",
-                    "type": {
-                        "_obj": "gradientLayer",
-                        "angle": {
-                            "_unit": "angleUnit",
-                            "_value": 42.38
+                using: {
+                    _obj: "contentLayer",
+                    type: {
+                        _obj: "gradientLayer",
+                        angle: {
+                            _unit: "angleUnit",
+                            _value: 42.38,
                         },
-                        "gradient": {
-                            "_obj": "gradientClassEvent",
-                            "colors": colors,
-                            "gradientForm": {
-                                "_enum": "gradientForm",
-                                "_value": "customStops"
+                        gradient: {
+                            _obj: "gradientClassEvent",
+                            colors: colors,
+                            gradientForm: {
+                                _enum: "gradientForm",
+                                _value: "customStops",
                             },
-                            "interfaceIconFrameDimmed": 4096.0,
-                            "name": "Custom",
-                            "transparency": opacities
+                            interfaceIconFrameDimmed: 4096.0,
+                            name: "Custom",
+                            transparency: opacities,
                         },
-                        "gradientsInterpolationMethod": {
-                            "_enum": "gradientInterpolationMethodType",
-                            "_value": "smooth"
+                        gradientsInterpolationMethod: {
+                            _enum: "gradientInterpolationMethodType",
+                            _value: "smooth",
                         },
-                        "type": {
-                            "_enum": "gradientType",
-                            "_value": options.type.toLowerCase()
-                        }
-                    }
-                }
-            }
+                        type: {
+                            _enum: "gradientType",
+                            _value: options.type.toLowerCase(),
+                        },
+                    },
+                },
+            },
         ];
 
         await action.batchPlay(commands, {});
     });
-
-
-}
-
+};
 
 const commandHandlers = {
     getLayerBounds,
@@ -1867,6 +1912,7 @@ const commandHandlers = {
     getDocumentInfo,
     cropDocument,
     cutSelectionToClipboard,
+    copyMergedSelectionToClipboard,
     copySelectionToClipboard,
     pasteFromClipboard,
     selectSubject,
@@ -1877,7 +1923,6 @@ const commandHandlers = {
     rotateLayer,
     scaleLayer,
     flipLayer,
-    copyToClipboard,
     deleteLayer,
     setLayerVisibility,
     //exportPng,
@@ -1909,14 +1954,16 @@ const commandHandlers = {
 };
 
 const checkRequiresActiveDocument = (command) => {
-    if(!requiresActiveDocument(command)) {
-        return
+    if (!requiresActiveDocument(command)) {
+        return;
     }
 
-    if(!app.activeDocument) {
-        throw new Error(`${command.action} : Requires as open Photoshop document`);
+    if (!app.activeDocument) {
+        throw new Error(
+            `${command.action} : Requires as open Photoshop document`
+        );
     }
-}
+};
 
 const requiresActiveDocument = (command) => {
     return !["createDocument"].includes(command.action);

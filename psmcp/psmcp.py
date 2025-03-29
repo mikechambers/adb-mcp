@@ -483,14 +483,40 @@ def cut_selection_to_clipboard(layer_name: str):
 
     return sendCommand(command)
 
+
+@mcp.tool()
+def copy_merged_selection_to_clipboard():
+    """Copies the selected pixels from all visible layers to the system clipboard.
+
+    This function requires an active selection. If no selection is active, the operation will fail.
+    The copied content will include pixel data from all visible layers within the selection area,
+    effectively capturing what you see on screen.
+
+    Returns:
+        dict: Response from the Photoshop operation indicating success status.
+        
+    Raises:
+        RuntimeError: If no active selection exists.
+    """
+
+    command = createCommand("copyMergedSelectionToClipboard", {})
+
+    return sendCommand(command)
+
 @mcp.tool()
 def copy_selection_to_clipboard(layer_name: str):
     """Copies the selected pixels from the specified layer to the system clipboard.
 
-    This function requires an active selection.
+    This function requires an active selection. If no selection is active, the operation will fail.
 
     Args:
         layer_name (str): The name of the layer that contains the pixels to copy.
+        
+    Returns:
+        dict: Response from the Photoshop operation indicating success status.
+        
+    Raises:
+        RuntimeError: If no active selection exists or if the specified layer doesn't exist.
     """
 
     command = createCommand("copySelectionToClipboard", {
@@ -769,34 +795,6 @@ def fill_selection(
 
     return sendCommand(command)
 
-@mcp.tool()
-def copy_document():
-
-    """Copies all visible layers from the document to the system clipboard"""
-    
-    command = createCommand("copyToClipboard", {
-        "copyMerged":True
-    })
-
-    return sendCommand(command)
-
-@mcp.tool()
-def copy_layer(
-    layer_name: str
-    ):
-
-    """Copies the layer with the specified name to the system clipboard
-    
-    Args:
-        layer_name: the name of the layer to be copied to the clipboard
-    """
-    
-    command = createCommand("copyToClipboard", {
-        "layerName":layer_name,
-        "copyMerged":False
-    })
-
-    return sendCommand(command)
 
 
 @mcp.tool()
@@ -1190,6 +1188,8 @@ def get_instructions() -> str:
     {{"top": 0, "left": 0, "bottom": 250, "right": 300}}
 
     Always check your work periodically by check the layers.
+
+    At anytime that you want to view your work, you can select all and then copied merged to the system clipboard and ask the user to paste it into your context so you can view it.
 
     Valid options for API calls:
 
