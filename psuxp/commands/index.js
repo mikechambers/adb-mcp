@@ -170,6 +170,8 @@ const getLayers = async (command) => {
                     name: layer.name,
                     type: layer.kind.toUpperCase().toString(),
                     isClippingMask: layer.isClippingMask,
+                    opacity:layer.opacity,
+                    blendMode:layer.blendMode.toString().toUpperCase()
                 };
 
                 // Check if this layer has sublayers (is a group)
