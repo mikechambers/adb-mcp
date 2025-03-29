@@ -1927,7 +1927,37 @@ const openFile = async (command) => {
     });
 }
 
+const groupLayers = async (command) => {
+
+    console.log("groupLayers")
+
+    let options = command.options
+    
+    
+    let layers = []
+
+    for(const layerName of options.layerNames) {
+        let layer = findLayer(layerName)
+
+        if(!layer) {
+            throw new Error(
+                `groupLayers : Could not find layerName : ${layerName}`
+            );
+        }
+
+        layers.push(layer)
+    }
+
+    await execute(async () => {
+        await app.activeDocument.createLayerGroup({
+            name:options.groupName,
+            fromLayers:layers
+        })
+    });
+}
+
 const commandHandlers = {
+    groupLayers,
     openFile,
     getLayerBounds,
     placeImage,

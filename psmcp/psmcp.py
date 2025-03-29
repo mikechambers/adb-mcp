@@ -142,6 +142,31 @@ def create_document(document_name: str, width: int, height:int, resolution:int, 
 
 
 @mcp.tool()
+def group_layers(group_name: str, layer_names: list[str]) -> list:
+    """
+    Creates a new layer group from the specified layers in Photoshop.
+
+    Note: The layers will be added to the group in the order they are specified in the document, and not the order of their layerNames passed in. The group will be made at the same level as the top most layer in the layer tree.
+
+    Args:
+        groupName (str): The name to assign to the newly created layer group.
+        layerNames (list[str]): A list of layer names to include in the new group.
+
+    Raises:
+        RuntimeError: If the operation fails or times out.
+
+    """
+
+
+    command = createCommand("groupLayers", {
+        "groupName":group_name,
+        "layerNames":layer_names
+    })
+
+    return sendCommand(command)
+
+
+@mcp.tool()
 def get_layers() -> list:
     """Returns a nested list of dicts that contain layer info and the order they are arranged in.
 
