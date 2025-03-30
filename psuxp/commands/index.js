@@ -354,10 +354,6 @@ const duplicateLayer = async (command) => {
     });
 };
 
-async function tokenify(url) {
-    return await fs.createSessionToken(url);
-}
-
 const placeImage = async (command) => {
     console.log("placeImage");
     let options = command.options;
