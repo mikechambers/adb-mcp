@@ -4,12 +4,12 @@ adb-mcp is a proof of concept project to create an Adobe Photoshop AI Agent by p
 
 The project is not endorsed by nor supported by Adobe.
 
-It has been tested with Claude desktop (Mac and Windows) from Anthropic, and allows Claude to control Adobe Photoshop. Theoretically, it should work with any AI App / LLM that supports the MCP protocol.
+It has been tested with Claude desktop (Mac and Windows) from Anthropic, and allows Claude to control Adobe Photoshop. Theoretically, it should work with any AI App / LLM that supports the MCP protocol, and is built in a way to support other Adobe applications (such as Illustrator, InDesign and Premeire).
 
 Example use cases include:
 
 -   Giving Claude step by step instruction on what to do in Photoshop, providing a conversational based interface (particularly useful if you are new to Photoshop).
--   Giving Claude a task (create an instagram post that looks like a Polariod image, create a double exposure) and letting it create it from start to finish.
+-   Giving Claude a task (create an instagram post that looks like a Polariod image, create a double exposure) and letting it create it from start to finish to use as a template.
 -   Asking Claude to generate custom Photoshop tutorials for you, by creating an example file, then step by step instructions on how to recreate.
 -   As a Photoshop utility tool (have Claude rename all of your layers into a consistent format)
 
@@ -37,11 +37,14 @@ In order to run this, the following is required:
 -   Adobe UXP Developer tool (available via Creative Cloud) used to install and debug the Photoshop plugin used to connect to the proxy
 -   Adobe Photoshop (26.0 or greater) with the MCP Plugin installed.
 
-This has been tested with Claude Desktop on Mac and Windows
 
 ## Installation
 
 This project has been developed and tested with Claude Desktop, and assumes that is what is being used. It should be possible to use other AI apps that support MCP.
+
+### Download adp-mcp
+
+Download the adp-mcp project, and unzip into the location you want to save it.
 
 ### Claude Desktop
 
@@ -49,16 +52,16 @@ Download and install [Claude Desktop](https://Claudee.ai/download). Once you hav
 
 ### MCP Server
 
-Make sure you have Python3 installed and configured on your system (in your system PATH). This assumes you are using [uv](https://github.com/astral-sh/uv) and have it setup and configured on your system.
+Make sure you have Python3 installed and configured on your system (in your system PATH). This assumes you are using [uv](https://github.com/astral-sh/uv) for package management and have it setup and configured on your system.
 
-Change to the psmcp directory and start the dev server
+Change to the psmcp directory and start the dev server:
 
 ```
 $cd psmcp
 $uv run mcp dev psmcp.py
 ```
 
-You can now load the dev interface at http://localhost:5173, click "connect", and then under "Resources" click "config://get_instructions". This should list out a bunch of JSON info. If it does, everything is working and configured.
+You can now load the dev interface at http://localhost:5173, click _"connect"_, and then under _"Resources"_ click _"config://get_instructions"_. This should list out a bunch of JSON info. If it does, everything is working and configured.
 
 Now we can install into Claude Desktop.
 
@@ -74,7 +77,7 @@ At this point, you still need to install a few more things.
 
 Make sure you have [NodeJS](https://nodejs.org/en) installed and configured in your system PATH.
 
-Switch to adb-proxy-socket directory. Install the requirements, and then start the server
+Switch to _adb-proxy-socket directory_. Install the requirements, and then start the server:
 
 ```
 $cd adb-proxy-socket
@@ -84,14 +87,14 @@ $node proxy.js
 
 You should see a message similar to _Photoshop MCP Command proxy server running on ws://localhost:3001_.
 
-This proxy must be running in order to Claude to communicate with the plugin
+This proxy must be running in order for Claude to communicate with the plugin.
 
 ### Photoshop Plugin
 
 Enable developer mode in Photoshop
 
 1. Launch Photoshop (26.0 or greater)
-2. Settings > Plugins and check "Enable Developer Mode"
+2. _Settings > Plugins_ and check _"Enable Developer Mode"_
 3. Restart Photoshop
 
 From Creative Cloud Desktop, install and launch "UXP Developer Tools". When prompted, enable developer mode.
@@ -99,7 +102,7 @@ From Creative Cloud Desktop, install and launch "UXP Developer Tools". When prom
 Install the plugin:
 
 1. Select File > Add Plugin
-2. Navigate to the psuxp directory, and select the manifest.json file.
+2. Navigate to the _psuxp_ directory, and select the _manifest.json file_.
 3. Once the plugin is listed, then click the "Load" button.
 
 This should load the plugin in Photoshop. If you dont see it, you can open it via the plugins menu in Photoshop.
@@ -111,11 +114,13 @@ Launch the following:
 1. Claude Desktop
 2. adb-proxy-socket node server
 3. Launch Photoshop
-4. Launch UXP Developer Tool and click the Load button for *Photoshop MCP Agent*
-5. In Photoshop, if the MCP Agent panel is not open, open Plugins > Photoshop MCP Agent > MCP Agent
+4. Launch UXP Developer Tool and click the Load button for _Photoshop MCP Agent_
+5. In Photoshop, if the MCP Agent panel is not open, open _Plugins > Photoshop MCP Agent > MCP Agent_
 6. Click connect in the agent panel in Photoshop
 
-Now you can switch over the Claude desktop. Before you start a session, you should load the instructions resource which will provide guidance and info the Claude.
+Now you can switch over the Claude desktop. Before you start a session, you should load the instructions resource which will provide guidance and info the Claude by clicking the socket icon (Attach from MCP) and then _Choose an Intergration_ > _Adobe Photoshop_ > _config://get_instructions_.
+
+<img src="images/claud-attach-mcp.png" width="600">
 
 Note, you must reload the plugin via the UCP Developer app every time you restart Photoshop.
 
@@ -160,18 +165,27 @@ Make something cool with photoshop
 
 ### Tips
 
-* When prompting, ask the AI to think about and check its work
-* The more advanced the models, or the more resources given to the models the better and more creative the AI is
+* When prompting, ask the AI to think about and check its work.
+* The more you guide it (i.e. "consider using clipping masks") the better the results
+* The more advanced the model, or the more resources given to the model the better and more creative the AI is.
 * As a general rule, don't make changes in Photoshop while the AI is doing work. If you do make changes, make sure to tell the AI about it.
 * You can copy and paste images from Photoshop into the AI to give it more information on what is going on.
-* The AI has issue sizing and positioning text correctly, so giving it guidelines on font sizes to use will help, as well as telling it to align the text relative to the canvas.
-* The AI has access to all of the Postscript fonts on the system. If you want to specify a font, you must use its Postscript name (you may be able to ask the AI for it)
-* You can ask the AI for suggestions. It comes up with really useful ideas / feedback sometimes
+* The AI currently has issue sizing and positioning text correctly, so giving it guidelines on font sizes to use will help, as well as telling it to align the text relative to the canvas.
+* The AI has access to all of the Postscript fonts on the system. If you want to specify a font, you must use its Postscript name (you may be able to ask the AI for it).
+* You can ask the AI for suggestions. It comes up with really useful ideas / feedback sometimes.
+* You can ask the AI to list out all of the functionality exposed for Photoshop and it should giev you a list of what it has access to.
+* The AI will learn from its mistakes, but will lose its memory once you start a new chat. You can guide it to do things in a different way, and then ask it to start over and it should follow the new approach.
+
+The AI currently has access to a subset of Photoshop functionality. In general, the approach has been to provide lower level tools to give the AI the basics to do more complex stuff.
+
+By default, the AI cannot access files directly, although if you install the File System MCP server it can access, and load files into Photoshop (open files and embed images).
 
 ### Troubleshooting
 
-* If something fails on the AI side, it will usually tell you the issue, and if you click the command / code box, you can see the error.
-* First thing to check if there is an issue is to make sure the plugin in Photoshop is connected, and that the node proxy server is running
+* If something fails on the AI side, it will usually tell you the issue. If you click the command / code box, you can see the error.
+* The first thing to check if there is an issue is to make sure the plugin in Photoshop is connected, and that the node proxy server is running.
+* If response times get really slow, check if the AI servers are under load, and that you do not have too much text in the current conversation (restarting a new chat can sometimes help speed up, but you will lose the context).
+
 
 ## Development
 
