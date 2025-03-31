@@ -65,15 +65,13 @@
         }
       ],
       "label": {
-        "default": "MCP Agent"
+        "default": "Photoshop MCP Agent"
       }
     }
   ],
   "requiredPermissions": {
     "network": {
-      "domains": 
-        "all"
-      
+      "domains": "all"
     },
     "localFileSystem": "fullAccess"
   },

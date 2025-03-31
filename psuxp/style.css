@@ -1,6 +1,7 @@
 body {
   color: white;
-  padding: 0 16px;
+  padding: 16px;
+  font-family: Arial, sans-serif;
 }
 
 li:before {
@@ -17,5 +18,5 @@ li:before {
 footer {
   position: fixed;
   bottom: 16px;
-  right: 16px;
+  left: 16px;
 }
