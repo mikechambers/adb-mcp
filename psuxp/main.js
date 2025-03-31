@@ -198,6 +198,27 @@ document.getElementById("btnStart").addEventListener("click", () => {
 });
 
 
+const CONNECT_ON_LAUNCH = "connectOnLaunch";
+// Save checkbox state in localStorage
+document.getElementById("chkConnectOnLaunch").addEventListener("change", function(event) {
+    window.localStorage.setItem(CONNECT_ON_LAUNCH, JSON.stringify(event.target.checked));
+
+    
+});
+
+// Retrieve checkbox state
+const getConnectOnLaunch = () => {
+    return JSON.parse(window.localStorage.getItem(CONNECT_ON_LAUNCH)) || false;
+};
+
+// Set checkbox state on page load
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("chkConnectOnLaunch").checked = getConnectOnLaunch();
+});
+
+
 window.addEventListener("load", (event) => {
-    connectToServer()
+    if(getConnectOnLaunch()) {
+        connectToServer()
+    }
 });

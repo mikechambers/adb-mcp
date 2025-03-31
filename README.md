@@ -173,7 +173,6 @@ Make something cool with photoshop
 * The AI currently has issue sizing and positioning text correctly, so giving it guidelines on font sizes to use will help, as well as telling it to align the text relative to the canvas.
 * The AI has access to all of the Postscript fonts on the system. If you want to specify a font, you must use its Postscript name (you may be able to ask the AI for it).
 * You can ask the AI for suggestions. It comes up with really useful ideas / feedback sometimes.
-* You can ask the AI to list out all of the functionality exposed for Photoshop and it should giev you a list of what it has access to.
 * The AI will learn from its mistakes, but will lose its memory once you start a new chat. You can guide it to do things in a different way, and then ask it to start over and it should follow the new approach.
 
 The AI currently has access to a subset of Photoshop functionality. In general, the approach has been to provide lower level tools to give the AI the basics to do more complex stuff.
