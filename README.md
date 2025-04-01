@@ -13,6 +13,8 @@ Example use cases include:
 -   Asking Claude to generate custom Photoshop tutorials for you, by creating an example file, then step by step instructions on how to recreate.
 -   As a Photoshop utility tool (have Claude rename all of your layers into a consistent format)
 
+[View Video Examples](https://www.youtube.com/playlist?list=PLrZcuHfRluqt5JQiKzMWefUb0Xumb7MkI)
+
 Currently, the AI agent can get some information back from Photoshop which enables it to check its work. However, it cannot automatically see its work (i.e. get images from Photoshop). This should be possible, but is not yet implemented. In the meantime, you can copy and past from Photoshop into Claude desktop.
 
 ## How it works
@@ -25,7 +27,7 @@ The proof of concept works by providing:
 
 **AI** <-> **MCP Server** <-> **Command Proxy Server** <-> **Photoshop UXP Plugin** <-> **Photoshop**
 
-The proxy server is required because the UXP Based JavaScript plugin cannot listen on a socket connection (as a server) for the MCP Server to connect to (it can only connect to a socket as a client).
+The proxy server is required because the public facing API for UXP Based JavaScript plugin does not allow it to listen on a socket connection (as a server) for the MCP Server to connect to (it can only connect to a socket as a client).
 
 ## Requirements
 
