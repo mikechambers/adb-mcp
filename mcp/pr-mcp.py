@@ -77,6 +77,29 @@ def create_project(directory_path: str, project_name: str):
 
     return sendCommand(command)
 
+
+
+@mcp.tool()
+def get_sequences():
+    """
+    Retrieves a list of sequences in the active Premeire project.
+
+    Args:
+        None
+
+    Returns:
+        list: A list containing dicts with the following information:
+            - name (str): The name of the sequences.
+            - id (str): The globally unique identifier (GUID) of the project as a string.
+
+    """
+
+    command = createCommand("getSequences", {
+
+    })
+
+    return sendCommand(command)
+
 @mcp.tool()
 def get_active_project_info():
     """
@@ -92,7 +115,7 @@ def get_active_project_info():
         dict: A dictionary containing the following project information:
             - name (str): The name of the project file.
             - path (str): The full file path to the project.
-            - guid (str): The globally unique identifier (GUID) of the project as a string.
+            - id (str): The globally unique identifier (GUID) of the project as a string.
 
     """
 

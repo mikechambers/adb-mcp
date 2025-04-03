@@ -54,20 +54,40 @@ const getActiveProjectInfo = async (command) => {
 
     console.log("getActiveProjectInfo")
 
-    app.Project.createProject("/Users/mesh/tmp/test/test.prproj")
-
     let project = await app.Project.getActiveProject()
 
     let out = {
         name:project.name,
         path:project.path,
-        guid:project.guid.toString()
+        id:project.guid.toString()
+    }
+
+    return out   
+}
+
+const getSequences = async (command) => {
+
+    console.log("getSequences")
+
+    let project = await app.Project.getActiveProject()
+
+    let sequences = await project.getSequences()
+
+    //what else should i add here
+
+    let out = []
+    for (const s of sequences) {
+        out.push({
+            name:s.name,
+            id:s.guid.toString()
+        })
     }
 
     return out   
 }
 
 const commandHandlers = {
+    getSequences,
     createProject,
     getActiveProjectInfo
 };
