@@ -35,9 +35,26 @@ const parseAndRouteCommand = async (command) => {
     return f(command);
 };
 
+const createProject = async (command) => {
+
+    console.log("createProject")
+
+    let options = command.options
+    let path = options.path
+    let name = options.name
+
+    if (!path.endsWith('/')) {
+        path = path + '/';
+    }
+
+    app.Project.createProject(`${path}${name}.prproj`) 
+}
+
 const getActiveProjectInfo = async (command) => {
 
     console.log("getActiveProjectInfo")
+
+    app.Project.createProject("/Users/mesh/tmp/test/test.prproj")
 
     let project = await app.Project.getActiveProject()
 
@@ -51,6 +68,7 @@ const getActiveProjectInfo = async (command) => {
 }
 
 const commandHandlers = {
+    createProject,
     getActiveProjectInfo
 };
 
@@ -68,8 +86,7 @@ const checkRequiresActiveProject = async (command) => {
 };
 
 const requiresActiveProject = (command) => {
-    return true
-    //return !["createDocument"].includes(command.action);
+    return !["createProject"].includes(command.action);
 };
 
 module.exports = {

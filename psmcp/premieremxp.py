@@ -49,8 +49,52 @@ socket_client.configure(
     timeout=PROXY_TIMEOUT
 )
 
+
+
+@mcp.tool()
+def create_project(directory_path: str, project_name: str):
+    """
+    Create a new Premiere project.
+
+    Creates a new Adobe Premiere project file, saves it to the specified location and then opens it in Premiere.
+
+    The function initializes an empty project with default settings.
+
+    Args:
+        directory_path (str): The full path to the directory where the project file will be saved.
+                                This directory must exist before calling the function.
+        project_name (str): The name to be given to the project file. The '.prproj' extension
+                            will be added.
+
+    Returns:
+        None
+    """
+
+    command = createCommand("createProject", {
+        "path":directory_path,
+        "name":project_name
+    })
+
+    return sendCommand(command)
+
 @mcp.tool()
 def get_active_project_info():
+    """
+    Retrieves basic information about the currently active Premiere project.
+
+    This function queries the currently open Premiere Pro project and returns 
+    information about the ative project.
+
+    Args:
+        None
+
+    Returns:
+        dict: A dictionary containing the following project information:
+            - name (str): The name of the project file.
+            - path (str): The full file path to the project.
+            - guid (str): The globally unique identifier (GUID) of the project as a string.
+
+    """
 
     command = createCommand("getActiveProjectInfo", {
 
