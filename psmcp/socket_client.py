@@ -120,7 +120,7 @@ def send_message_blocking(command, timeout=None):
         response = response_queue.get(timeout=wait_timeout)
 
         if connection_failed[0]:
-            raise RuntimeError(f"Error: Could not connect to Photoshop command proxy server. Make sure that the proxy server is running listening on the correct url {proxy_url}.")
+            raise RuntimeError(f"Error: Could not connect to {application} command proxy server. Make sure that the proxy server is running listening on the correct url {proxy_url}.")
 
         if response:
             logger.log("response received...")
@@ -130,17 +130,17 @@ def send_message_blocking(command, timeout=None):
                 logger.log(f"Response (not JSON-serializable): {response}")
 
             if response["status"] == "FAILURE":
-                raise PhotoShopError(f"Error returned from Photoshop: {response['message']}")
+                raise AppError(f"Error returned from {application}: {response['message']}")
             
         return response
-    except PhotoShopError:
+    except AppError:
         raise
     except Exception as e:
         logger.log(f"Error waiting for response: {e}")
         if sio.connected:
             sio.disconnect()
   
-        raise RuntimeError(f"Error: Could not connect to {application}. Connection Timed Out. Make sure that Photoshop is running and that the MCP Plugin is connected. Original error: {e}")
+        raise RuntimeError(f"Error: Could not connect to {application}. Connection Timed Out. Make sure that {application} is running and that the MCP Plugin is connected. Original error: {e}")
     finally:
         # Make sure client is disconnected
         if sio.connected:
@@ -148,7 +148,7 @@ def send_message_blocking(command, timeout=None):
         # Wait for the thread to finish (should be quick after disconnect)
         client_thread.join(timeout=1)
 
-class PhotoShopError(Exception):
+class AppError(Exception):
     pass
 
 def configure(app=None, url=None, timeout=None):
