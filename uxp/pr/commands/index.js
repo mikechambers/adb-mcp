@@ -50,6 +50,39 @@ const createProject = async (command) => {
     app.Project.createProject(`${path}${name}.prproj`) 
 }
 
+const importFiles = async (command) => {
+    console.log("importFiles")
+
+    let options = command.options
+
+    let project = await app.Project.getActiveProject()
+
+    let paths = command.options.filePaths
+
+    let root = await project.getRootItem()
+    let originalItems = await root.getItems()
+
+    //currently import everything into root
+    let rootFolderItems = await project.getRootItem()
+    let success = await project.importFiles(paths, true, rootFolderItems)
+
+    //TODO: what is not success?
+
+    let updatedItems = await root.getItems()
+    
+
+    const addedItems = updatedItems.filter(
+        updatedItem => !originalItems.some(originalItem => originalItem.name === updatedItem.name)
+      );
+      
+    let addedProjectItems = [];
+    for (const p of addedItems) { 
+        addedProjectItems.push({ name: p.name });
+    }
+    
+    return { addedProjectItems };
+}
+
 const getActiveProjectInfo = async (command) => {
 
     console.log("getActiveProjectInfo")
@@ -87,6 +120,7 @@ const getSequences = async (command) => {
 }
 
 const commandHandlers = {
+    importFiles,
     getSequences,
     createProject,
     getActiveProjectInfo
