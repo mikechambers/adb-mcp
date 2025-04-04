@@ -78,6 +78,22 @@ def create_project(directory_path: str, project_name: str):
     return sendCommand(command)
 
 @mcp.tool()
+def add_item_to_sequence(item_name:str):
+    """
+    Imports a list of media files into the active Premiere project.
+
+    Args:
+        file_paths (list): A list of file paths (strings) to import into the project.
+            Each path should be a complete, valid path to a media file supported by Premiere Pro.
+    """
+
+    command = createCommand("addItemToSequence", {
+        "itemName":item_name
+    })
+
+    return sendCommand(command)
+
+@mcp.tool()
 def import_files(file_paths:list):
     """
     Imports a list of media files into the active Premiere project.

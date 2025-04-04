@@ -50,6 +50,51 @@ const createProject = async (command) => {
     app.Project.createProject(`${path}${name}.prproj`) 
 }
 
+const addItemToSequence = async (command) => {
+    let options = command.options
+
+    let itemName = options.itemName
+
+    //find project item by name
+    let project = await app.Project.getActiveProject()
+    let root = await project.getRootItem()
+    let rootItems = await root.getItems()
+
+    let insertItem;
+    for(const item of rootItems) {
+        
+        if (item.name == itemName) {
+            insertItem = item;
+            break;
+        }
+    }
+
+    if(!insertItem) {
+        throw new Error(
+            `addItemToSequence : Could not find item named ${itemName}`
+        );
+    }
+
+    let sequence = await project.getActiveSequence()
+    let editor = await app.SequenceEditor.getEditor(sequence)
+
+    //where to insert it
+    const insertionTime = await app.TickTime.createWithSeconds(3);
+    const videoTrackIndex = 0
+    const audioTrackIndex = 0
+
+    //not sure what this does
+    const limitShift = false
+
+    console.log("here")
+    project.lockedAccess(() => {
+        project.executeTransaction((compoundAction) => {
+            let action = editor.createInsertProjectItemAction(insertItem, insertionTime, videoTrackIndex, audioTrackIndex, limitShift)
+            compoundAction.addAction(action);
+        });
+      });
+}
+
 const importFiles = async (command) => {
     console.log("importFiles")
 
@@ -120,6 +165,7 @@ const getSequences = async (command) => {
 }
 
 const commandHandlers = {
+    addItemToSequence,
     importFiles,
     getSequences,
     createProject,
