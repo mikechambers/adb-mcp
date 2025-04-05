@@ -102,6 +102,192 @@ def add_item_to_active_sequence(item_name: str, video_track_index: float = 0.0, 
 
     return sendCommand(command)
 
+
+
+"""
+@mcp.tool()
+def append_audio_filter(audio_track_index: float, track_item_index: float, effect_name: str):
+    
+    Adds the specified video effect to a clip at the specified track and position.
+    
+    Args:
+        video_track_index (float): The index of the video track containing the target clip.
+        track_item_index (float): The index of the clip within the track to apply the effect to.
+        effect_name (str): The name of the effect to apply. Must be a valid effect name (see below).
+        
+    Returns:
+        None
+        
+    
+
+    command = createCommand("appendAudioFilter", {
+        "audioTrackIndex":audio_track_index,
+        "trackItemIndex":track_item_index,
+        "effectName":effect_name
+    })
+
+    return sendCommand(command)
+"""
+
+@mcp.tool()
+def append_video_filter(video_track_index: int, track_item_index: int, effect_name: str):
+    """
+    Adds the specified video effect to a clip at the specified track and position.
+    
+    Args:
+        video_track_index (int): The index of the video track containing the target clip.
+        track_item_index (int): The index of the clip within the track to apply the effect to.
+        effect_name (str): The name of the effect to apply. Must be a valid effect name (see below).
+        
+    Returns:
+        None
+        
+    Valid Effect Names:
+        - "AE.ADBE Turbulent Displace"
+        - "AE.ADBE Ultra Key" MAYBE
+        - "AE.ADBE Twirl" NO EF
+        - "AE.ADBE Echo"
+        - "AE.ADBE Ramp" //what does this do
+        - "AE.ADBE LightingEffect"
+        - "AE.ADBE Vertical Flip"
+        - "AE.ADBE Wave Warp"
+       
+
+    
+        - "AE.ADBE Noise2"
+        - "AE.ADBE Roughen Edges"
+        - "AE.ADBE Magnify"
+        - "AE.ADBE Rolling Shutter"
+        - "AE.ADBE Replicate"
+        - "AE.ADBE Alpha Glow"
+        - "AE.ADBE Cineon Converter"
+        - "AE.ADBE Posterize"
+        - "AE.ADBE Geometry2"
+        - "AE.ADBE Offset"
+        - "AE.ADBE AEASCCDL"
+        - "AE.ADBE Lightning"
+        - "AE.ADBE Gaussian Blur 2"
+        - "AE.ADBE Color Emboss"
+        - "AE.ADBE ProcAmp"
+        - "AE.ADBE DigitalVideoLimiter"
+        - "AE.ADBE Black & White"
+        - "AE.ADBE AECrop"
+        - "AE.ADBE Find Edges"
+        - "AE.ADBE Tint"
+        - "AE.ADBE Posterize Time"
+        - "AE.ADBE Lens Flare"
+        - "AE.ADBE AESDRConform"
+        - "AE.ADBE Legacy Key Luma"
+        - "AE.ADBE Sharpen"
+        - "AE.ADBE Brightness & Contrast 2"
+        - "AE.ADBE PPro Metadata"
+        - "AE.ADBE Corner Pin"
+        - "AE.ADBE Basic 3D"
+        - "AE.ADBE Drop Shadow"
+        - "AE.ADBE Horizontal Flip"
+        - "AE.ADBE Mosaic"
+        - "AE.ADBE 4ColorGradient"
+        - "AE.ADBE Strobe"
+        - "AE.ADBE Color Key"
+        - "AE.ADBE Brush Strokes"
+        - "AE.ADBE SubspaceStabilizer"
+        - "AE.ADBE VR Projection"
+        - "AE.ADBE PPro SimpleText"
+        - "AE.ADBE Legacy Key Track Matte"
+        - "AE.ADBE AEFilterAutoFramer"
+        - "AE.ADBE Edge Feather"
+        - "AE.ADBE Invert"
+        - "AE.Mettle SkyBox Project 2D"
+        - "AE.Mettle SkyBox Blur"
+        - "AE.Mettle SkyBox Glow"
+        - "AE.Mettle SkyBox Rotate Sphere"
+        - "AE.Mettle SkyBox Color Gradients"
+        - "AE.Mettle SkyBox Denoise"
+        - "AE.Mettle SkyBox Fractal Noise"
+        - "AE.Mettle SkyBox Sharpen"
+        - "AE.Mettle SkyBox Digital Glitch"
+        - "AE.Mettle SkyBox Chromatic Aberrations"
+    """
+
+    command = createCommand("appendVideoFilter", {
+        "videoTrackIndex":video_track_index,
+        "trackItemIndex":track_item_index,
+        "effectName":effect_name
+    })
+
+    return sendCommand(command)
+
+@mcp.tool()
+def append_video_transition(video_track_index: int, track_item_index: int, transition_name: str, duration: int = 1.0, clip_alignment: float = 0.5):
+    """
+    Creates a transition between the specified clip and the adjacent clip on the timeline.
+    
+    Args:
+        video_track_index (int): The index of the video track containing the target clips.
+        track_item_index (int): The index of the clip within the track to apply the transition to.
+        transition_name (str): The name of the transition to apply. Must be a valid transition name (see below).
+        duration (int): The duration of the transition in frames.
+        clip_alignment (float): Controls how the transition is distributed between the two clips.
+                                Range: 0.0 to 1.0, where:
+                                - 0.0 places transition entirely on the right (later) clip
+                                - 0.5 centers the transition equally between both clips (default)
+                                - 1.0 places transition entirely on the left (earlier) clip
+        
+    Returns:
+        None
+        
+    Valid Transition Names:
+        Basic Transitions (ADBE):
+            - "ADBE Additive Dissolve"
+            - "ADBE Cross Zoom"
+            - "ADBE Cube Spin"
+            - "ADBE Film Dissolve"
+            - "ADBE Flip Over"
+            - "ADBE Gradient Wipe"
+            - "ADBE Iris Cross"
+            - "ADBE Iris Diamond"
+            - "ADBE Iris Round"
+            - "ADBE Iris Square"
+            - "ADBE Page Peel"
+            - "ADBE Page Turn"
+            - "ADBE Push"
+            - "ADBE Slide"
+            - "ADBE Wipe"
+            
+        After Effects Transitions (AE.ADBE):
+            - "AE.ADBE Center Split"
+            - "AE.ADBE Inset"
+            - "AE.ADBE Cross Dissolve New"
+            - "AE.ADBE Dip To White"
+            - "AE.ADBE Split"
+            - "AE.ADBE Whip"
+            - "AE.ADBE Non-Additive Dissolve"
+            - "AE.ADBE Dip To Black"
+            - "AE.ADBE Barn Doors"
+            - "AE.ADBE MorphCut"
+            
+        Mettle SkyBox Transitions (AE.Mettle):
+            - "AE.Mettle SkyBox Rays"
+            - "AE.Mettle SkyBox Radial Blur"
+            - "AE.Mettle SkyBox Chroma Leaks"
+            - "AE.Mettle SkyBox Iris Wipe"
+            - "AE.Mettle SkyBox Mobius Zoom"
+            - "AE.Mettle SkyBox Light Leaks"
+            - "AE.Mettle SkyBox Gradient Wipe"
+            - "AE.Mettle SkyBox Random Blocks"
+    """
+
+    command = createCommand("appendVideoTransition", {
+        "videoTrackIndex":video_track_index,
+        "trackItemIndex":track_item_index,
+        "transitionName":transition_name,
+        "clipAlignment":clip_alignment,
+        "duration":duration
+    })
+
+    return sendCommand(command)
+
+
 @mcp.tool()
 def import_files(file_paths:list):
     """

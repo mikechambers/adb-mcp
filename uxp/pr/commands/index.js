@@ -22,6 +22,7 @@
  */
 
 const fs = require("uxp").storage.localFileSystem;
+const app = require("premierepro");
 
 
 const createProject = async (command) => {
@@ -41,6 +42,133 @@ const createProject = async (command) => {
     //create a default sequence and set it as active
     let sequence = await project.createSequence("default")
     await project.setActiveSequence(sequence)
+}
+
+const appendVideoTransition = async (command) => {
+    console.log("appendVideoTransition")
+
+    let options = command.options
+
+    let project = await app.Project.getActiveProject()
+    let sequence = await project.getActiveSequence()
+
+    if(!sequence) {
+        throw new Error(`appendVideoFilter : Requires an active sequence.`)
+    }
+
+    let trackItem = await getVideoTrack(sequence, options.videoTrackIndex, options.trackItemIndex)
+
+    let transition = await app.TransitionFactory.createVideoTransition(options.transitionName);
+
+    let transitionOptions = new app.AddTransitionOptions()
+    transitionOptions.setApplyToStart(false)
+
+    const time = await app.TickTime.createWithSeconds(options.duration)
+    transitionOptions.setDuration(time)
+    transitionOptions.setTransitionAlignment(options.clipAlignment)
+
+    let action = await trackItem.createAddVideoTransitionAction(transition, transitionOptions)
+
+    executeAction(project, action)
+}
+
+/*
+const appendAudioFilter = async (command) => {
+    console.log("addAudioFilter")
+
+    let options = command.options
+
+    let project = await app.Project.getActiveProject()
+    let sequence = await project.getActiveSequence()
+
+    if(!sequence) {
+        throw new Error(`appendAudioFilter : Requires an active sequence.`)
+    }
+
+    //todo: pass this in
+    let audioTrack = await sequence.getAudioTrack(options.audioTrackIndex)
+ 
+    if(!audioTrack) {
+        throw new Error(`appendAudioFilter : audioTrackIndex [${options.audioTrackIndex}] does not exist`)
+    }
+
+    let trackItems = await audioTrack.getTrackItems(1, false)
+
+    let trackItem;
+    for(const t of trackItems) {
+        let index = await t.getTrackIndex()
+        if(index === options.trackItemIndex) {
+            trackItem = t
+            break
+        }
+    }
+    
+    if(!trackItem) {
+        throw new Error(`appendAudioFilter : trackItemIndex [${options.trackItemIndex}] does not exist`)
+    }
+
+    const mosaic = await app.VideoFilterFactory.createComponent(
+        options.effectName);
+
+    let componentChain = await trackItem.getComponentChain()
+
+    let action = await componentChain.createAppendComponentAction(
+        mosaic, 0)
+
+    executeAction(project, action)
+}
+    */
+
+const getVideoTrack = async (sequence, trackIndex, clipIndex) => {
+
+    //todo: pass this in
+    let videoTrack = await sequence.getVideoTrack(trackIndex)
+ 
+    if(!videoTrack) {
+        throw new Error(`appendVideoFilter : videoTrackIndex [${trackIndex}] does not exist`)
+    }
+
+
+    let trackItems = await videoTrack.getTrackItems(1, false)
+
+    let trackItem;
+    for(const t of trackItems) {
+        let index = await t.getTrackIndex()
+        if(index === clipIndex) {
+            trackItem = t
+            break
+        }
+    }
+    if(!trackItem) {
+        throw new Error(`appendVideoFilter : trackItemIndex [${clipIndex}] does not exist`)
+    }
+
+    return trackItem
+}
+
+const appendVideoFilter = async (command) => {
+    console.log("addVideoFilter")
+
+    let options = command.options
+
+    let project = await app.Project.getActiveProject()
+    let sequence = await project.getActiveSequence()
+
+    if(!sequence) {
+        throw new Error(`appendVideoFilter : Requires an active sequence.`)
+    }
+
+    let trackItem = await getVideoTrack(sequence, options.videoTrackIndex, options.trackItemIndex)
+
+    const mosaic = await app.VideoFilterFactory.createComponent(
+        options.effectName);
+
+    let componentChain = await trackItem.getComponentChain()
+
+    let action = await componentChain.createAppendComponentAction(
+        mosaic, 0)
+
+    executeAction(project, action)
 }
 
 //note: right now, we just always add to the active sequence. Need to add support
@@ -87,15 +215,11 @@ const addItemToSequence = async (command) => {
     //not sure what this does
     const limitShift = false
 
-    execute(() => {
+    let f = ((options.overwrite) ? editor.createOverwriteItemAction : editor.createInsertProjectItemAction).bind(editor)
 
-        //TODO: overwrite seems to be ignored
-        let f = ((options.overwrite) ? editor.createOverwriteItemAction : editor.createInsertProjectItemAction).bind(editor)
+    let action = f(insertItem, insertionTime, videoTrackIndex, audioTrackIndex, limitShift)
 
-        let action = f(insertItem, insertionTime, videoTrackIndex, audioTrackIndex, limitShift)
-
-        return action
-    }, project);
+    executeAction(project, action)
 
       /*
       //this returns references to the actual clips on the timeline
@@ -105,11 +229,10 @@ const addItemToSequence = async (command) => {
      
 }
 
-const execute = (callback, project) => {
+const executeAction = (project, action) => {
     try {
         project.lockedAccess( () => {
             project.executeTransaction((compoundAction) => {
-                let action = callback()
                 compoundAction.addAction(action);
             });
           });
@@ -293,6 +416,9 @@ const parseAndRouteCommand = async (command) => {
 };
 
 const commandHandlers = {
+    appendVideoTransition,
+    //appendAudioFilter,
+    appendVideoFilter,
     addItemToSequence,
     importFiles,
     createProject,
