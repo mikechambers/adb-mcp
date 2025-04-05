@@ -87,7 +87,7 @@ def add_item_to_active_sequence(item_name: str, video_track_index: int = 0, audi
         video_track_index (int, optional): The index of the video track where the item should be inserted. Defaults to 0.
         audio_track_index (int, optional): The index of the audio track where the item should be inserted. Defaults to 0.
         insertion_time_seconds (int, optional): The time (in seconds) at which the item should be inserted. Defaults to 0.
-        overwrite (bool, optional): Whether to overwrite existing content at the insertion point. Defaults to True. If False, any existing clips that overlap will be split.
+        overwrite (bool, optional): Whether to overwrite existing content at the insertion point. Defaults to True. If False, any existing clips that overlap will be split and item inserted.
 
     Returns:
         None
