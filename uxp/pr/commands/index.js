@@ -23,17 +23,6 @@
 
 const fs = require("uxp").storage.localFileSystem;
 
-const parseAndRouteCommand = async (command) => {
-    let action = command.action;
-
-    let f = commandHandlers[action];
-
-    if (typeof f !== "function") {
-        throw new Error(`Unknown Command: ${action}`);
-    }
-
-    return f(command);
-};
 
 const createProject = async (command) => {
 
@@ -47,22 +36,35 @@ const createProject = async (command) => {
         path = path + '/';
     }
 
-    app.Project.createProject(`${path}${name}.prproj`) 
+    let project = await app.Project.createProject(`${path}${name}.prproj`) 
+
+    //create a default sequence and set it as active
+    let sequence = await project.createSequence("default")
+    await project.setActiveSequence(sequence)
 }
 
+//note: right now, we just always add to the active sequence. Need to add support
+//for specifying sequence
 const addItemToSequence = async (command) => {
-    let options = command.options
+    console.log("addItemToSequence")
 
+    let options = command.options
     let itemName = options.itemName
 
     //find project item by name
     let project = await app.Project.getActiveProject()
+
+    let sequence = await project.getActiveSequence()
+
+    if(!sequence) {
+        throw new Error(`addItemToSequence : Requires an active sequence.`)
+    }
+
     let root = await project.getRootItem()
     let rootItems = await root.getItems()
 
     let insertItem;
     for(const item of rootItems) {
-        
         if (item.name == itemName) {
             insertItem = item;
             break;
@@ -75,47 +77,65 @@ const addItemToSequence = async (command) => {
         );
     }
 
-    let sequence = await project.getActiveSequence()
     let editor = await app.SequenceEditor.getEditor(sequence)
 
     //where to insert it
-    const insertionTime = await app.TickTime.createWithSeconds(3);
-    const videoTrackIndex = 0
-    const audioTrackIndex = 0
+    const insertionTime = await app.TickTime.createWithSeconds(options.insertionTimeSeconds);
+    const videoTrackIndex = options.videoTrackIndex
+    const audioTrackIndex = options.audioTrackIndex
 
     //not sure what this does
     const limitShift = false
 
-    console.log("here")
-    project.lockedAccess(() => {
-        project.executeTransaction((compoundAction) => {
-            let action = editor.createInsertProjectItemAction(insertItem, insertionTime, videoTrackIndex, audioTrackIndex, limitShift)
-            compoundAction.addAction(action);
-        });
-      });
+    execute(() => {
+
+        //TODO: overwrite seems to be ignored
+        let f = ((options.overwrite) ? editor.createOverwriteItemAction : editor.createInsertProjectItemAction).bind(editor)
+
+        let action = f(insertItem, insertionTime, videoTrackIndex, audioTrackIndex, limitShift)
+
+        return action
+    }, project);
+
+      /*
+      //this returns references to the actual clips on the timeline
+      let videoTrack = await sequence.getVideoTrack(1) //index / layer
+      let trackItems = await videoTrack.getTrackItems(1, true) //1 CLIP  Empty (0), Clip (1), Transition (2), Preview (3) or Feedback (4)
+      */
+     
 }
+
+const execute = (callback, project) => {
+    try {
+        project.lockedAccess( () => {
+            project.executeTransaction((compoundAction) => {
+                let action = callback()
+                compoundAction.addAction(action);
+            });
+          });
+    } catch (e) {
+        throw new Error(`Error executing locked transaction : ${e}`);
+    }
+};
 
 const importFiles = async (command) => {
     console.log("importFiles")
 
     let options = command.options
+    let paths = command.options.filePaths
 
     let project = await app.Project.getActiveProject()
-
-    let paths = command.options.filePaths
 
     let root = await project.getRootItem()
     let originalItems = await root.getItems()
 
-    //currently import everything into root
+    //import everything into root
     let rootFolderItems = await project.getRootItem()
     let success = await project.importFiles(paths, true, rootFolderItems)
-
     //TODO: what is not success?
 
     let updatedItems = await root.getItems()
     
-
     const addedItems = updatedItems.filter(
         updatedItem => !originalItems.some(originalItem => originalItem.name === updatedItem.name)
       );
@@ -128,6 +148,7 @@ const importFiles = async (command) => {
     return { addedProjectItems };
 }
 
+/*
 const getActiveProjectInfo = async (command) => {
 
     console.log("getActiveProjectInfo")
@@ -142,7 +163,9 @@ const getActiveProjectInfo = async (command) => {
 
     return out   
 }
+    */
 
+/*
 const getSequences = async (command) => {
 
     console.log("getSequences")
@@ -163,13 +186,24 @@ const getSequences = async (command) => {
 
     return out   
 }
+    */
+
+const parseAndRouteCommand = async (command) => {
+    let action = command.action;
+
+    let f = commandHandlers[action];
+
+    if (typeof f !== "function") {
+        throw new Error(`Unknown Command: ${action}`);
+    }
+
+    return f(command);
+};
 
 const commandHandlers = {
     addItemToSequence,
     importFiles,
-    getSequences,
     createProject,
-    getActiveProjectInfo
 };
 
 const checkRequiresActiveProject = async (command) => {

@@ -78,17 +78,29 @@ def create_project(directory_path: str, project_name: str):
     return sendCommand(command)
 
 @mcp.tool()
-def add_item_to_sequence(item_name:str):
+def add_item_to_active_sequence(item_name: str, video_track_index: int = 0, audio_track_index: int = 0, insertion_time_seconds: int = 0, overwrite: bool = True):
     """
-    Imports a list of media files into the active Premiere project.
+    Adds a specified media item to the active sequence's timeline.
 
     Args:
-        file_paths (list): A list of file paths (strings) to import into the project.
-            Each path should be a complete, valid path to a media file supported by Premiere Pro.
+        item_name (str): The name or identifier of the media item to add.
+        video_track_index (int, optional): The index of the video track where the item should be inserted. Defaults to 0.
+        audio_track_index (int, optional): The index of the audio track where the item should be inserted. Defaults to 0.
+        insertion_time_seconds (int, optional): The time (in seconds) at which the item should be inserted. Defaults to 0.
+        overwrite (bool, optional): Whether to overwrite existing content at the insertion point. Defaults to True. If False, any existing clips that overlap will be split.
+
+    Returns:
+        None
     """
 
+
     command = createCommand("addItemToSequence", {
-        "itemName":item_name
+        "itemName":item_name,
+        "sequenceId":sequence_id,
+        "videoTrackIndex":video_track_index,
+        "audioTrackIndex":audio_track_index,
+        "insertionTimeSeconds":insertion_time_seconds,
+        "overwrite":overwrite
     })
 
     return sendCommand(command)
@@ -109,10 +121,10 @@ def import_files(file_paths:list):
 
     return sendCommand(command)
 
-
+"""
 @mcp.tool()
 def get_sequences():
-    """
+ 
     Retrieves a list of sequences in the active Premeire project.
 
     Args:
@@ -123,7 +135,6 @@ def get_sequences():
             - name (str): The name of the sequences.
             - id (str): The globally unique identifier (GUID) of the project as a string.
 
-    """
 
     command = createCommand("getSequences", {
 
@@ -131,9 +142,12 @@ def get_sequences():
 
     return sendCommand(command)
 
+   
+
+
 @mcp.tool()
 def get_active_project_info():
-    """
+
     Retrieves basic information about the currently active Premiere project.
 
     This function queries the currently open Premiere Pro project and returns 
@@ -148,14 +162,13 @@ def get_active_project_info():
             - path (str): The full file path to the project.
             - id (str): The globally unique identifier (GUID) of the project as a string.
 
-    """
 
     command = createCommand("getActiveProjectInfo", {
 
     })
 
     return sendCommand(command)
-
+"""
 
 def createCommand(action:str, options:dict) -> str:
     command = {
