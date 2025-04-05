@@ -37,7 +37,13 @@ const createProject = async (command) => {
         path = path + '/';
     }
 
+    //todo: this will open a dialog if directory doesnt exist
     let project = await app.Project.createProject(`${path}${name}.prproj`) 
+
+
+    if(!project) {
+        throw new Error("createProject : Could not create project. Check that the directory path exists and try again.")
+    }
 
     //create a default sequence and set it as active
     let sequence = await project.createSequence("default")
@@ -97,9 +103,12 @@ const setAudioClipDisabled = async (command) => {
 
     let trackItem = await getAudioTrack(sequence, options.audioTrackIndex, options.trackItemIndex)
 
-    let action = await trackItem.createSetDisabledAction(options.disabled)
+    execute(() => {
+        let action = trackItem.createSetDisabledAction(options.disabled)
+        console.log(action)
+        return [action]
+    }, project)
 
-    executeAction(project, action)
 }
 
 const setVideoClipDisabled = async (command) => {
@@ -116,9 +125,10 @@ const setVideoClipDisabled = async (command) => {
 
     let trackItem = await getVideoTrack(sequence, options.videoTrackIndex, options.trackItemIndex)
 
-    let action = await trackItem.createSetDisabledAction(options.disabled)
-
-    executeAction(project, action)
+    execute(() => {
+        let action = trackItem.createSetDisabledAction(options.disabled)
+        return [action]
+    }, project)
 }
 
 const appendVideoTransition = async (command) => {
@@ -144,11 +154,10 @@ const appendVideoTransition = async (command) => {
     transitionOptions.setDuration(time)
     transitionOptions.setTransitionAlignment(options.clipAlignment)
 
-    console.log(transitionOptions)
-
-    let action = await trackItem.createAddVideoTransitionAction(transition, transitionOptions)
-
-    executeAction(project, action)
+    execute(() => {
+        let action = trackItem.createAddVideoTransitionAction(transition, transitionOptions)
+        return [action]
+    }, project)
 }
 
 /*
@@ -218,16 +227,17 @@ const appendVideoFilter = async (command) => {
 
     let componentChain = await trackItem.getComponentChain()
 
-    let action = await componentChain.createAppendComponentAction(
-        effect, 0)
-
-    executeAction(project, action)
+    execute(() => {
+        let action = componentChain.createAppendComponentAction(
+            effect, 0)
+        return [action]
+    }, project)
 }
 
 //note: right now, we just always add to the active sequence. Need to add support
 //for specifying sequence
-const addItemToSequence = async (command) => {
-    console.log("addItemToSequence")
+const addMediaToSequence = async (command) => {
+    console.log("addMediaToSequence")
 
     let options = command.options
     let itemName = options.itemName
@@ -238,7 +248,7 @@ const addItemToSequence = async (command) => {
     let sequence = await project.getActiveSequence()
 
     if(!sequence) {
-        throw new Error(`addItemToSequence : Requires an active sequence.`)
+        throw new Error(`addMediaToSequence : Requires an active sequence.`)
     }
 
     let root = await project.getRootItem()
@@ -259,20 +269,23 @@ const addItemToSequence = async (command) => {
     }
 
     let editor = await app.SequenceEditor.getEditor(sequence)
-
+  
     //where to insert it
     const insertionTime = await app.TickTime.createWithSeconds(options.insertionTimeSeconds);
     const videoTrackIndex = options.videoTrackIndex
     const audioTrackIndex = options.audioTrackIndex
-
+  
     //not sure what this does
     const limitShift = false
 
-    let f = ((options.overwrite) ? editor.createOverwriteItemAction : editor.createInsertProjectItemAction).bind(editor)
+    //let f = ((options.overwrite) ? editor.createOverwriteItemAction : editor.createInsertProjectItemAction).bind(editor)
+    //let action = f(insertItem, insertionTime, videoTrackIndex, audioTrackIndex, limitShift)
+    
+    execute(() => {
+        let action = editor.createOverwriteItemAction(insertItem, insertionTime, videoTrackIndex, audioTrackIndex)
+        return [action]
+    }, project)
 
-    let action = f(insertItem, insertionTime, videoTrackIndex, audioTrackIndex, limitShift)
-
-    executeAction(project, action)
 
       /*
       //this returns references to the actual clips on the timeline
@@ -280,6 +293,22 @@ const addItemToSequence = async (command) => {
       let trackItems = await videoTrack.getTrackItems(1, true) //1 CLIP  Empty (0), Clip (1), Transition (2), Preview (3) or Feedback (4)
       */
      
+}
+
+const execute = (getActions, project) => {
+    try {
+        project.lockedAccess( () => {
+            project.executeTransaction((compoundAction) => {
+                let actions = getActions()
+
+                for(const a of actions) {
+                    compoundAction.addAction(a);
+                }
+            });
+          });
+    } catch (e) {
+        throw new Error(`Error executing locked transaction : ${e}`);
+    }
 }
 
 const executeAction = (project, action) => {
@@ -307,6 +336,8 @@ const importFiles = async (command) => {
 
     //import everything into root
     let rootFolderItems = await project.getRootItem()
+
+
     let success = await project.importFiles(paths, true, rootFolderItems)
     //TODO: what is not success?
 
@@ -510,6 +541,22 @@ const getVideoTrack = async (sequence, trackIndex, clipIndex) => {
     return trackItem
 }
 
+const getProjectContentInfo = async () => {
+    let project = await app.Project.getActiveProject()
+
+    let root = await project.getRootItem()
+    let items = await root.getItems()
+
+    let out = []
+    for(const item of items) {
+
+        //todo: it would be good to get more data / info here
+        out.push({name:item.name})
+    }
+
+    return out
+}
+
 const parseAndRouteCommand = async (command) => {
     let action = command.action;
 
@@ -529,7 +576,7 @@ const commandHandlers = {
     appendVideoTransition,
     //appendAudioFilter,
     appendVideoFilter,
-    addItemToSequence,
+    addMediaToSequence,
     importFiles,
     createProject,
 };
@@ -552,6 +599,7 @@ const requiresActiveProject = (command) => {
 };
 
 module.exports = {
+    getProjectContentInfo,
     getAudioTracks,
     getVideoTracks,
     checkRequiresActiveProject,

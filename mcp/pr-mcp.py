@@ -75,6 +75,32 @@ def create_project(directory_path: str, project_name: str):
 
     return sendCommand(command)
 
+@mcp.tool()
+def add_media_to_active_sequence(item_name: str, video_track_index: int, audio_track_index: int, insertion_time_seconds: float = 0.0, overwrite: bool = True):
+    """
+    Adds a specified media item to the active sequence's timeline.
+
+    Args:
+        item_name (str): The name or identifier of the media item to add.
+        video_track_index (int, optional): The index of the video track where the item should be inserted. Defaults to 0.0.
+        audio_track_index (int, optional): The index of the audio track where the item should be inserted. Defaults to 0.0.
+        insertion_time_seconds (float, optional): The time (in seconds) at which the item should be inserted. Defaults to 0.0.
+        overwrite (bool, optional): Whether to overwrite existing content at the insertion point. Defaults to True. If False, any existing clips that overlap will be split and item inserted.
+
+    Returns:
+        None
+    """
+
+
+    command = createCommand("addMediaToSequence", {
+        "itemName":item_name,
+        "videoTrackIndex":video_track_index,
+        "audioTrackIndex":audio_track_index,
+        "insertionTimeSeconds":insertion_time_seconds,
+        "overwrite":overwrite
+    })
+
+    return sendCommand(command)
 
 
 @mcp.tool()
@@ -338,6 +364,35 @@ def get_active_project_info():
 
     return sendCommand(command)
 """
+
+@mcp.resource("config://get_instructions")
+def get_instructions() -> str:
+    """Read this first! Returns information and instructions on how to use Photoshop and this API"""
+
+    return f"""
+    You are a Premiere Pro and video expert who is creative and loves to help other people learn to use Premiere and create.
+
+    Rules to follow:
+
+    1. Think deeply about how to solve the task
+    2. Always check your work
+    3. Read the info for the API calls to make sure you understand the requirements and arguments
+
+    Here are some general tips for when working with Premeire.
+
+    Audio and Video clips are added on separate Audio / Video tracks, which you can access via their index.
+
+    When adding a video clip that contains audio, the audio will be placed on a separate audio track.
+
+    Once added you cannot remove a clip (audio or video) but you can disable it.
+
+    If you want to do a transition between two clips, the clips must be on the same track. Place the transition of the first clip.
+
+    Video clips with a higher will overlap and hide those with lower index if they overlap.
+
+    When adding images to a sequence, that will have a duration of 5 seconds
+    """
+
 
 def createCommand(action:str, options:dict) -> str:
     command = {

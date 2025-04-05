@@ -26,6 +26,7 @@ const { io } = require("./socket.io.js");
 const app = require("premierepro");
 
 const {
+    getProjectContentInfo,
     getAudioTracks,
     getVideoTracks,
     parseAndRouteCommand,
@@ -45,7 +46,6 @@ const onCommandPacket = async (packet) => {
     };
 
     try {
-      
       //this will throw if an active document is required and not open
       await checkRequiresActiveProject(command)
 
@@ -56,8 +56,10 @@ const onCommandPacket = async (packet) => {
 
       //out.layers = await getLayers()
       //out.hasActiveSelection = hasActiveSelection()
-      out.videoTracks = await getVideoTracks()
-      out.audioTracks = await getAudioTracks()
+      out.activeSequence = {}
+      out.activeSequence.videoTracks = await getVideoTracks()
+      out.activeSequence.audioTracks = await getAudioTracks()
+      out.projecItems = await getProjectContentInfo()
 
     } catch (e) {
         out.status = "FAILURE";
