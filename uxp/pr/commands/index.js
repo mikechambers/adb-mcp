@@ -44,6 +44,44 @@ const createProject = async (command) => {
     await project.setActiveSequence(sequence)
 }
 
+const setAudioClipDisabled = async (command) => {
+    console.log("setAudioClipDisabled")
+
+    let options = command.options
+
+    let project = await app.Project.getActiveProject()
+    let sequence = await project.getActiveSequence()
+
+    if(!sequence) {
+        throw new Error(`setAudioClipDisabled : Requires an active sequence.`)
+    }
+
+    let trackItem = await getAudioTrack(sequence, options.audioTrackIndex, options.trackItemIndex)
+
+    let action = await trackItem.createSetDisabledAction(options.disabled)
+
+    executeAction(project, action)
+}
+
+const setVideoClipDisabled = async (command) => {
+    console.log("setVideoClipDisabled")
+
+    let options = command.options
+
+    let project = await app.Project.getActiveProject()
+    let sequence = await project.getActiveSequence()
+
+    if(!sequence) {
+        throw new Error(`setVideoClipDisabled : Requires an active sequence.`)
+    }
+
+    let trackItem = await getVideoTrack(sequence, options.videoTrackIndex, options.trackItemIndex)
+
+    let action = await trackItem.createSetDisabledAction(options.disabled)
+
+    executeAction(project, action)
+}
+
 const appendVideoTransition = async (command) => {
     console.log("appendVideoTransition")
 
@@ -119,35 +157,9 @@ const appendAudioFilter = async (command) => {
 }
     */
 
-const getVideoTrack = async (sequence, trackIndex, clipIndex) => {
-
-    //todo: pass this in
-    let videoTrack = await sequence.getVideoTrack(trackIndex)
- 
-    if(!videoTrack) {
-        throw new Error(`appendVideoFilter : videoTrackIndex [${trackIndex}] does not exist`)
-    }
-
-
-    let trackItems = await videoTrack.getTrackItems(1, false)
-
-    let trackItem;
-    for(const t of trackItems) {
-        let index = await t.getTrackIndex()
-        if(index === clipIndex) {
-            trackItem = t
-            break
-        }
-    }
-    if(!trackItem) {
-        throw new Error(`appendVideoFilter : trackItemIndex [${clipIndex}] does not exist`)
-    }
-
-    return trackItem
-}
 
 const appendVideoFilter = async (command) => {
-    console.log("addVideoFilter")
+    console.log("appendVideoFilter")
 
     let options = command.options
 
@@ -160,13 +172,13 @@ const appendVideoFilter = async (command) => {
 
     let trackItem = await getVideoTrack(sequence, options.videoTrackIndex, options.trackItemIndex)
 
-    const mosaic = await app.VideoFilterFactory.createComponent(
+    const effect = await app.VideoFilterFactory.createComponent(
         options.effectName);
 
     let componentChain = await trackItem.getComponentChain()
 
     let action = await componentChain.createAppendComponentAction(
-        mosaic, 0)
+        effect, 0)
 
     executeAction(project, action)
 }
@@ -403,6 +415,60 @@ const getVideoTracks = async () => {
     return videoTracks
 }
 
+const getAudioTrack = async (sequence, trackIndex, clipIndex) => {
+
+    //todo: pass this in
+    let audioTrack = await sequence.getAudioTrack(trackIndex)
+ 
+    if(!audioTrack) {
+        throw new Error(`getAudioTrack : audioTrackIndex [${trackIndex}] does not exist`)
+    }
+
+
+    let trackItems = await audioTrack.getTrackItems(1, false)
+
+    let trackItem;
+    for(const t of trackItems) {
+        let index = await t.getTrackIndex()
+        if(index === clipIndex) {
+            trackItem = t
+            break
+        }
+    }
+    if(!trackItem) {
+        throw new Error(`getAudioTrack : trackItemIndex [${clipIndex}] does not exist`)
+    }
+
+    return trackItem
+}
+
+const getVideoTrack = async (sequence, trackIndex, clipIndex) => {
+
+    //todo: pass this in
+    let videoTrack = await sequence.getVideoTrack(trackIndex)
+ 
+    if(!videoTrack) {
+        throw new Error(`getVideoTrack : videoTrackIndex [${trackIndex}] does not exist`)
+    }
+
+
+    let trackItems = await videoTrack.getTrackItems(1, false)
+
+    let trackItem;
+    for(const t of trackItems) {
+        let index = await t.getTrackIndex()
+        if(index === clipIndex) {
+            trackItem = t
+            break
+        }
+    }
+    if(!trackItem) {
+        throw new Error(`getVideoTrack : trackItemIndex [${clipIndex}] does not exist`)
+    }
+
+    return trackItem
+}
+
 const parseAndRouteCommand = async (command) => {
     let action = command.action;
 
@@ -416,6 +482,8 @@ const parseAndRouteCommand = async (command) => {
 };
 
 const commandHandlers = {
+    setAudioClipDisabled,
+    setVideoClipDisabled,
     appendVideoTransition,
     //appendAudioFilter,
     appendVideoFilter,

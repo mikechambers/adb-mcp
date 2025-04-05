@@ -76,7 +76,55 @@ def create_project(directory_path: str, project_name: str):
     return sendCommand(command)
 
 @mcp.tool()
-def add_item_to_active_sequence(item_name: str, video_track_index: float = 0.0, audio_track_index: float = 0.0, insertion_time_seconds: float = 0.0, overwrite: bool = True):
+def set_audio_clip_disabled(audio_track_index: int, track_item_index: int, disabled: bool):
+    """
+    Enables or disables a audio clip in the timeline.
+    
+    Args:
+        audio_track_index (int): The index of the audio track containing the target clip.
+        track_item_index (int): The index of the clip within the track to enable/disable.
+        disabled (bool): Whether to disable the clip.
+            - True: Disables the clip (clip will not be visible during playback or export)
+            - False: Enables the clip (normal visibility)
+    
+    Returns:
+        None
+    """
+
+    command = createCommand("setAudioClipDisabled", {
+        "audioTrackIndex":audio_track_index,
+        "trackItemIndex":track_item_index,
+        "disabled":disabled
+    })
+
+    return sendCommand(command)
+
+@mcp.tool()
+def set_video_clip_disabled(video_track_index: int, track_item_index: int, disabled: bool):
+    """
+    Enables or disables a video clip in the timeline.
+    
+    Args:
+        video_track_index (int): The index of the video track containing the target clip.
+        track_item_index (int): The index of the clip within the track to enable/disable.
+        disabled (bool): Whether to disable the clip.
+            - True: Disables the clip (clip will not be visible during playback or export)
+            - False: Enables the clip (normal visibility)
+    
+    Returns:
+        None
+    """
+
+    command = createCommand("setVideoClipDisabled", {
+        "videoTrackIndex":video_track_index,
+        "trackItemIndex":track_item_index,
+        "disabled":disabled
+    })
+
+    return sendCommand(command)
+
+@mcp.tool()
+def add_item_to_active_sequence(item_name: str, video_track_index: int, audio_track_index: int, insertion_time_seconds: float = 0.0, overwrite: bool = True):
     """
     Adds a specified media item to the active sequence's timeline.
 
