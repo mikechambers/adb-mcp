@@ -75,6 +75,8 @@ def create_project(directory_path: str, project_name: str):
 
     return sendCommand(command)
 
+
+
 @mcp.tool()
 def set_audio_clip_disabled(audio_track_index: int, track_item_index: int, disabled: bool):
     """
@@ -123,9 +125,10 @@ def set_video_clip_disabled(video_track_index: int, track_item_index: int, disab
 
     return sendCommand(command)
 
+"""
 @mcp.tool()
-def add_item_to_active_sequence(item_name: str, video_track_index: int, audio_track_index: int, insertion_time_seconds: float = 0.0, overwrite: bool = True):
-    """
+def set_audio_clip_out_point(audio_track_index: int, track_item_index: int, seconds:float):
+  
     Adds a specified media item to the active sequence's timeline.
 
     Args:
@@ -137,19 +140,17 @@ def add_item_to_active_sequence(item_name: str, video_track_index: int, audio_tr
 
     Returns:
         None
-    """
 
 
-    command = createCommand("addItemToSequence", {
-        "itemName":item_name,
-        "videoTrackIndex":video_track_index,
+
+    command = createCommand("setAudioClipOutPoint", {
         "audioTrackIndex":audio_track_index,
-        "insertionTimeSeconds":insertion_time_seconds,
-        "overwrite":overwrite
+        "trackItemIndex":track_item_index,
+        "seconds":seconds
     })
 
     return sendCommand(command)
-
+"""
 
 
 """
@@ -191,70 +192,8 @@ def append_video_filter(video_track_index: int, track_item_index: int, effect_na
         None
         
     Valid Effect Names:
-        - "AE.ADBE Turbulent Displace"
-        - "AE.ADBE Ultra Key" MAYBE
-        - "AE.ADBE Twirl" NO EF
-        - "AE.ADBE Echo"
-        - "AE.ADBE Ramp" //what does this do
-        - "AE.ADBE LightingEffect"
-        - "AE.ADBE Vertical Flip"
-        - "AE.ADBE Wave Warp"
-       
-
-    
-        - "AE.ADBE Noise2"
-        - "AE.ADBE Roughen Edges"
-        - "AE.ADBE Magnify"
-        - "AE.ADBE Rolling Shutter"
-        - "AE.ADBE Replicate"
-        - "AE.ADBE Alpha Glow"
-        - "AE.ADBE Cineon Converter"
-        - "AE.ADBE Posterize"
-        - "AE.ADBE Geometry2"
-        - "AE.ADBE Offset"
-        - "AE.ADBE AEASCCDL"
-        - "AE.ADBE Lightning"
-        - "AE.ADBE Gaussian Blur 2"
-        - "AE.ADBE Color Emboss"
-        - "AE.ADBE ProcAmp"
-        - "AE.ADBE DigitalVideoLimiter"
-        - "AE.ADBE Black & White"
-        - "AE.ADBE AECrop"
-        - "AE.ADBE Find Edges"
-        - "AE.ADBE Tint"
-        - "AE.ADBE Posterize Time"
-        - "AE.ADBE Lens Flare"
-        - "AE.ADBE AESDRConform"
-        - "AE.ADBE Legacy Key Luma"
-        - "AE.ADBE Sharpen"
-        - "AE.ADBE Brightness & Contrast 2"
-        - "AE.ADBE PPro Metadata"
-        - "AE.ADBE Corner Pin"
-        - "AE.ADBE Basic 3D"
-        - "AE.ADBE Drop Shadow"
-        - "AE.ADBE Horizontal Flip"
-        - "AE.ADBE Mosaic"
-        - "AE.ADBE 4ColorGradient"
-        - "AE.ADBE Strobe"
-        - "AE.ADBE Color Key"
-        - "AE.ADBE Brush Strokes"
-        - "AE.ADBE SubspaceStabilizer"
-        - "AE.ADBE VR Projection"
-        - "AE.ADBE PPro SimpleText"
-        - "AE.ADBE Legacy Key Track Matte"
-        - "AE.ADBE AEFilterAutoFramer"
-        - "AE.ADBE Edge Feather"
-        - "AE.ADBE Invert"
-        - "AE.Mettle SkyBox Project 2D"
-        - "AE.Mettle SkyBox Blur"
-        - "AE.Mettle SkyBox Glow"
-        - "AE.Mettle SkyBox Rotate Sphere"
-        - "AE.Mettle SkyBox Color Gradients"
-        - "AE.Mettle SkyBox Denoise"
-        - "AE.Mettle SkyBox Fractal Noise"
-        - "AE.Mettle SkyBox Sharpen"
-        - "AE.Mettle SkyBox Digital Glitch"
-        - "AE.Mettle SkyBox Chromatic Aberrations"
+            "AE.ADBE Black & White"
+            "AE.ADBE Lens Flare"
     """
 
     command = createCommand("appendVideoFilter", {
@@ -297,7 +236,6 @@ def append_video_transition(video_track_index: int, track_item_index: int, trans
             - "ADBE Iris Round"
             - "ADBE Iris Square"
             - "ADBE Page Peel"
-            - "ADBE Page Turn"
             - "ADBE Push"
             - "ADBE Slide"
             - "ADBE Wipe"

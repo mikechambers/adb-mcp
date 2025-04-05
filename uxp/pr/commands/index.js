@@ -44,6 +44,45 @@ const createProject = async (command) => {
     await project.setActiveSequence(sequence)
 }
 
+/*
+const setAudioClipOutPoint = async (command) => {
+    console.log("setAudioClipOutPoint")
+
+    let options = command.options
+
+    let project = await app.Project.getActiveProject()
+    let sequence = await project.getActiveSequence()
+
+    if(!sequence) {
+        throw new Error(`setAudioClipOutPoint : Requires an active sequence.`)
+    }
+
+    let trackItem = await getAudioTrack(sequence, options.audioTrackIndex, options.trackItemIndex)
+
+    let time = await app.TickTime.createWithSeconds(options.seconds)
+    let action = await trackItem.createSetOutPointAction(time)
+    
+    //executeAction(project, action)
+
+
+    let time2 = await app.TickTime.createWithSeconds(0)
+    let action2 = await trackItem.createSetInPointAction(time2)
+    
+    //executeAction(project, action)
+
+
+    project.lockedAccess( () => {
+        project.executeTransaction((compoundAction) => {
+            compoundAction.addAction(action2);
+            compoundAction.addAction(action);
+        });
+      });
+
+
+    console.log(trackItem)
+}
+*/
+
 const setAudioClipDisabled = async (command) => {
     console.log("setAudioClipDisabled")
 
@@ -91,7 +130,7 @@ const appendVideoTransition = async (command) => {
     let sequence = await project.getActiveSequence()
 
     if(!sequence) {
-        throw new Error(`appendVideoFilter : Requires an active sequence.`)
+        throw new Error(`appendVideoTransition : Requires an active sequence.`)
     }
 
     let trackItem = await getVideoTrack(sequence, options.videoTrackIndex, options.trackItemIndex)
@@ -104,6 +143,8 @@ const appendVideoTransition = async (command) => {
     const time = await app.TickTime.createWithSeconds(options.duration)
     transitionOptions.setDuration(time)
     transitionOptions.setTransitionAlignment(options.clipAlignment)
+
+    console.log(transitionOptions)
 
     let action = await trackItem.createAddVideoTransitionAction(transition, transitionOptions)
 
@@ -482,6 +523,7 @@ const parseAndRouteCommand = async (command) => {
 };
 
 const commandHandlers = {
+    //setAudioClipOutPoint,
     setAudioClipDisabled,
     setVideoClipDisabled,
     appendVideoTransition,
