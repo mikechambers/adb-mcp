@@ -37,7 +37,7 @@ logger.log(f"Sys.path: {sys.path}")
 
 
 # Create an MCP server
-mcp = FastMCP("Adobe Premeire", log_level="ERROR")
+mcp = FastMCP("Adobe Premiere", log_level="ERROR")
 
 APPLICATION = "premiere"
 PROXY_URL = 'http://localhost:3001'
@@ -48,8 +48,6 @@ socket_client.configure(
     url=PROXY_URL,
     timeout=PROXY_TIMEOUT
 )
-
-
 
 @mcp.tool()
 def create_project(directory_path: str, project_name: str):
@@ -78,15 +76,15 @@ def create_project(directory_path: str, project_name: str):
     return sendCommand(command)
 
 @mcp.tool()
-def add_item_to_active_sequence(item_name: str, video_track_index: int = 0, audio_track_index: int = 0, insertion_time_seconds: int = 0, overwrite: bool = True):
+def add_item_to_active_sequence(item_name: str, video_track_index: float = 0.0, audio_track_index: float = 0.0, insertion_time_seconds: float = 0.0, overwrite: bool = True):
     """
     Adds a specified media item to the active sequence's timeline.
 
     Args:
         item_name (str): The name or identifier of the media item to add.
-        video_track_index (int, optional): The index of the video track where the item should be inserted. Defaults to 0.
-        audio_track_index (int, optional): The index of the audio track where the item should be inserted. Defaults to 0.
-        insertion_time_seconds (int, optional): The time (in seconds) at which the item should be inserted. Defaults to 0.
+        video_track_index (float, optional): The index of the video track where the item should be inserted. Defaults to 0.0.
+        audio_track_index (float, optional): The index of the audio track where the item should be inserted. Defaults to 0.0.
+        insertion_time_seconds (float, optional): The time (in seconds) at which the item should be inserted. Defaults to 0.0.
         overwrite (bool, optional): Whether to overwrite existing content at the insertion point. Defaults to True. If False, any existing clips that overlap will be split and item inserted.
 
     Returns:
@@ -179,21 +177,6 @@ def createCommand(action:str, options:dict) -> str:
     return command
 
 def sendCommand(command:dict):
-    #url = "http://127.0.0.1:3030/commands/add/"
-
-    #data = json.dumps(command)
-
-    """
-    headers = {
-        'Content-Type': 'application/json'
-    }
-
-    response = requests.post(url, data=data, headers=headers)
-
-    print(f"Status Code: {response.status_code}")
-    print("Response Content:")
-    print(response.json())"
-    """
 
     response = socket_client.send_message_blocking(command)
     
