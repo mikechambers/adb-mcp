@@ -188,6 +188,98 @@ const getSequences = async (command) => {
 }
     */
 
+const getAudioTracks = async () => {
+    let project = await app.Project.getActiveProject()
+    let sequence = await project.getActiveSequence()
+
+    let audioCount = await sequence.getAudioTrackCount()
+
+    let audioTracks = []
+    for(let i = 0; i < audioCount; i++) {
+        let audioTrack = await sequence.getAudioTrack(i)
+
+        let track = {
+            index:i,
+            tracks:[]
+        }
+
+        let clips = await audioTrack.getTrackItems(1, false)
+
+
+        if(clips.length === 0) {
+            continue
+        }
+
+
+        for (const c of clips) {
+            let startTime = (await c.getStartTime()).seconds
+            let endTime = (await c.getEndTime()).seconds
+            let duration = (await c.getDuration()).seconds
+            let name = (await c.getProjectItem()).name
+            let type = await c.getType()
+            let index = await c.getTrackIndex()
+
+            track.tracks.push({
+                startTime,
+                endTime,
+                duration,
+                name,
+                type,
+                index
+            })
+        }
+
+        audioTracks.push(track)
+    }
+    return audioTracks
+}
+
+const getVideoTracks = async () => {
+    let project = await app.Project.getActiveProject()
+    let sequence = await project.getActiveSequence()
+
+    let videoCount = await sequence.getVideoTrackCount()
+
+    let videoTracks = []
+    for(let i = 0; i < videoCount; i++) {
+        let videoTrack = await sequence.getVideoTrack(i)
+
+        let track = {
+            index:i,
+            tracks:[]
+        }
+
+        let clips = await videoTrack.getTrackItems(1, false)
+
+
+        if(clips.length === 0) {
+            continue
+        }
+
+
+        for (const c of clips) {
+            let startTime = (await c.getStartTime()).seconds
+            let endTime = (await c.getEndTime()).seconds
+            let duration = (await c.getDuration()).seconds
+            let name = (await c.getProjectItem()).name
+            let type = await c.getType()
+            let index = await c.getTrackIndex()
+
+            track.tracks.push({
+                startTime,
+                endTime,
+                duration,
+                name,
+                type,
+                index
+            })
+        }
+
+        videoTracks.push(track)
+    }
+    return videoTracks
+}
+
 const parseAndRouteCommand = async (command) => {
     let action = command.action;
 
@@ -224,6 +316,8 @@ const requiresActiveProject = (command) => {
 };
 
 module.exports = {
+    getAudioTracks,
+    getVideoTracks,
     checkRequiresActiveProject,
     parseAndRouteCommand
 };

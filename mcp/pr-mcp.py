@@ -96,7 +96,6 @@ def add_item_to_active_sequence(item_name: str, video_track_index: int = 0, audi
 
     command = createCommand("addItemToSequence", {
         "itemName":item_name,
-        "sequenceId":sequence_id,
         "videoTrackIndex":video_track_index,
         "audioTrackIndex":audio_track_index,
         "insertionTimeSeconds":insertion_time_seconds,

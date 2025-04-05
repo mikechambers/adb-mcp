@@ -26,6 +26,8 @@ const { io } = require("./socket.io.js");
 const app = require("premierepro");
 
 const {
+    getAudioTracks,
+    getVideoTracks,
     parseAndRouteCommand,
     checkRequiresActiveProject,
 } = require("./commands/index.js");
@@ -54,6 +56,8 @@ const onCommandPacket = async (packet) => {
 
       //out.layers = await getLayers()
       //out.hasActiveSelection = hasActiveSelection()
+      out.videoTracks = await getVideoTracks()
+      out.audioTracks = await getAudioTracks()
 
     } catch (e) {
         out.status = "FAILURE";
