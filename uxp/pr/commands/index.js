@@ -234,6 +234,18 @@ const appendVideoFilter = async (command) => {
     }, project)
 }
 
+const setAudioTrackMute = async (command) => {
+    console.log("setAudioTrackMute")
+
+
+    let options = command.options
+
+    let project = await app.Project.getActiveProject()
+    let sequence = await project.getActiveSequence()
+    let track = await sequence.getAudioTrack(options.audioTrackIndex)
+    track.setMute(options.mute)
+}
+
 //note: right now, we just always add to the active sequence. Need to add support
 //for specifying sequence
 const addMediaToSequence = async (command) => {
@@ -627,6 +639,7 @@ const parseAndRouteCommand = async (command) => {
 };
 
 const commandHandlers = {
+    setAudioTrackMute,
     //setAudioClipOutPoint,
     setAudioClipDisabled,
     setVideoClipDisabled,

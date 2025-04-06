@@ -76,6 +76,42 @@ def create_project(directory_path: str, project_name: str):
     return sendCommand(command)
 
 @mcp.tool()
+@mcp.tool()
+def set_audio_track_mute(audio_track_index: int, mute: bool):
+    """
+    Sets the mute property on the specified audio track. If mute is true, all clips on the track will be muted and not played.
+
+    Args:
+        audio_track_index (int): The index of the audio track to mute or unmute. Indices start at 0 for the first audio track.
+        mute (bool): Whether the track should be muted.
+            - True: Mutes the track (audio will not be played)
+            - False: Unmutes the track (audio will be played normally)
+
+    Returns:
+        None
+
+    Example:
+        # Mute the first audio track (index 0)
+        set_audio_track_mute(audio_track_index=0, mute=True)
+
+        # Unmute the second audio track (index 1)
+        set_audio_track_mute(audio_track_index=1, mute=False)
+
+    Notes:
+        - This function affects the entire track, including all audio clips placed on it
+        - Muting a track is different from disabling individual clips - it's a global setting for the track
+        - This is useful for quickly toggling entire audio tracks without having to disable individual clips
+    """
+    pass
+
+    command = createCommand("setAudioTrackMute", {
+        "audioTrackIndex":audio_track_index,
+        "mute":mute
+    })
+
+    return sendCommand(command)
+
+@mcp.tool()
 def add_media_to_active_sequence(item_name: str, video_track_index: int, audio_track_index: int, insertion_time_ticks: int = 0, overwrite: bool = True):
     """
     Adds a specified media item to the active sequence's timeline.
@@ -279,16 +315,6 @@ def append_video_transition(video_track_index: int, track_item_index: int, trans
             - "AE.ADBE Dip To Black"
             - "AE.ADBE Barn Doors"
             - "AE.ADBE MorphCut"
-            
-        Mettle SkyBox Transitions (AE.Mettle):
-            - "AE.Mettle SkyBox Rays"
-            - "AE.Mettle SkyBox Radial Blur"
-            - "AE.Mettle SkyBox Chroma Leaks"
-            - "AE.Mettle SkyBox Iris Wipe"
-            - "AE.Mettle SkyBox Mobius Zoom"
-            - "AE.Mettle SkyBox Light Leaks"
-            - "AE.Mettle SkyBox Gradient Wipe"
-            - "AE.Mettle SkyBox Random Blocks"
     """
 
     command = createCommand("appendVideoTransition", {
@@ -390,7 +416,7 @@ def get_instructions() -> str:
 
     Once added you cannot remove a clip (audio or video) but you can disable it.
 
-    If you want to do a transition between two clips, the clips must be on the same track. Place the transition of the first clip.
+    If you want to do a transition between two clips, the clips must be on the same track and there should not be a gap between them. Place the transition of the first clip.
 
     Video clips with a higher will overlap and hide those with lower index if they overlap.
 
