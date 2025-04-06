@@ -235,6 +235,8 @@ def append_video_transition(video_track_index: int, track_item_index: int, trans
     """
     Creates a transition between the specified clip and the adjacent clip on the timeline.
     
+    In general, you should keep transitions short (no more than 2 seconds is a good rule).
+
     Args:
         video_track_index (int): The index of the video track containing the target clips.
         track_item_index (int): The index of the clip within the track to apply the transition to.
@@ -377,6 +379,8 @@ def get_instructions() -> str:
     1. Think deeply about how to solve the task
     2. Always check your work
     3. Read the info for the API calls to make sure you understand the requirements and arguments
+    4. In general, add clips first, then effects, then transitions
+    5. As a general rule keep transitions short (no more that 2 seconds is a good rule)
 
     Here are some general tips for when working with Premeire.
 
@@ -390,7 +394,7 @@ def get_instructions() -> str:
 
     Video clips with a higher will overlap and hide those with lower index if they overlap.
 
-    When adding images to a sequence, that will have a duration of 5 seconds
+    When adding images to a sequence, they will have a duration of 5 seconds.
     """
 
 

@@ -418,13 +418,14 @@ const getAudioTracks = async () => {
         }
 
 
+        let k = 0
         for (const c of clips) {
             let startTime = (await c.getStartTime()).seconds
             let endTime = (await c.getEndTime()).seconds
             let duration = (await c.getDuration()).seconds
             let name = (await c.getProjectItem()).name
             let type = await c.getType()
-            let index = await c.getTrackIndex()
+            let index = k++
 
             track.tracks.push({
                 startTime,
@@ -463,14 +464,14 @@ const getVideoTracks = async () => {
             continue
         }
 
-
+        let k = 0;
         for (const c of clips) {
             let startTime = (await c.getStartTime()).seconds
             let endTime = (await c.getEndTime()).seconds
             let duration = (await c.getDuration()).seconds
             let name = (await c.getProjectItem()).name
             let type = await c.getType()
-            let index = await c.getTrackIndex()
+            let index = k++
 
             track.tracks.push({
                 startTime,
@@ -500,8 +501,9 @@ const getAudioTrack = async (sequence, trackIndex, clipIndex) => {
     let trackItems = await audioTrack.getTrackItems(1, false)
 
     let trackItem;
+    let i = 0
     for(const t of trackItems) {
-        let index = await t.getTrackIndex()
+        let index = i++
         if(index === clipIndex) {
             trackItem = t
             break
@@ -523,19 +525,21 @@ const getVideoTrack = async (sequence, trackIndex, clipIndex) => {
         throw new Error(`getVideoTrack : videoTrackIndex [${trackIndex}] does not exist`)
     }
 
-
     let trackItems = await videoTrack.getTrackItems(1, false)
 
+    console.log(trackItems)
+
     let trackItem;
+    let i = 0
     for(const t of trackItems) {
-        let index = await t.getTrackIndex()
+        let index = i++
         if(index === clipIndex) {
             trackItem = t
             break
         }
     }
     if(!trackItem) {
-        throw new Error(`getVideoTrack : trackItemIndex [${clipIndex}] does not exist`)
+        throw new Error(`getVideoTrack : clipIndex [${clipIndex}] does not exist`)
     }
 
     return trackItem
