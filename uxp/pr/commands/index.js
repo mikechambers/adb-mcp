@@ -442,6 +442,25 @@ const getAudioTracks = async () => {
     return audioTracks
 }
 
+const getActiveSequenceInfo = async () => {
+    let project = await app.Project.getActiveProject()
+    let sequence = await project.getActiveSequence()
+
+    let size = await sequence.getFrameSize()
+    //let settings = await sequence.getSettings()
+
+    console.log(sequence)
+
+    let videoTracks = await getVideoTracks()
+    let audioTracks = await getAudioTracks()
+
+    return {
+        frameSize:{width:size.width, height:size.height},
+        videoTracks,
+        audioTracks
+    }
+}
+
 const getVideoTracks = async () => {
     let project = await app.Project.getActiveProject()
     let sequence = await project.getActiveSequence()
@@ -516,6 +535,42 @@ const getAudioTrack = async (sequence, trackIndex, clipIndex) => {
     return trackItem
 }
 
+const cleanVideoTrackGaps = async (project, sequence, trackIndex) => {
+
+    console.log("cleanVideoTrackGaps")
+
+    let videoTrack = await sequence.getVideoTrack(trackIndex)
+
+    if(!videoTrack) {
+        throw new Error(`getVideoTrack : videoTrackIndex [${trackIndex}] does not exist`)
+    }
+
+    console.log(trackIndex)
+    let emptyItems = await videoTrack.getTrackItems(1, false)
+
+    let g = await emptyItems[2].getEndTime()
+    console.log(g)
+    if (!Array.isArray(emptyItems) || emptyItems.length === 0) {
+        console.log("returning")
+        return;
+    }
+
+    console.log("a")
+
+    let editor = await app.SequenceEditor.getEditor(sequence)
+    console.log("b")
+    execute(() => {
+        let out = []
+        for (let i = emptyItems.length - 1; i >= 0; i--) {
+            console.log("c")
+            let action = editor.createRemoveItemsAction(emptyItems[i], true, 0, false)
+            console.log(action)
+            out.push(action)
+        }
+        return out
+    }, project)
+}
+
 const getVideoTrack = async (sequence, trackIndex, clipIndex) => {
 
     //todo: pass this in
@@ -558,6 +613,8 @@ const getProjectContentInfo = async () => {
         out.push({name:item.name})
     }
 
+    let s = await project.getActiveSequence()
+    await cleanVideoTrackGaps(project, s, 0)
     return out
 }
 
@@ -603,6 +660,7 @@ const requiresActiveProject = (command) => {
 };
 
 module.exports = {
+    getActiveSequenceInfo,
     getProjectContentInfo,
     getAudioTracks,
     getVideoTracks,
