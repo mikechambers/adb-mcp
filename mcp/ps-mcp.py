@@ -140,6 +140,40 @@ def create_document(document_name: str, width: int, height:int, resolution:int, 
 
     return sendCommand(command)
 
+@mcp.tool()
+def save_document_as(file_name: str, file_type: str = "PSD"):
+    """Saves the current Photoshop Document as the specified file type
+    
+    The user will be prompted with a file dialog to select the directory where the file will be saved.
+    
+    Args:
+        file_name (str): The name to give the saved file (without directory path)
+        file_type (str): The file type / format to save the document.
+            Options:
+                - PSD
+                - PNG
+                - JPG
+    
+    Returns:
+        dict: Response from the Photoshop operation indicating success status, and the path that the file was saved at
+    """
+    
+    command = createCommand("saveDocumentAs", {
+        "fileName":file_name,
+        "fileType":file_type
+    })
+
+    return sendCommand(command)
+
+@mcp.tool()
+def save_document():
+    """Saves the current Photoshop Document
+    """
+    
+    command = createCommand("saveDocument", {
+    })
+
+    return sendCommand(command)
 
 @mcp.tool()
 def group_layers(group_name: str, layer_names: list[str]) -> list:

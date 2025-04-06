@@ -354,6 +354,13 @@ const duplicateLayer = async (command) => {
     });
 };
 
+const tokenify = async (url) => {
+    let out = await fs.createSessionToken(
+        await fs.getEntryWithUrl("file:" + url)
+    );
+    return out;
+};
+
 const placeImage = async (command) => {
     console.log("placeImage");
     let options = command.options;
@@ -363,13 +370,6 @@ const placeImage = async (command) => {
     if (!layer) {
         throw new Error(`placeImage : Could not find layerName : ${layerName}`);
     }
-
-    let tokenify = async (url) => {
-        let out = await fs.createSessionToken(
-            await fs.getEntryWithUrl("file:" + url)
-        );
-        return out;
-    };
 
     await execute(async () => {
         selectLayer(layer, true);
@@ -1637,6 +1637,47 @@ const createSingleLineTextLayer = async (command) => {
     });
 };
 
+const saveDocument = async (command) => {
+    console.log("saveDocument");
+
+    await execute(async () => {
+        await app.activeDocument.save()
+    });
+};
+
+const saveDocumentAs = async (command) => {
+    console.log("saveDocumentAs");
+    let options = command.options
+
+    let fileName = options.fileName
+    var folder = await fs.getFolder();
+    const saveFile = await folder.createFile(fileName, {overwrite: true});
+
+    return await execute(async () => {
+
+        let fileType = options.fileType
+        if (fileType == "JPG") {
+            await app.activeDocument.saveAs.jpg(saveFile, {
+                quality:9
+            }, true)
+        } else if (fileType == "PNG") {
+            await app.activeDocument.saveAs.png(saveFile, {
+            }, true)
+        } else {
+            await app.activeDocument.saveAs.psd(saveFile, {
+                alphaChannels:true,
+                annotations:true,
+                embedColorProfile:true,
+                layers:true,
+                maximizeCompatibility:true,
+                spotColor:true,
+            }, true)
+        }
+
+        return {savedFilePath:saveFile.nativePath}
+    });
+};
+
 const createPixelLayer = async (command) => {
     console.log("createPixelLayer");
     let options = command.options;
@@ -1955,6 +1996,8 @@ const groupLayers = async (command) => {
 }
 
 const commandHandlers = {
+    saveDocumentAs,
+    saveDocument,
     groupLayers,
     openFile,
     getLayerBounds,
@@ -2012,13 +2055,13 @@ const checkRequiresActiveDocument = (command) => {
 
     if (!app.activeDocument) {
         throw new Error(
-            `${command.action} : Requires as open Photoshop document`
+            `${command.action} : Requires an open Photoshop document`
         );
     }
 };
 
 const requiresActiveDocument = (command) => {
-    return !["createDocument"].includes(command.action);
+    return !["createDocument", "openFile"].includes(command.action);
 };
 
 module.exports = {
