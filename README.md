@@ -28,7 +28,7 @@ The proof of concept works by providing:
 -   A Node based command proxy server that sits between the MCP server and Adobe app plugins
 -   An Adobe app (Photoshop and Premiere) plugin that listens for commands, and drives the programs
 
-**AI** <-> **MCP Server** <-> **Command Proxy Server** <-> **Photoshop UXP Plugin** <-> **Photoshop / Premiere**
+**AI** <-> **MCP Server** <-> **Command Proxy Server** <-> **Photoshop / Premiere UXP Plugin** <-> **Photoshop / Premiere**
 
 The proxy server is required because the public facing API for UXP Based JavaScript plugin does not allow it to listen on a socket connection (as a server) for the MCP Server to connect to (it can only connect to a socket as a client).
 
