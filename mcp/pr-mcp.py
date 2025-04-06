@@ -76,7 +76,6 @@ def create_project(directory_path: str, project_name: str):
     return sendCommand(command)
 
 @mcp.tool()
-@mcp.tool()
 def set_audio_track_mute(audio_track_index: int, mute: bool):
     """
     Sets the mute property on the specified audio track. If mute is true, all clips on the track will be muted and not played.
@@ -102,7 +101,6 @@ def set_audio_track_mute(audio_track_index: int, mute: bool):
         - Muting a track is different from disabling individual clips - it's a global setting for the track
         - This is useful for quickly toggling entire audio tracks without having to disable individual clips
     """
-    pass
 
     command = createCommand("setAudioTrackMute", {
         "audioTrackIndex":audio_track_index,
