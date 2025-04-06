@@ -270,8 +270,7 @@ const addMediaToSequence = async (command) => {
 
     let editor = await app.SequenceEditor.getEditor(sequence)
   
-    //where to insert it
-    const insertionTime = await app.TickTime.createWithSeconds(options.insertionTimeSeconds);
+    const insertionTime = await app.TickTime.createWithTicks(options.insertionTimeTicks.toString());
     const videoTrackIndex = options.videoTrackIndex
     const audioTrackIndex = options.audioTrackIndex
   
@@ -280,19 +279,10 @@ const addMediaToSequence = async (command) => {
 
     //let f = ((options.overwrite) ? editor.createOverwriteItemAction : editor.createInsertProjectItemAction).bind(editor)
     //let action = f(insertItem, insertionTime, videoTrackIndex, audioTrackIndex, limitShift)
-    
     execute(() => {
         let action = editor.createOverwriteItemAction(insertItem, insertionTime, videoTrackIndex, audioTrackIndex)
         return [action]
-    }, project)
-
-
-      /*
-      //this returns references to the actual clips on the timeline
-      let videoTrack = await sequence.getVideoTrack(1) //index / layer
-      let trackItems = await videoTrack.getTrackItems(1, true) //1 CLIP  Empty (0), Clip (1), Transition (2), Preview (3) or Feedback (4)
-      */
-     
+    }, project)  
 }
 
 const execute = (getActions, project) => {
@@ -420,17 +410,19 @@ const getAudioTracks = async () => {
 
         let k = 0
         for (const c of clips) {
-            let startTime = (await c.getStartTime()).seconds
-            let endTime = (await c.getEndTime()).seconds
-            let duration = (await c.getDuration()).seconds
+            let startTimeTicks = (await c.getStartTime()).ticks
+            let endTimeTicks = (await c.getEndTime()).ticks
+            let durationTicks = (await c.getDuration()).ticks
+            let durationSeconds = (await c.getDuration()).seconds
             let name = (await c.getProjectItem()).name
             let type = await c.getType()
             let index = k++
 
             track.tracks.push({
-                startTime,
-                endTime,
-                duration,
+                startTimeTicks,
+                endTimeTicks,
+                durationTicks,
+                durationSeconds,
                 name,
                 type,
                 index
@@ -449,10 +441,11 @@ const getActiveSequenceInfo = async () => {
     let size = await sequence.getFrameSize()
     //let settings = await sequence.getSettings()
 
-    console.log(sequence)
 
     let videoTracks = await getVideoTracks()
+  
     let audioTracks = await getAudioTracks()
+
 
     return {
         frameSize:{width:size.width, height:size.height},
@@ -483,25 +476,28 @@ const getVideoTracks = async () => {
             continue
         }
 
+
         let k = 0;
         for (const c of clips) {
-            let startTime = (await c.getStartTime()).seconds
-            let endTime = (await c.getEndTime()).seconds
-            let duration = (await c.getDuration()).seconds
+            let startTimeTicks = (await c.getStartTime()).ticks
+            let endTimeTicks = (await c.getEndTime()).ticks
+            let durationTicks = (await c.getDuration()).ticks
+            let durationSeconds = (await c.getDuration()).seconds
             let name = (await c.getProjectItem()).name
             let type = await c.getType()
             let index = k++
 
             track.tracks.push({
-                startTime,
-                endTime,
-                duration,
+                startTimeTicks,
+                endTimeTicks,
+                durationTicks,
+                durationSeconds,
                 name,
                 type,
                 index
             })
         }
-
+        
         videoTracks.push(track)
     }
     return videoTracks
@@ -535,6 +531,7 @@ const getAudioTrack = async (sequence, trackIndex, clipIndex) => {
     return trackItem
 }
 
+/*
 const cleanVideoTrackGaps = async (project, sequence, trackIndex) => {
 
     console.log("cleanVideoTrackGaps")
@@ -570,6 +567,7 @@ const cleanVideoTrackGaps = async (project, sequence, trackIndex) => {
         return out
     }, project)
 }
+    */
 
 const getVideoTrack = async (sequence, trackIndex, clipIndex) => {
 
@@ -613,8 +611,6 @@ const getProjectContentInfo = async () => {
         out.push({name:item.name})
     }
 
-    let s = await project.getActiveSequence()
-    await cleanVideoTrackGaps(project, s, 0)
     return out
 }
 

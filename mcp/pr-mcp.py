@@ -76,7 +76,7 @@ def create_project(directory_path: str, project_name: str):
     return sendCommand(command)
 
 @mcp.tool()
-def add_media_to_active_sequence(item_name: str, video_track_index: int, audio_track_index: int, insertion_time_seconds: float = 0.0, overwrite: bool = True):
+def add_media_to_active_sequence(item_name: str, video_track_index: int, audio_track_index: int, insertion_time_ticks: int = 0, overwrite: bool = True):
     """
     Adds a specified media item to the active sequence's timeline.
 
@@ -84,7 +84,7 @@ def add_media_to_active_sequence(item_name: str, video_track_index: int, audio_t
         item_name (str): The name or identifier of the media item to add.
         video_track_index (int, optional): The index of the video track where the item should be inserted. Defaults to 0.0.
         audio_track_index (int, optional): The index of the audio track where the item should be inserted. Defaults to 0.0.
-        insertion_time_seconds (float, optional): The time (in seconds) at which the item should be inserted. Defaults to 0.0.
+        insertion_time_ticks (int, optional): The position on the timeline in ticks, with 0 being the beginning. The API will return positions of existing clips in ticks
         overwrite (bool, optional): Whether to overwrite existing content at the insertion point. Defaults to True. If False, any existing clips that overlap will be split and item inserted.
 
     Returns:
@@ -96,7 +96,7 @@ def add_media_to_active_sequence(item_name: str, video_track_index: int, audio_t
         "itemName":item_name,
         "videoTrackIndex":video_track_index,
         "audioTrackIndex":audio_track_index,
-        "insertionTimeSeconds":insertion_time_seconds,
+        "insertionTimeTicks":insertion_time_ticks,
         "overwrite":overwrite
     })
 
@@ -241,7 +241,7 @@ def append_video_transition(video_track_index: int, track_item_index: int, trans
         video_track_index (int): The index of the video track containing the target clips.
         track_item_index (int): The index of the clip within the track to apply the transition to.
         transition_name (str): The name of the transition to apply. Must be a valid transition name (see below).
-        duration (int): The duration of the transition in frames.
+        duration (int): The duration of the transition in seconds.
         clip_alignment (float): Controls how the transition is distributed between the two clips.
                                 Range: 0.0 to 1.0, where:
                                 - 0.0 places transition entirely on the right (later) clip
@@ -380,7 +380,7 @@ def get_instructions() -> str:
     2. Always check your work
     3. Read the info for the API calls to make sure you understand the requirements and arguments
     4. In general, add clips first, then effects, then transitions
-    5. As a general rule keep transitions short (no more that 2 seconds is a good rule)
+    5. As a general rule keep transitions short (no more that 2 seconds is a good rule), and there should not be a gap between clips (or else the transition may not work)
 
     Here are some general tips for when working with Premeire.
 

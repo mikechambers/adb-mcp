@@ -47,19 +47,18 @@ const onCommandPacket = async (packet) => {
     };
 
     try {
-      //this will throw if an active document is required and not open
-      await checkRequiresActiveProject(command)
+        //this will throw if an active document is required and not open
+        await checkRequiresActiveProject(command);
 
-      let response = await parseAndRouteCommand(command);
+        let response = await parseAndRouteCommand(command);
 
-      out.response = response;
-      out.status = "SUCCESS";
-
-      //out.layers = await getLayers()
-      //out.hasActiveSelection = hasActiveSelection()
-      out.activeSequence = await getActiveSequenceInfo()
-      out.projectItems = await getProjectContentInfo()
-
+        out.response = response;
+        out.status = "SUCCESS";
+        console.log("aa")
+        out.activeSequence = await getActiveSequenceInfo();
+        console.log("bb")
+        out.projectItems = await getProjectContentInfo();
+        
     } catch (e) {
         out.status = "FAILURE";
         out.message = `Error calling ${command.action} : ${e}`;
@@ -69,14 +68,13 @@ const onCommandPacket = async (packet) => {
 };
 
 function connectToServer() {
-
     // Create new Socket.IO connection
     socket = io(PROXY_URL, {
         transports: ["websocket"],
     });
 
     socket.on("connect", () => {
-        updateButton()
+        updateButton();
         console.log("Connected to server with ID:", socket.id);
         socket.emit("register", { application: APPLICATION });
     });
@@ -86,7 +84,6 @@ function connectToServer() {
 
         let response = await onCommandPacket(packet);
         sendResponsePacket(response);
- 
     });
 
     socket.on("registration_response", (data) => {
@@ -95,12 +92,12 @@ function connectToServer() {
     });
 
     socket.on("connect_error", (error) => {
-        updateButton()
+        updateButton();
         console.error("Connection error:", error);
     });
 
     socket.on("disconnect", (reason) => {
-        updateButton()
+        updateButton();
         console.log("Disconnected from server. Reason:", reason);
 
         //TODO:connect button here
@@ -137,7 +134,6 @@ function sendCommand(command) {
     return false;
 }
 
-
 entrypoints.setup({
     panels: {
         vanilla: {
@@ -147,28 +143,30 @@ entrypoints.setup({
 });
 
 let updateButton = () => {
-  let b = document.getElementById("btnStart");
+    let b = document.getElementById("btnStart");
 
-  b.textContent = (socket && socket.connected)? "Disconnect" : "Connect";
-}
+    b.textContent = socket && socket.connected ? "Disconnect" : "Connect";
+};
 
 //Toggle button to make it start stop
 document.getElementById("btnStart").addEventListener("click", () => {
-    if(socket && socket.connected) {
-      disconnectFromServer();
+    if (socket && socket.connected) {
+        disconnectFromServer();
     } else {
-      connectToServer();
+        connectToServer();
     }
 });
 
-
 const CONNECT_ON_LAUNCH = "connectOnLaunch";
 // Save checkbox state in localStorage
-document.getElementById("chkConnectOnLaunch").addEventListener("change", function(event) {
-    window.localStorage.setItem(CONNECT_ON_LAUNCH, JSON.stringify(event.target.checked));
-
-    
-});
+document
+    .getElementById("chkConnectOnLaunch")
+    .addEventListener("change", function (event) {
+        window.localStorage.setItem(
+            CONNECT_ON_LAUNCH,
+            JSON.stringify(event.target.checked)
+        );
+    });
 
 // Retrieve checkbox state
 const getConnectOnLaunch = () => {
@@ -177,12 +175,12 @@ const getConnectOnLaunch = () => {
 
 // Set checkbox state on page load
 document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("chkConnectOnLaunch").checked = getConnectOnLaunch();
+    document.getElementById("chkConnectOnLaunch").checked =
+        getConnectOnLaunch();
 });
 
-
 window.addEventListener("load", (event) => {
-    if(getConnectOnLaunch()) {
-        connectToServer()
+    if (getConnectOnLaunch()) {
+        connectToServer();
     }
 });
