@@ -1078,6 +1078,7 @@ const addAdjustmentLayerBlackAndWhite = async (command) => {
     }
 
     let colors = options.colors;
+    let tintColor = options.tintColor
 
     await execute(async () => {
         selectLayer(layer, true);
@@ -1106,11 +1107,11 @@ const addAdjustmentLayerBlackAndWhite = async (command) => {
                         red: colors.red,
                         tintColor: {
                             _obj: "RGBColor",
-                            blue: 179.00115966796875,
-                            grain: 211.00067138671875,
-                            red: 225.00045776367188,
+                            blue: tintColor.blue,
+                            grain: tintColor.green,
+                            red: tintColor.red,
                         },
-                        useTint: false,
+                        useTint: options.tint,
                         yellow: colors.yellow,
                     },
                 },

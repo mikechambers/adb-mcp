@@ -1152,23 +1152,49 @@ def add_vibrance_adjustment_layer(
 @mcp.tool()
 def add_black_and_white_adjustment_layer(
     layer_name: str,
-    colors: dict = {"blue": 20, "cyan": 60, "green": 40, "magenta": 80, "red": 40, "yellow": 60}):
-    """Adds an adjustment layer to the layer with the specified name to change it to black and white
+    colors: dict = {"blue": 20, "cyan": 60, "green": 40, "magenta": 80, "red": 40, "yellow": 60},
+    tint: bool = False,
+    tint_color: dict = {"red": 225, "green": 211, "blue": 179}
+):
+    """Adds a Black & White adjustment layer to the specified layer.
+    
+    Creates an adjustment layer that converts the target layer to black and white with customizable
+    color channel conversions. Optionally applies a color tint to the result.
     
     Args:
-        layer_name (str): The name of the layer to apply the black and white adjustment layer
-        colors (dict): Dictionary controlling how each color converts to grayscale. Valid color values are from -200 to 300. Higher values make that color appear lighter in the black and white conversion. Keys must include: red, yellow, green, cyan, blue, magenta.
+        layer_name (str): The name of the layer to apply the black and white adjustment to.
+        colors (dict): Controls how each color channel converts to grayscale. Values range from 
+                      -200 to 300, with higher values making that color appear lighter in the 
+                      conversion. Must include all keys: red, yellow, green, cyan, blue, magenta.
+        tint (bool, optional): Whether to apply a color tint to the black and white result.
+                              Defaults to False.
+        tint_color (dict, optional): The RGB color to use for tinting, specified as a dictionary
+                                    with "red", "green", and "blue" keys (values 0-255).
+                                    Defaults to a sepia tone {"red": 225, "green": 211, "blue": 179}.
     
     Returns:
-        dict: Response from the Photoshop operation
+        dict: Response from the Photoshop operation with status information.
         
     Raises:
-        RuntimeError: If the operation fails or times out
+        RuntimeError: If the operation fails or times out.
+        
+    Example:
+        # Apply default black and white adjustment
+        add_black_and_white_adjustment_layer("Portrait")
+        
+        # Apply black and white with custom color conversion and sepia tint
+        add_black_and_white_adjustment_layer(
+            layer_name="Portrait",
+            colors={"red": 60, "yellow": 40, "green": 30, "cyan": 50, "blue": 10, "magenta": 80},
+            tint=True
+        )
     """
 
     command = createCommand("addAdjustmentLayerBlackAndWhite", {
         "layerName":layer_name,
         "colors":colors,
+        "tint":tint,
+        "tintColor":tint_color
     })
 
     return sendCommand(command)

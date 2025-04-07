@@ -494,9 +494,15 @@ const getActiveSequenceInfo = async () => {
     let project = await app.Project.getActiveProject()
     let sequence = await project.getActiveSequence()
 
+    if(!sequence) {
+        return {}
+    }
+
     let size = await sequence.getFrameSize()
     //let settings = await sequence.getSettings()
 
+    let projectItem = await sequence.getProjectItem()
+    let name = projectItem.name
 
     let videoTracks = await getVideoTracks()
   
@@ -504,6 +510,7 @@ const getActiveSequenceInfo = async () => {
 
 
     return {
+        name,
         frameSize:{width:size.width, height:size.height},
         videoTracks,
         audioTracks
