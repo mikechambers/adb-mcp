@@ -24,6 +24,7 @@
 const { app, constants, core, action } = require("photoshop");
 //const { localFileSystem: fs } = require("uxp").storage;
 const fs = require("uxp").storage.localFileSystem;
+const openfs = require('fs')
 
 const parseAndRouteCommands = async (commands) => {
     if (!commands.length) {
@@ -1650,13 +1651,19 @@ const saveDocumentAs = async (command) => {
     console.log("saveDocumentAs");
     let options = command.options
 
-    let fileName = options.fileName
-    var folder = await fs.getFolder();
-    const saveFile = await folder.createFile(fileName, {overwrite: true});
+    let filePath = options.filePath
+    //var folder = await fs.getFolder();
+
+    //make sure the file 
+    let url = `file:${filePath}`
+    const fd = await openfs.open(url, "a+");
+    await openfs.close(fd)
+
+    let saveFile = await fs.getEntryWithUrl(url);
 
     return await execute(async () => {
 
-        let fileType = options.fileType
+        let fileType = options.fileType.toUpperCase()
         if (fileType == "JPG") {
             await app.activeDocument.saveAs.jpg(saveFile, {
                 quality:9
