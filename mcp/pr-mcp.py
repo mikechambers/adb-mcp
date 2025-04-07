@@ -433,22 +433,22 @@ def get_instructions() -> str:
     IMPORTANT: To create a new project and add clips:
     1. Create new project (create_project)
     2. Add media to the project (import_media)
-    3. Create a new sequence with media (create_sequence_from_media). This will create a sequence with the clips, and set the sequence to the the active sequence
+    3. Create a new sequence with media (should always add video / image clips before audio.(create_sequence_from_media). This will create a sequence with the clips, and set the sequence to the the active sequence.
+    4. The first clip you add will determine the dimensions / resolution of the sequence
 
     There must be an active sequence for most API calls
 
-
-    Here are some general tips for when working with Premeire.
+    Here are some general tips for when working with Premiere.
 
     Audio and Video clips are added on separate Audio / Video tracks, which you can access via their index.
 
     When adding a video clip that contains audio, the audio will be placed on a separate audio track.
 
-    Once added you cannot remove a clip (audio or video) but you can disable it.
+    Once added you currently cannot remove a clip (audio or video) but you can disable it.
 
     If you want to do a transition between two clips, the clips must be on the same track and there should not be a gap between them. Place the transition of the first clip.
 
-    Video clips with a higher will overlap and hide those with lower index if they overlap.
+    Video clips with a higher track index will overlap and hide those with lower index if they overlap.
 
     When adding images to a sequence, they will have a duration of 5 seconds.
     """
