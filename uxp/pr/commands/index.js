@@ -24,6 +24,43 @@
 const fs = require("uxp").storage.localFileSystem;
 const app = require("premierepro");
 
+const createSequenceFromMedia = async (command) => {
+    console.log("createSequenceFromMedia")
+
+    let options = command.options
+
+    let itemNames = options.itemNames
+    let sequenceName = options.sequenceName
+
+    let project = await app.Project.getActiveProject()
+
+    let found = false
+    try {
+        await findProjectItem(sequenceName, project)
+        found  = true
+    } catch {
+        //do nothing
+    }
+
+    if(found) {
+        throw Error(`createSequenceFromMedia : sequence name [${sequenceName}] is already in use`)
+    }
+
+    let items = []
+    for (const name of itemNames) {
+
+        //this is a little inefficient
+        let insertItem = await findProjectItem(name, project)
+        items.push(insertItem)
+    }
+
+
+    
+    let root = await project.getRootItem()
+    let sequence = await project.createSequenceFromMedia(sequenceName, items, root)
+
+    await project.setActiveSequence(sequence)
+}
 
 const createProject = async (command) => {
 
@@ -46,8 +83,8 @@ const createProject = async (command) => {
     }
 
     //create a default sequence and set it as active
-    let sequence = await project.createSequence("default")
-    await project.setActiveSequence(sequence)
+    //let sequence = await project.createSequence("default")
+    //await project.setActiveSequence(sequence)
 }
 
 /*
@@ -246,6 +283,28 @@ const setAudioTrackMute = async (command) => {
     track.setMute(options.mute)
 }
 
+
+const findProjectItem = async (itemName, project) => {
+    let root = await project.getRootItem()
+    let rootItems = await root.getItems()
+
+    let insertItem;
+    for(const item of rootItems) {
+        if (item.name == itemName) {
+            insertItem = item;
+            break;
+        }
+    }
+
+    if(!insertItem) {
+        throw new Error(
+            `addItemToSequence : Could not find item named ${itemName}`
+        );
+    }
+
+    return insertItem
+}
+
 //note: right now, we just always add to the active sequence. Need to add support
 //for specifying sequence
 const addMediaToSequence = async (command) => {
@@ -263,22 +322,7 @@ const addMediaToSequence = async (command) => {
         throw new Error(`addMediaToSequence : Requires an active sequence.`)
     }
 
-    let root = await project.getRootItem()
-    let rootItems = await root.getItems()
-
-    let insertItem;
-    for(const item of rootItems) {
-        if (item.name == itemName) {
-            insertItem = item;
-            break;
-        }
-    }
-
-    if(!insertItem) {
-        throw new Error(
-            `addItemToSequence : Could not find item named ${itemName}`
-        );
-    }
+    let insertItem = await findProjectItem(itemName, project)
 
     let editor = await app.SequenceEditor.getEditor(sequence)
   
@@ -325,8 +369,8 @@ const executeAction = (project, action) => {
     }
 };
 
-const importFiles = async (command) => {
-    console.log("importFiles")
+const importMedia = async (command) => {
+    console.log("importMedia")
 
     let options = command.options
     let paths = command.options.filePaths
@@ -639,6 +683,7 @@ const parseAndRouteCommand = async (command) => {
 };
 
 const commandHandlers = {
+    createSequenceFromMedia,
     setAudioTrackMute,
     //setAudioClipOutPoint,
     setAudioClipDisabled,
@@ -647,7 +692,7 @@ const commandHandlers = {
     //appendAudioFilter,
     appendVideoFilter,
     addMediaToSequence,
-    importFiles,
+    importMedia,
     createProject,
 };
 

@@ -109,6 +109,30 @@ def set_audio_track_mute(audio_track_index: int, mute: bool):
 
     return sendCommand(command)
 
+
+@mcp.tool()
+def create_sequence_from_media(item_names: list[str], sequence_name: str = "default"):
+    """
+    Creates a new sequence from the specified project items, placing clips on the timeline in the order they are provided.
+    
+    The sequence will be set as the active sequence when created.
+    
+    Args:
+        item_names (list[str]): A list of project item names to include in the sequence in the desired order.
+        sequence_name (str, optional): The name to give the new sequence. Defaults to "default".
+    
+    Returns:
+        None
+    """
+
+
+    command = createCommand("createSequenceFromMedia", {
+        "itemNames":item_names,
+        "sequenceName":sequence_name
+    })
+
+    return sendCommand(command)
+
 @mcp.tool()
 def add_media_to_active_sequence(item_name: str, video_track_index: int, audio_track_index: int, insertion_time_ticks: int = 0, overwrite: bool = True):
     """
@@ -327,7 +351,7 @@ def append_video_transition(video_track_index: int, track_item_index: int, trans
 
 
 @mcp.tool()
-def import_files(file_paths:list):
+def import_media(file_paths:list):
     """
     Imports a list of media files into the active Premiere project.
 
@@ -336,7 +360,7 @@ def import_files(file_paths:list):
             Each path should be a complete, valid path to a media file supported by Premiere Pro.
     """
 
-    command = createCommand("importFiles", {
+    command = createCommand("importMedia", {
         "filePaths":file_paths
     })
 
@@ -346,7 +370,7 @@ def import_files(file_paths:list):
 @mcp.tool()
 def get_sequences():
  
-    Retrieves a list of sequences in the active Premeire project.
+    Retrieves a list of sequences in the active Premiere project.
 
     Args:
         None
@@ -405,6 +429,14 @@ def get_instructions() -> str:
     3. Read the info for the API calls to make sure you understand the requirements and arguments
     4. In general, add clips first, then effects, then transitions
     5. As a general rule keep transitions short (no more that 2 seconds is a good rule), and there should not be a gap between clips (or else the transition may not work)
+
+    IMPORTANT: To create a new project and add clips:
+    1. Create new project (create_project)
+    2. Add media to the project (import_media)
+    3. Create a new sequence with media (create_sequence_from_media). This will create a sequence with the clips, and set the sequence to the the active sequence
+
+    There must be an active sequence for most API calls
+
 
     Here are some general tips for when working with Premeire.
 
