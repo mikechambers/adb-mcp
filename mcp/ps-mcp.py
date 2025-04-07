@@ -141,25 +141,25 @@ def create_document(document_name: str, width: int, height:int, resolution:int, 
     return sendCommand(command)
 
 @mcp.tool()
-def save_document_as(file_name: str, file_type: str = "PSD"):
-    """Saves the current Photoshop Document as the specified file type
-    
-    The user will be prompted with a file dialog to select the directory where the file will be saved.
+def save_document_as(file_path: str, file_type: str = "PSD"):
+    """Saves the current Photoshop document to the specified location and format.
     
     Args:
-        file_name (str): The name to give the saved file (without directory path)
-        file_type (str): The file type / format to save the document.
-            Options:
-                - PSD
-                - PNG
-                - JPG
+        file_path (str): The absolute path (including filename) where the file will be saved.
+            Example: "/Users/username/Documents/my_image.psd"
+        file_type (str, optional): The file format to use when saving the document.
+            Defaults to "PSD".
+            Supported formats:
+                - "PSD": Adobe Photoshop Document (preserves layers and editability)
+                - "PNG": Portable Network Graphics (lossless compression with transparency)
+                - "JPG": Joint Photographic Experts Group (lossy compression)
     
     Returns:
         dict: Response from the Photoshop operation indicating success status, and the path that the file was saved at
     """
     
     command = createCommand("saveDocumentAs", {
-        "fileName":file_name,
+        "filePath":file_path,
         "fileType":file_type
     })
 
