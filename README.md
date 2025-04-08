@@ -53,7 +53,7 @@ Download the adp-mcp project, and unzip into the location you want to save it.
 
 ### Claude Desktop
 
-Download and install [Claude Desktop](https://Claudee.ai/download). Once you have done this, launch to make sure everything works.
+Download and install [Claude Desktop](https://claude.ai/download). Once you have done this, launch to make sure everything works.
 
 ### MCP Server
 
