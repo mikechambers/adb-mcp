@@ -54,9 +54,7 @@ const onCommandPacket = async (packet) => {
 
         out.response = response;
         out.status = "SUCCESS";
-        console.log("aa")
         out.activeSequence = await getActiveSequenceInfo();
-        console.log("bb")
         out.projectItems = await getProjectContentInfo();
         
     } catch (e) {

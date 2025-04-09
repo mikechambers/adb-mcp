@@ -351,6 +351,23 @@ def append_video_transition(video_track_index: int, track_item_index: int, trans
 
 
 @mcp.tool()
+def apply_blur_filter(video_track_index: int, track_item_index: int):
+    """
+    Imports a list of media files into the active Premiere project.
+
+    Args:
+        file_paths (list): A list of file paths (strings) to import into the project.
+            Each path should be a complete, valid path to a media file supported by Premiere Pro.
+    """
+
+    command = createCommand("setVideoClipProperties", {
+        "videoTrackIndex":video_track_index,
+        "trackItemIndex":track_item_index,
+    })
+
+    return sendCommand(command)
+
+@mcp.tool()
 def import_media(file_paths:list):
     """
     Imports a list of media files into the active Premiere project.

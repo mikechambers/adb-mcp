@@ -243,7 +243,70 @@ const appendAudioFilter = async (command) => {
     executeAction(project, action)
 }
     */
+const getParam = async (trackItem, componentName, paramName) => {
 
+    let components = await trackItem.getComponentChain()
+
+    const count = components.getComponentCount()
+    for(let i = 0; i < count; i++) {
+        const component =  components.getComponentAtIndex(i)
+
+        //search for match name
+        //component name AE.ADBE Opacity
+        const matchName = await component.getMatchName()
+        
+
+        if(matchName == componentName) {
+            console.log(matchName)
+            let pCount = component.getParamCount()
+
+            for (let j = 0; j < pCount; j++) {
+                
+                const param = component.getParam(j);
+                console.log(param.displayName)
+                if(param.displayName == paramName) {
+                    return param
+                }
+
+            }
+        }
+    }
+}
+
+
+const setVideoClipProperties = async (command) => {
+    console.log("setVideoClipProperties")
+
+    const options = command.options
+    const project = await app.Project.getActiveProject()
+    const sequence = await project.getActiveSequence()
+
+    if(!sequence) {
+        throw new Error(`appendVideoFilter : Requires an active sequence.`)
+    }
+
+    let trackItem = await getVideoTrack(sequence, options.videoTrackIndex, options.trackItemIndex)
+
+    //let param = await getParam(trackItem, "AE.ADBE Opacity", "Opacity")
+    let param = await getParam(trackItem, "AE.ADBE Motion", "Scale")
+    //returns valid ComponentParam
+
+    //This throws Object does not exist and assert error
+    let keyframe = await param.createKeyframe(200)
+
+    console.log("b")
+    console.log(keyframe)
+
+    execute(() => {
+        let action = param.createSetValueAction(keyframe);
+        return [action]
+    }, project)
+
+    // /AE.ADBE Opacity
+    //Opacity
+    //Blend Mode
+
+}
 
 const appendVideoFilter = async (command) => {
     console.log("appendVideoFilter")
@@ -643,8 +706,6 @@ const getVideoTrack = async (sequence, trackIndex, clipIndex) => {
 
     let trackItems = await videoTrack.getTrackItems(1, false)
 
-    console.log(trackItems)
-
     let trackItem;
     let i = 0
     for(const t of trackItems) {
@@ -690,6 +751,7 @@ const parseAndRouteCommand = async (command) => {
 };
 
 const commandHandlers = {
+    setVideoClipProperties,
     createSequenceFromMedia,
     setAudioTrackMute,
     //setAudioClipOutPoint,
