@@ -351,18 +351,35 @@ def append_video_transition(video_track_index: int, track_item_index: int, trans
 
 
 @mcp.tool()
-def apply_blur_filter(video_track_index: int, track_item_index: int):
+def set_video_clip_properties(video_track_index: int, track_item_index: int, opacity: int = 100, blend_mode: str = "NORMAL"):
     """
-    Imports a list of media files into the active Premiere project.
+    Sets opacity and blend mode properties for a video clip in the timeline.
+
+    This function modifies the visual properties of a specific clip located on a specific video track
+    in the active Premiere Pro sequence. The clip is identified by its track index and item index
+    within that track.
 
     Args:
-        file_paths (list): A list of file paths (strings) to import into the project.
-            Each path should be a complete, valid path to a media file supported by Premiere Pro.
+        video_track_index (int): The index of the video track containing the target clip.
+            Track indices start at 0 for the first video track.
+        track_item_index (int): The index of the clip within the track to modify.
+            Clip indices start at 0 for the first clip on the track.
+        opacity (int, optional): The opacity value to set for the clip, as a percentage.
+            Valid values range from 0 (completely transparent) to 100 (completely opaque).
+            Defaults to 100.
+        blend_mode (str, optional): The blend mode to apply to the clip.
+            Must be one of the valid blend modes supported by Premiere Pro.
+            Defaults to "NORMAL".
+
+    Returns:
+        None
     """
 
     command = createCommand("setVideoClipProperties", {
         "videoTrackIndex":video_track_index,
         "trackItemIndex":track_item_index,
+        "opacity":opacity,
+        "blendMode":blend_mode
     })
 
     return sendCommand(command)
@@ -468,6 +485,8 @@ def get_instructions() -> str:
     Video clips with a higher track index will overlap and hide those with lower index if they overlap.
 
     When adding images to a sequence, they will have a duration of 5 seconds.
+
+    blend_modes: {", ".join(BLEND_MODES)}
     """
 
 
@@ -486,3 +505,33 @@ def sendCommand(command:dict):
     
     logger.log(f"Final response: {response['status']}")
     return response
+
+BLEND_MODES = [
+    "COLOR",
+    "COLORBURN",
+    "COLORDODGE",
+    "DARKEN",
+    "DARKERCOLOR",
+    "DIFFERENCE",
+    "DISSOLVE",
+    "EXCLUSION",
+    "HARDLIGHT",
+    "HARDMIX",
+    "HUE",
+    "LIGHTEN",
+    "LIGHTERCOLOR",
+    "LINEARBURN",
+    "LINEARDODGE",
+    "LINEARLIGHT",
+    "LUMINOSITY",
+    "MULTIPLY",
+    "NORMAL",
+    "OVERLAY",
+    "PINLIGHT",
+    "SATURATION",
+    "SCREEN",
+    "SOFTLIGHT",
+    "VIVIDLIGHT",
+    "SUBTRACT",
+    "DIVIDE"
+]

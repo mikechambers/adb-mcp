@@ -1,0 +1,34 @@
+
+const BLEND_MODES = {
+    COLOR: 0,
+    COLORBURN: 1,
+    COLORDODGE: 2,
+    DARKEN: 3,
+    DARKERCOLOR: 4,
+    DIFFERENCE: 5,
+    DISSOLVE: 6,
+    EXCLUSION: 7,
+    HARDLIGHT: 8,
+    HARDMIX: 9,
+    HUE: 10,
+    LIGHTEN: 11,
+    LIGHTERCOLOR: 12,
+    LINEARBURN: 13,
+    LINEARDODGE: 14,
+    LINEARLIGHT: 15,
+    LUMINOSITY: 16,
+    MULTIPLY: 17,
+    NORMAL: 18,
+    OVERLAY: 19,
+    PINLIGHT: 20,
+    SATURATION: 21,
+    SCREEN: 22,
+    SOFTLIGHT: 23,
+    VIVIDLIGHT: 24,
+    SUBTRACT: 25,
+    DIVIDE: 26
+  };
+
+  module.exports = {
+    BLEND_MODES
+};

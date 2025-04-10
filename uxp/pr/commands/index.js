@@ -23,6 +23,7 @@
 
 const fs = require("uxp").storage.localFileSystem;
 const app = require("premierepro");
+const {consts, BLEND_MODES} = require("./consts.js")
 
 const createSequenceFromMedia = async (command) => {
     console.log("createSequenceFromMedia")
@@ -257,13 +258,13 @@ const getParam = async (trackItem, componentName, paramName) => {
         
 
         if(matchName == componentName) {
-            console.log(matchName)
+            //console.log(matchName)
             let pCount = component.getParamCount()
 
             for (let j = 0; j < pCount; j++) {
                 
                 const param = component.getParam(j);
-                console.log(param.displayName)
+                //console.log(param.displayName)
                 if(param.displayName == paramName) {
                     return param
                 }
@@ -287,19 +288,18 @@ const setVideoClipProperties = async (command) => {
 
     let trackItem = await getVideoTrack(sequence, options.videoTrackIndex, options.trackItemIndex)
 
-    //let param = await getParam(trackItem, "AE.ADBE Opacity", "Opacity")
-    let param = await getParam(trackItem, "AE.ADBE Motion", "Scale")
-    //returns valid ComponentParam
+    let opacityParam = await getParam(trackItem, "AE.ADBE Opacity", "Opacity")
+    let opacityKeyframe = await opacityParam.createKeyframe(options.opacity)
 
-    //This throws Object does not exist and assert error
-    let keyframe = await param.createKeyframe(200)
+    let blendModeParam = await getParam(trackItem, "AE.ADBE Opacity", "Blend Mode")
 
-    console.log("b")
-    console.log(keyframe)
+    let mode = BLEND_MODES[options.blendMode.toUpperCase()]
+    let blendModeKeyframe = await blendModeParam.createKeyframe(mode)
 
     execute(() => {
-        let action = param.createSetValueAction(keyframe);
-        return [action]
+        let opacityAction = opacityParam.createSetValueAction(opacityKeyframe);
+        let blendModeAction = blendModeParam.createSetValueAction(blendModeKeyframe);
+        return [opacityAction, blendModeAction]
     }, project)
 
     // /AE.ADBE Opacity
