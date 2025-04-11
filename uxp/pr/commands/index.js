@@ -22,6 +22,7 @@
  */
 
 const fs = require("uxp").storage.localFileSystem;
+const openfs = require('fs')
 const app = require("premierepro");
 const {consts, BLEND_MODES} = require("./consts.js")
 
@@ -55,8 +56,6 @@ const createSequenceFromMedia = async (command) => {
         items.push(insertItem)
     }
 
-
-    
     let root = await project.getRootItem()
     let sequence = await project.createSequenceFromMedia(sequenceName, items, root)
 
@@ -88,44 +87,33 @@ const createProject = async (command) => {
     //await project.setActiveSequence(sequence)
 }
 
-/*
-const setAudioClipOutPoint = async (command) => {
-    console.log("setAudioClipOutPoint")
-
-    let options = command.options
+const exportFrame = async (command) => {
+    const options = command.options
 
     let project = await app.Project.getActiveProject()
     let sequence = await project.getActiveSequence()
 
-    if(!sequence) {
-        throw new Error(`setAudioClipOutPoint : Requires an active sequence.`)
+    let size = await sequence.getFrameSize()
+
+    let p = window.path.parse(options.filePath)
+
+    let t = app.TickTime.createWithSeconds(options.seconds)
+
+    let out = await app.Exporter.exportSequenceFrame(sequence, t, p.base, p.dir, size.width, size.height)
+
+    let ps = `${p.dir}${window.path.sep}${p.base}`
+    let outPath = `${ps}.png`
+
+    if(!out) {
+        throw new Error(`exportFrame : Could not save frame to [${outPath}]`);
     }
+    //console.log(ps)
+    //console.log(`${ps}.png`)
 
-    let trackItem = await getAudioTrack(sequence, options.audioTrackIndex, options.trackItemIndex)
+    //let tmp = await openfs.rename(`file:${ps}.png`, `file:${ps}`);
 
-    let time = await app.TickTime.createWithSeconds(options.seconds)
-    let action = await trackItem.createSetOutPointAction(time)
-    
-    //executeAction(project, action)
-
-
-    let time2 = await app.TickTime.createWithSeconds(0)
-    let action2 = await trackItem.createSetInPointAction(time2)
-    
-    //executeAction(project, action)
-
-
-    project.lockedAccess( () => {
-        project.executeTransaction((compoundAction) => {
-            compoundAction.addAction(action2);
-            compoundAction.addAction(action);
-        });
-      });
-
-
-    console.log(trackItem)
+    return {"filePath": outPath}
 }
-*/
 
 const setAudioClipDisabled = async (command) => {
     console.log("setAudioClipDisabled")
@@ -341,7 +329,6 @@ const appendVideoFilter = async (command) => {
 
     await addEffect(trackItem, effectName)
 
-
     for(const p of properties) {
         await setParam(trackItem, effectName, p.name, p.value)
     }
@@ -350,6 +337,7 @@ const appendVideoFilter = async (command) => {
 const addEffect = async (trackItem, effectName) => {
     let project = await app.Project.getActiveProject()
     const effect = await app.VideoFilterFactory.createComponent(effectName);
+
     let componentChain = await trackItem.getComponentChain()
     
     execute(() => {
@@ -490,45 +478,6 @@ const importMedia = async (command) => {
     return { addedProjectItems };
 }
 
-/*
-const getActiveProjectInfo = async (command) => {
-
-    console.log("getActiveProjectInfo")
-
-    let project = await app.Project.getActiveProject()
-
-    let out = {
-        name:project.name,
-        path:project.path,
-        id:project.guid.toString()
-    }
-
-    return out   
-}
-    */
-
-/*
-const getSequences = async (command) => {
-
-    console.log("getSequences")
-
-    let project = await app.Project.getActiveProject()
-
-    let sequences = await project.getSequences()
-
-    //what else should i add here
-
-    let out = []
-    for (const s of sequences) {
-        out.push({
-            name:s.name,
-            id:s.guid.toString()
-        })
-    }
-
-    return out   
-}
-    */
 
 const getAudioTracks = async () => {
     let project = await app.Project.getActiveProject()
@@ -594,7 +543,6 @@ const getActiveSequenceInfo = async () => {
     let name = projectItem.name
 
     let videoTracks = await getVideoTracks()
-  
     let audioTracks = await getAudioTracks()
 
 
@@ -777,6 +725,7 @@ const parseAndRouteCommand = async (command) => {
 };
 
 const commandHandlers = {
+    exportFrame,
     setVideoClipProperties,
     createSequenceFromMedia,
     setAudioTrackMute,

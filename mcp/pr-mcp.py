@@ -209,58 +209,6 @@ def set_video_clip_disabled(video_track_index: int, track_item_index: int, disab
 
     return sendCommand(command)
 
-"""
-@mcp.tool()
-def set_audio_clip_out_point(audio_track_index: int, track_item_index: int, seconds:float):
-  
-    Adds a specified media item to the active sequence's timeline.
-
-    Args:
-        item_name (str): The name or identifier of the media item to add.
-        video_track_index (float, optional): The index of the video track where the item should be inserted. Defaults to 0.0.
-        audio_track_index (float, optional): The index of the audio track where the item should be inserted. Defaults to 0.0.
-        insertion_time_seconds (float, optional): The time (in seconds) at which the item should be inserted. Defaults to 0.0.
-        overwrite (bool, optional): Whether to overwrite existing content at the insertion point. Defaults to True. If False, any existing clips that overlap will be split and item inserted.
-
-    Returns:
-        None
-
-
-
-    command = createCommand("setAudioClipOutPoint", {
-        "audioTrackIndex":audio_track_index,
-        "trackItemIndex":track_item_index,
-        "seconds":seconds
-    })
-
-    return sendCommand(command)
-"""
-
-
-"""
-@mcp.tool()
-def append_audio_filter(audio_track_index: float, track_item_index: float, effect_name: str):
-    
-    Adds the specified video effect to a clip at the specified track and position.
-    
-    Args:
-        video_track_index (float): The index of the video track containing the target clip.
-        track_item_index (float): The index of the clip within the track to apply the effect to.
-        effect_name (str): The name of the effect to apply. Must be a valid effect name (see below).
-        
-    Returns:
-        None
-        
-    
-
-    command = createCommand("appendAudioFilter", {
-        "audioTrackIndex":audio_track_index,
-        "trackItemIndex":track_item_index,
-        "effectName":effect_name
-    })
-
-    return sendCommand(command)
-"""
 
 @mcp.tool()
 def add_black_and_white_effect(video_track_index: int, track_item_index: int):
@@ -285,6 +233,26 @@ def add_black_and_white_effect(video_track_index: int, track_item_index: int):
         "properties":[
         ]
     })
+
+    return sendCommand(command)
+
+@mcp.tool()
+def export_frame(file_path: str, seconds: int):
+    """Captures a specific frame from the active sequence at the given timestamp
+    and exports it as a PNG image file to the specified path.
+    
+    Args:
+        file_path (str): The destination path where the exported PNG image will be saved.
+            Must include the full directory path and filename with .png extension.
+            
+        seconds (int): The timestamp in seconds from the beginning of the sequence
+            where the frame should be captured. The frame closest to this time position
+            will be extracted.
+    """
+    if not file_path.lower().endswith(".png"):
+        file_path += ".png"
+    
+    command = createCommand("exportFrame", {"filePath": file_path, "seconds":seconds})
 
     return sendCommand(command)
 
