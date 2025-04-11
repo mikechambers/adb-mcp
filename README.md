@@ -40,7 +40,7 @@ In order to run this, the following is required:
 -   Python 3, which is used to run the MCP server provided with this project
 -   NodeJS, used to provide a proxy between the MCP server and Photoshop
 -   Adobe UXP Developer tool (available via Creative Cloud) used to install and debug the Photoshop / Premiere plugin used to connect to the proxy
--   Adobe Photoshop (26.0 or greater) with the MCP Plugin installed or Adobe Premiere Beta (25.3 or greater)
+-   Adobe Photoshop (26.0 or greater) with the MCP Plugin installed or Adobe Premiere Beta (25.3 Build 46 or greater)
 
 
 ## Installation
