@@ -263,27 +263,65 @@ def append_audio_filter(audio_track_index: float, track_item_index: float, effec
 """
 
 @mcp.tool()
-def append_video_filter(video_track_index: int, track_item_index: int, effect_name: str):
+def add_black_and_white_effect(video_track_index: int, track_item_index: int):
     """
-    Adds the specified video effect to a clip at the specified track and position.
+    Adds a black and white effect to a clip at the specified track and position.
     
     Args:
         video_track_index (int): The index of the video track containing the target clip.
+            Track indices start at 0 for the first video track and increment upward.
+            
         track_item_index (int): The index of the clip within the track to apply the effect to.
-        effect_name (str): The name of the effect to apply. Must be a valid effect name (see below).
-        
+            Clip indices start at 0 for the first clip in the track and increment from left to right.
+    
     Returns:
         None
-        
-    Valid Effect Names:
-            "AE.ADBE Black & White"
-            "AE.ADBE Lens Flare"
     """
 
     command = createCommand("appendVideoFilter", {
         "videoTrackIndex":video_track_index,
         "trackItemIndex":track_item_index,
-        "effectName":effect_name
+        "effectName":"AE.ADBE Black & White",
+        "properties":[
+        ]
+    })
+
+    return sendCommand(command)
+
+@mcp.tool()
+def add_motion_blur_effect(video_track_index: int, track_item_index: int, direction: int, length: int):
+    """
+    Adds the directional blur effect to a clip at the specified track and position.
+    
+    This function applies a motion blur effect that simulates movement in a specific direction.
+    
+    Args:
+        video_track_index (int): The index of the video track containing the target clip.
+            Track indices start at 0 for the first video track and increment upward.
+            
+        track_item_index (int): The index of the clip within the track to apply the effect to.
+            Clip indices start at 0 for the first clip in the track and increment from left to right.
+            
+        direction (int): The angle of the directional blur in degrees, ranging from 0 to 360.
+            - 0/360: Vertical blur upward
+            - 90: Horizontal blur to the right 
+            - 180: Vertical blur downward
+            - 270: Horizontal blur to the left
+            
+        length (int): The intensity or distance of the blur effect, ranging from 0 to 1000.
+    
+    Returns:
+        None
+    """
+
+    command = createCommand("appendVideoFilter", {
+        "videoTrackIndex":video_track_index,
+        "trackItemIndex":track_item_index,
+        "effectName":"AE.ADBE Motion Blur",
+        "properties":[
+            {"name":"Direction", "value":direction},
+            {"name":"Blur Length", "value":length}
+        ]
     })
 
     return sendCommand(command)

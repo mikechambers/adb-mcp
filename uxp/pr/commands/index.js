@@ -244,6 +244,20 @@ const appendAudioFilter = async (command) => {
     executeAction(project, action)
 }
     */
+
+const setParam = async(trackItem, componentName, paramName, value) => {
+
+    const project = await app.Project.getActiveProject()
+
+    let param = await getParam(trackItem, componentName, paramName)
+    let keyframe = await param.createKeyframe(value)
+
+    execute(() => {
+        let action = param.createSetValueAction(keyframe);
+        return [action]
+    }, project)
+}
+
 const getParam = async (trackItem, componentName, paramName) => {
 
     let components = await trackItem.getComponentChain()
@@ -256,15 +270,15 @@ const getParam = async (trackItem, componentName, paramName) => {
         //component name AE.ADBE Opacity
         const matchName = await component.getMatchName()
         
-
+        
         if(matchName == componentName) {
-            //console.log(matchName)
+            console.log(matchName)
             let pCount = component.getParamCount()
 
             for (let j = 0; j < pCount; j++) {
                 
                 const param = component.getParam(j);
-                //console.log(param.displayName)
+                console.log(param.displayName)
                 if(param.displayName == paramName) {
                     return param
                 }
@@ -322,17 +336,29 @@ const appendVideoFilter = async (command) => {
 
     let trackItem = await getVideoTrack(sequence, options.videoTrackIndex, options.trackItemIndex)
 
-    const effect = await app.VideoFilterFactory.createComponent(
-        options.effectName);
+    let effectName = options.effectName
+    let properties = options.properties
 
+    await addEffect(trackItem, effectName)
+
+
+    for(const p of properties) {
+        await setParam(trackItem, effectName, p.name, p.value)
+    }
+}
+
+const addEffect = async (trackItem, effectName) => {
+    let project = await app.Project.getActiveProject()
+    const effect = await app.VideoFilterFactory.createComponent(effectName);
     let componentChain = await trackItem.getComponentChain()
-
+    
     execute(() => {
         let action = componentChain.createAppendComponentAction(
-            effect, 0)
+            effect, 0)//todo, second isnt needed
         return [action]
     }, project)
 }
+
 
 const setAudioTrackMute = async (command) => {
     console.log("setAudioTrackMute")
