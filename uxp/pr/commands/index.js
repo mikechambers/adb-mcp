@@ -238,6 +238,12 @@ const setParam = async(trackItem, componentName, paramName, value) => {
     const project = await app.Project.getActiveProject()
 
     let param = await getParam(trackItem, componentName, paramName)
+
+
+    let v = await param.getStartValue()
+    console.log(v)
+
+
     let keyframe = await param.createKeyframe(value)
 
     execute(() => {
@@ -285,7 +291,7 @@ const setVideoClipProperties = async (command) => {
     const sequence = await project.getActiveSequence()
 
     if(!sequence) {
-        throw new Error(`appendVideoFilter : Requires an active sequence.`)
+        throw new Error(`setVideoClipProperties : Requires an active sequence.`)
     }
 
     let trackItem = await getVideoTrack(sequence, options.videoTrackIndex, options.trackItemIndex)

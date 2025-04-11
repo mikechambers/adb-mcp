@@ -256,6 +256,47 @@ def export_frame(file_path: str, seconds: int):
 
     return sendCommand(command)
 
+
+@mcp.tool()
+def add_gaussian_blur_effect(video_track_index: int, track_item_index: int, blurriness: float, blur_dimensions: str = "HORIZONTAL_VERTICAL"):
+    """
+    Adds a gaussian blur effect to a clip at the specified track and position.
+
+    Args:
+        video_track_index (int): The index of the video track containing the target clip.
+            Track indices start at 0 for the first video track and increment upward.
+            
+        track_item_index (int): The index of the clip within the track to apply the effect to.
+            Clip indices start at 0 for the first clip in the track and increment from left to right.
+            
+        blurriness (float): The intensity of the blur effect. Higher values create stronger blur.
+            Recommended range is between 0.0 and 100.0 (Max 3000).
+            
+        blur_dimensions (str, optional): The direction of the blur effect. Defaults to "HORIZONTAL_VERTICAL".
+            Valid options are:
+            - "HORIZONTAL_VERTICAL": Blur in all directions
+            - "HORIZONTAL": Blur only horizontally
+            - "VERTICAL": Blur only vertically
+    """
+    dimensions = {"HORIZONTAL_VERTICAL": 0, "HORIZONTAL": 1, "VERTICAL": 2}
+    
+    # Validate blur_dimensions parameter
+    if blur_dimensions not in dimensions:
+        raise ValueError(f"Invalid blur_dimensions. ")
+
+    command = createCommand("appendVideoFilter", {
+        "videoTrackIndex": video_track_index,
+        "trackItemIndex": track_item_index,
+        "effectName": "AE.ADBE Gaussian Blur 2",
+        "properties": [
+            {"name": "Blur Dimensions", "value": dimensions[blur_dimensions]},
+            {"name": "Blurriness", "value": blurriness}
+        ]
+    })
+
+    return sendCommand(command)
+
+
 @mcp.tool()
 def add_motion_blur_effect(video_track_index: int, track_item_index: int, direction: int, length: int):
     """
