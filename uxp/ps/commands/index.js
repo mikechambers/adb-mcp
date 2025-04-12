@@ -26,7 +26,7 @@ const fs = require("uxp").storage.localFileSystem;
 const openfs = require('fs')
 
 const adjustmentLayers = require("./adjustment_layers");
-const commands = require("./commands");
+const core = require("./core");
 const layerStyles = require("./layer_styles")
 const filters = require("./filters")
 const selection = require("./selection")
@@ -73,7 +73,7 @@ const requiresActiveDocument = (command) => {
 const commandHandlers = {
     ...selection.commandHandlers,
     ...filters.commandHandlers,
-    ...commands.commandHandlers,
+    ...core.commandHandlers,
     ...adjustmentLayers.commandHandlers,
     ...layerStyles.commandHandlers,
     ...layers.commandHandlers
