@@ -51,7 +51,7 @@ const parseAndRouteCommand = async (command) => {
         throw new Error(`Unknown Command: ${action}`);
     }
 
-    console.log(c.name)
+    console.log(f.name)
     return f(command);
 };
 
