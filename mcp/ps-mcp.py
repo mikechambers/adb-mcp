@@ -825,24 +825,27 @@ def translate_layer(
 @mcp.tool()
 def set_layer_properties(
     layer_name: str,
-    blend_mode:str = "NORMAL",
-    opacity:int = 100,
-    is_clipping_mask:bool = False
+    blend_mode: str = "NORMAL",
+    layer_opacity: int = 100,
+    fill_opacity: int = 100,
+    is_clipping_mask: bool = False
     ):
 
-    """Sets the blend mode and opacity on the layer with the specified name
+    """Sets the blend mode and opacity properties on the layer with the specified name
 
     Args:
         layer_name (str): The name of the layer whose properties should be updated
         blend_mode (str): The blend mode for the layer
-        opacity (int): The opacity for the layer (0 - 100)
-        is_clipping_mask (bool) : A boolean indicating whether this layer will be clipped to (masked by) the layer below it
+        layer_opacity (int): The opacity for the layer (0 - 100)
+        fill_opacity (int): The fill opacity for the layer (0 - 100). Will ignore anny effects that have been applied to the layer.
+        is_clipping_mask (bool): A boolean indicating whether this layer will be clipped to (masked by) the layer below it
     """
     
     command = createCommand("setLayerProperties", {
         "layerName":layer_name,
         "blendMode":blend_mode,
-        "opacity":opacity,
+        "layerOpacity":layer_opacity,
+        "fillOpacity":fill_opacity,
         "isClippingMask":is_clipping_mask
     })
 

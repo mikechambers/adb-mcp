@@ -225,7 +225,8 @@ const setLayerProperties = async (command) => {
 
     await execute(async () => {
         layer.blendMode = getBlendMode(options.blendMode);
-        layer.opacity = options.opacity;
+        layer.opacity = options.layerOpacity;
+        layer.fillOpacity = options.fillOpacity;
 
         if (layer.isClippingMask != options.isClippingMask) {
             selectLayer(layer, true);

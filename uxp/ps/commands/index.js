@@ -38,6 +38,7 @@ const parseAndRouteCommands = async (commands) => {
     }
 
     for (let c of commands) {
+        //console.log(c.name)
         await parseAndRouteCommand(c);
     }
 };
