@@ -40,19 +40,14 @@ const {hasActiveSelection} = require("./utils")
 
 const openFile = async (command) => {
 
-    console.log("openFile")
-
     let options = command.options    
 
     await execute(async () => {
 
         let entry = null
         try {
-            console.log("a")
             entry = await fs.getEntryWithUrl("file:" + options.filePath)
-            console.log("b")
         } catch (e) {
-            console.log("c")
             throw new Error("openFile: Could not create file entry. File probably does not exist.");
         }
      
@@ -61,7 +56,6 @@ const openFile = async (command) => {
 }
 
 const placeImage = async (command) => {
-    console.log("placeImage");
     let options = command.options;
     let layerName = options.layerName;
     let layer = findLayer(layerName);
@@ -76,7 +70,6 @@ const placeImage = async (command) => {
 
         let imagePath = await tokenify(options.imagePath);
 
-        //console.log("pathimagePathToken", imagePath)
 
         let commands = [
             // Place
@@ -134,7 +127,6 @@ const placeImage = async (command) => {
 
 
 const getDocumentInfo = async (command) => {
-    console.log("getDocumentInfo");
 
     let doc = app.activeDocument;
     let path = doc.path;
@@ -154,7 +146,6 @@ const getDocumentInfo = async (command) => {
 };
 
 const cropDocument = async (command) => {
-    console.log("cropDocument");
 
     let options = command.options;
 
@@ -178,7 +169,6 @@ const cropDocument = async (command) => {
 
 
 const removeBackground = async (command) => {
-    console.log("removeBackground");
 
     let options = command.options;
     let layerName = options.layerName;
@@ -206,7 +196,6 @@ const removeBackground = async (command) => {
 };
 
 const alignContent = async (command) => {
-    console.log("alignContent");
 
     let options = command.options;
     let layerName = options.layerName;
@@ -219,7 +208,6 @@ const alignContent = async (command) => {
         );
     }
 
-    //console.log(app.activeDocument.selection)
     if (!app.activeDocument.selection.bounds) {
         throw new Error(`alignContent : Requires an active selection`);
     }
@@ -251,7 +239,6 @@ const alignContent = async (command) => {
 };
 
 const generateImage = async (command) => {
-    console.log("generateImage");
 
     let options = command.options;
 
@@ -329,7 +316,6 @@ const generateImage = async (command) => {
 };
 
 const saveDocument = async (command) => {
-    console.log("saveDocument");
 
     await execute(async () => {
         await app.activeDocument.save()
@@ -337,7 +323,6 @@ const saveDocument = async (command) => {
 };
 
 const saveDocumentAs = async (command) => {
-    console.log("saveDocumentAs");
     let options = command.options
 
     let filePath = options.filePath
@@ -376,7 +361,6 @@ const saveDocumentAs = async (command) => {
 };
 
 const createDocument = async (command) => {
-    console.log("createDocument", command);
 
     let options = command.options;
     let colorMode = getNewDocumentMode(command.options.colorMode);

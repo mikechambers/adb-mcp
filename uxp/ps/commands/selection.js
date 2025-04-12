@@ -18,7 +18,6 @@ const clearSelection = async () => {
 };
 
 const createMaskFromSelection = async (command) => {
-    console.log("createMaskFromSelection");
 
     let options = command.options;
     let layerName = options.layerName;
@@ -57,7 +56,6 @@ const createMaskFromSelection = async (command) => {
 };
 
 const selectSubject = async (command) => {
-    console.log("selectSubject");
 
     let options = command.options;
     let layerName = options.layerName;
@@ -86,7 +84,6 @@ const selectSubject = async (command) => {
 };
 
 const selectSky = async (command) => {
-    console.log("selectSky");
 
     let options = command.options;
     let layerName = options.layerName;
@@ -114,7 +111,6 @@ const selectSky = async (command) => {
 };
 
 const cutSelectionToClipboard = async (command) => {
-    console.log("cutSelectionToClipboard");
 
     let options = command.options;
     let layerName = options.layerName;
@@ -147,7 +143,6 @@ const cutSelectionToClipboard = async (command) => {
 };
 
 const copyMergedSelectionToClipboard = async (command) => {
-    console.log("copyMergedSelectionToClipboard");
 
     let options = command.options;
 
@@ -167,7 +162,6 @@ const copyMergedSelectionToClipboard = async (command) => {
 };
 
 const copySelectionToClipboard = async (command) => {
-    console.log("copySelectionToClipboard");
 
     let options = command.options;
     let layerName = options.layerName;
@@ -199,7 +193,6 @@ const copySelectionToClipboard = async (command) => {
 };
 
 const pasteFromClipboard = async (command) => {
-    console.log("pasteFromClipboard");
 
     let options = command.options;
     let layerName = options.layerName;
@@ -236,7 +229,6 @@ const pasteFromClipboard = async (command) => {
 };
 
 const deleteSelection = async (command) => {
-    console.log("deleteSelection");
 
     let options = command.options;
     let layerName = options.layerName;
@@ -264,7 +256,6 @@ const deleteSelection = async (command) => {
 };
 
 const fillSelection = async (command) => {
-    console.log("fillSelection");
 
     let options = command.options;
     let layerName = options.layerName;
@@ -313,7 +304,6 @@ const fillSelection = async (command) => {
 };
 
 const selectPolygon = async (command) => {
-    console.log("selectPolygon");
 
     let options = command.options;
 
@@ -328,7 +318,6 @@ const selectPolygon = async (command) => {
 };
 
 let selectEllipse = async (command) => {
-    console.log("selectEllipse");
 
     let options = command.options;
 
@@ -343,7 +332,6 @@ let selectEllipse = async (command) => {
 };
 
 const selectRectangle = async (command) => {
-    console.log("selectRectangle");
 
     let options = command.options;
 
@@ -358,7 +346,6 @@ const selectRectangle = async (command) => {
 };
 
 const invertSelection = async (command) => {
-    console.log("invertSelection");
 
     if (!app.activeDocument.selection.bounds) {
         throw new Error(`invertSelection : Requires an active selection`);

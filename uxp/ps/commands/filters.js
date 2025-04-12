@@ -29,7 +29,6 @@ const {
 } = require("./utils");  // For the utility functions used in your code
 
 const applyMotionBlur = async (command) => {
-    console.log("applyMotionBlur");
 
     let options = command.options;
     let layerName = options.layerName;
@@ -48,7 +47,6 @@ const applyMotionBlur = async (command) => {
 };
 
 const applyGaussianBlur = async (command) => {
-    console.log("applyGaussianBlur");
 
     let options = command.options;
     let layerName = options.layerName;

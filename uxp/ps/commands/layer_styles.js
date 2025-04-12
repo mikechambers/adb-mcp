@@ -30,7 +30,6 @@ const {
 } = require("./utils")
 
 const addDropShadowLayerStyle = async (command) => {
-    console.log("addDropShadowLayerStyle");
 
     let options = command.options;
     let layerName = options.layerName;

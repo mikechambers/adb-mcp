@@ -97,7 +97,6 @@ const getConstantValue = (c, v, n) => {
 };
 
 const selectLayer = (layer, exclusive = false) => {
-    console.log("selectLayer");
     if (exclusive) {
         clearLayerSelections();
     }

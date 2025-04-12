@@ -34,7 +34,6 @@ const {
 } = require("./utils");
 
 const scaleLayer = async (command) => {
-    console.log("scaleLayer");
 
     let options = command.options;
 
@@ -58,7 +57,6 @@ const scaleLayer = async (command) => {
 };
 
 const rotateLayer = async (command) => {
-    console.log("rotateLayer");
 
     let options = command.options;
 
@@ -84,7 +82,6 @@ const rotateLayer = async (command) => {
 };
 
 const flipLayer = async (command) => {
-    console.log("flipLayer");
 
     let options = command.options;
 
@@ -103,7 +100,6 @@ const flipLayer = async (command) => {
 };
 
 const deleteLayer = async (command) => {
-    console.log("deleteLayer");
 
     let options = command.options;
 
@@ -122,7 +118,6 @@ const deleteLayer = async (command) => {
 };
 
 const renameLayer = async (command) => {
-    console.log("renameLayer");
 
     let options = command.options;
 
@@ -141,8 +136,6 @@ const renameLayer = async (command) => {
 };
 
 const groupLayers = async (command) => {
-
-    console.log("groupLayers")
 
     let options = command.options
     
@@ -170,7 +163,6 @@ const groupLayers = async (command) => {
 }
 
 const setLayerVisibility = async (command) => {
-    console.log("setLayerVisibility");
 
     let options = command.options;
 
@@ -191,7 +183,6 @@ const setLayerVisibility = async (command) => {
 
 
 const translateLayer = async (command) => {
-    console.log("translateLayer");
 
     let options = command.options;
 
@@ -210,7 +201,6 @@ const translateLayer = async (command) => {
 };
 
 const setLayerProperties = async (command) => {
-    console.log("setLayerProperties");
 
     let options = command.options;
 
@@ -258,7 +248,6 @@ const setLayerProperties = async (command) => {
 };
 
 const duplicateLayer = async (command) => {
-    console.log("duplicateLayer");
     let options = command.options;
 
     await execute(async () => {
@@ -276,7 +265,6 @@ const duplicateLayer = async (command) => {
 };
 
 const flattenAllLayers = async (command) => {
-    console.log("flattenAllLayers");
     let options = command.options;
 
     await execute(async () => {
@@ -295,7 +283,6 @@ const flattenAllLayers = async (command) => {
 };
 
 const getLayerBounds = async (command) => {
-    console.log("getLayerBounds");
 
     let options = command.options;
     let layerName = options.layerName;
@@ -313,7 +300,6 @@ const getLayerBounds = async (command) => {
 };
 
 const rasterizeLayer = async (command) => {
-    console.log("rasterizeLayer");
 
     let options = command.options;
     let layerName = options.layerName;
@@ -332,7 +318,6 @@ const rasterizeLayer = async (command) => {
 };
 
 const moveLayer = async (command) => {
-    console.log("moveLayer");
 
     let options = command.options;
 
@@ -391,7 +376,6 @@ const moveLayer = async (command) => {
 const createMultiLineTextLayer = async (command) => {
     let options = command.options;
 
-    console.log("createMultiLineTextLayer", options);
 
     await execute(async () => {
         let c = parseColor(options.textColor);
@@ -502,7 +486,6 @@ const createMultiLineTextLayer = async (command) => {
 };
 
 const createSingleLineTextLayer = async (command) => {
-    console.log("createSingleLineTextLayer");
 
     let options = command.options;
 
@@ -534,7 +517,6 @@ const createSingleLineTextLayer = async (command) => {
 };
 
 const createPixelLayer = async (command) => {
-    console.log("createPixelLayer");
     let options = command.options;
 
     await execute(async () => {
@@ -552,7 +534,6 @@ const createPixelLayer = async (command) => {
 };
 
 const getLayers = async (command) => {
-    console.log("getLayers");
 
     let out = await execute(async () => {
         let result = [];

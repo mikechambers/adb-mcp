@@ -30,7 +30,7 @@ const {
 } = require("./utils")
 
 const createGradientAdjustmentLayer = async (command) => {
-    console.log("createGradientAdjustmentLayer")
+
     let options = command.options;
     let layerName = options.layerName;
 
@@ -127,7 +127,6 @@ const createGradientAdjustmentLayer = async (command) => {
 };
 
 const addAdjustmentLayerBlackAndWhite = async (command) => {
-    console.log("addAdjustmentLayerBlackAndWhite");
 
     let options = command.options;
     let layerName = options.layerName;
@@ -186,7 +185,6 @@ const addAdjustmentLayerBlackAndWhite = async (command) => {
 };
 
 const addBrightnessContrastAdjustmentLayer = async (command) => {
-    console.log("addBrightnessContrastAdjustmentLayer");
 
     let options = command.options;
     let layerName = options.layerName;
@@ -243,7 +241,6 @@ const addBrightnessContrastAdjustmentLayer = async (command) => {
 };
 
 const addAdjustmentLayerVibrance = async (command) => {
-    console.log("addAdjustmentLayerVibrance");
 
     let options = command.options;
     let layerName = options.layerName;
@@ -300,7 +297,6 @@ const addAdjustmentLayerVibrance = async (command) => {
 };
 
 const addColorBalanceAdjustmentLayer = async (command) => {
-    console.log("addColorBalanceAdjustmentLayer");
 
     let options = command.options;
 
