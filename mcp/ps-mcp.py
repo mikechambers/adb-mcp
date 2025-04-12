@@ -50,7 +50,7 @@ socket_client.configure(
 )
 
 @mcp.tool()
-def create__gradient_adjustment_layer(
+def create_gradient_adjustment_layer(
     layer_name: str,
     angle: int,
     type:str,
@@ -1007,7 +1007,7 @@ def align_content(
     return sendCommand(command)
 
 @mcp.tool()
-def add_drop_shadow_layer_effect(
+def add_drop_shadow_layer_style(
     layer_name: str,
     blend_mode:str = "MULTIPLY",
     color:dict = {"red":0, "green":0, "blue":0},
@@ -1017,7 +1017,7 @@ def add_drop_shadow_layer_effect(
     spread:int = 0,
     size:int = 7
     ):
-    """Adds a drop shadow layer effect to the layer with the specified name
+    """Adds a drop shadow layer style to the layer with the specified name
 
     Args:
         layer_name (str): The layer with the content to add the drop shadow to
@@ -1030,7 +1030,7 @@ def add_drop_shadow_layer_effect(
         size (int): Control the blur and spread of the shadow effect (0 to 250)
     """
 
-    command = createCommand("addDropShadowLayerEffect", {
+    command = createCommand("addDropShadowLayerStyle", {
         "layerName":layer_name,
         "blendMode":blend_mode,
         "color":color,
@@ -1151,7 +1151,7 @@ def add_stroke_layer_style(
 
     command = createCommand("addStrokeLayerStyle", {
         "layerName":layer_name,
-        "strokeSize":size,
+        "size":size,
         "color":color,
         "opacity":opacity,
         "position":position,

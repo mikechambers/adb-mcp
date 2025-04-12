@@ -24,10 +24,14 @@
 const { entrypoints, UI } = require("uxp");
 const {
     checkRequiresActiveDocument,
-    parseAndRouteCommand,
-    getLayers,
-    hasActiveSelection
+    parseAndRouteCommand
 } = require("./commands/index.js");
+
+const {
+    hasActiveSelection
+} = require("./commands/utils.js")
+
+const {getLayers} = require("./commands/layers.js").commandHandlers
 
 const { io } = require("./socket.io.js");
 const app = require("photoshop").app;
