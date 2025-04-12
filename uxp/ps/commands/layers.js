@@ -30,11 +30,11 @@ const {
     getInterpolationMethod,
     getBlendMode,
     getJustificationMode,
-    selectLayer
+    selectLayer,
+    hasActiveSelection,
 } = require("./utils");
 
 const scaleLayer = async (command) => {
-
     let options = command.options;
 
     let layerName = options.layerName;
@@ -57,7 +57,6 @@ const scaleLayer = async (command) => {
 };
 
 const rotateLayer = async (command) => {
-
     let options = command.options;
 
     let layerName = options.layerName;
@@ -82,7 +81,6 @@ const rotateLayer = async (command) => {
 };
 
 const flipLayer = async (command) => {
-
     let options = command.options;
 
     let layerName = options.layerName;
@@ -100,7 +98,6 @@ const flipLayer = async (command) => {
 };
 
 const deleteLayer = async (command) => {
-
     let options = command.options;
 
     let layerName = options.layerName;
@@ -118,7 +115,6 @@ const deleteLayer = async (command) => {
 };
 
 const renameLayer = async (command) => {
-
     let options = command.options;
 
     let layerName = options.layerName;
@@ -136,34 +132,31 @@ const renameLayer = async (command) => {
 };
 
 const groupLayers = async (command) => {
+    let options = command.options;
 
-    let options = command.options
-    
-    
-    let layers = []
+    let layers = [];
 
-    for(const layerName of options.layerNames) {
-        let layer = findLayer(layerName)
+    for (const layerName of options.layerNames) {
+        let layer = findLayer(layerName);
 
-        if(!layer) {
+        if (!layer) {
             throw new Error(
                 `groupLayers : Could not find layerName : ${layerName}`
             );
         }
 
-        layers.push(layer)
+        layers.push(layer);
     }
 
     await execute(async () => {
         await app.activeDocument.createLayerGroup({
-            name:options.groupName,
-            fromLayers:layers
-        })
+            name: options.groupName,
+            fromLayers: layers,
+        });
     });
-}
+};
 
 const setLayerVisibility = async (command) => {
-
     let options = command.options;
 
     let layerName = options.layerName;
@@ -180,10 +173,7 @@ const setLayerVisibility = async (command) => {
     });
 };
 
-
-
 const translateLayer = async (command) => {
-
     let options = command.options;
 
     let layerName = options.layerName;
@@ -201,7 +191,6 @@ const translateLayer = async (command) => {
 };
 
 const setLayerProperties = async (command) => {
-
     let options = command.options;
 
     let layerName = options.layerName;
@@ -283,7 +272,6 @@ const flattenAllLayers = async (command) => {
 };
 
 const getLayerBounds = async (command) => {
-
     let options = command.options;
     let layerName = options.layerName;
 
@@ -300,7 +288,6 @@ const getLayerBounds = async (command) => {
 };
 
 const rasterizeLayer = async (command) => {
-
     let options = command.options;
     let layerName = options.layerName;
 
@@ -318,7 +305,6 @@ const rasterizeLayer = async (command) => {
 };
 
 const moveLayer = async (command) => {
-
     let options = command.options;
 
     let layerName = options.layerName;
@@ -375,7 +361,6 @@ const moveLayer = async (command) => {
 
 const createMultiLineTextLayer = async (command) => {
     let options = command.options;
-
 
     await execute(async () => {
         let c = parseColor(options.textColor);
@@ -486,7 +471,6 @@ const createMultiLineTextLayer = async (command) => {
 };
 
 const createSingleLineTextLayer = async (command) => {
-
     let options = command.options;
 
     await execute(async () => {
@@ -534,7 +518,6 @@ const createPixelLayer = async (command) => {
 };
 
 const getLayers = async (command) => {
-
     let out = await execute(async () => {
         let result = [];
 
@@ -548,8 +531,8 @@ const getLayers = async (command) => {
                     name: layer.name,
                     type: layer.kind.toUpperCase().toString(),
                     isClippingMask: layer.isClippingMask,
-                    opacity:layer.opacity,
-                    blendMode:layer.blendMode.toString().toUpperCase()
+                    opacity: layer.opacity,
+                    blendMode: layer.blendMode.toString().toUpperCase(),
                 };
 
                 // Check if this layer has sublayers (is a group)
@@ -572,7 +555,79 @@ const getLayers = async (command) => {
     return out;
 };
 
+const removeLayerMask = async (command) => {
+    const options = command.options;
+
+    const layerName = options.layerName;
+    const layer = findLayer(layerName);
+
+    if (!layer) {
+        throw new Error(`removeLayerMask : Could not find layerName : ${layerName}`);
+    }
+
+    await execute(async () => {
+        selectLayer(layer, true);
+
+        let commands = [
+            // Delete mask channel
+            {
+                _obj: "delete",
+                _target: [
+                    {
+                        _enum: "channel",
+                        _ref: "channel",
+                        _value: "mask",
+                    },
+                ],
+            },
+        ];
+        await action.batchPlay(commands, {});
+    });
+};
+
+const addLayerMask = async (command) => {
+    if (!hasActiveSelection()) {
+        throw new Error("addLayerMask : Requires an active selection.");
+    }
+
+    const options = command.options;
+
+    const layerName = options.layerName;
+    const layer = findLayer(layerName);
+
+    if (!layer) {
+        throw new Error(`addLayerMask : Could not find layerName : ${layerName}`);
+    }
+
+    await execute(async () => {
+        selectLayer(layer, true);
+
+        let commands = [
+            // Make
+            {
+                _obj: "make",
+                at: {
+                    _enum: "channel",
+                    _ref: "channel",
+                    _value: "mask",
+                },
+                new: {
+                    _class: "channel",
+                },
+                using: {
+                    _enum: "userMaskEnabled",
+                    _value: "revealSelection",
+                },
+            },
+        ];
+
+        await action.batchPlay(commands, {});
+    });
+};
+
 const commandHandlers = {
+    removeLayerMask,
+    addLayerMask,
     getLayers,
     scaleLayer,
     rotateLayer,
@@ -590,9 +645,9 @@ const commandHandlers = {
     moveLayer,
     createMultiLineTextLayer,
     createSingleLineTextLayer,
-    createPixelLayer
+    createPixelLayer,
 };
 
 module.exports = {
-    commandHandlers
+    commandHandlers,
 };

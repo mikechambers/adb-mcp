@@ -32,11 +32,11 @@ const {
     selectLayer,
     findLayer,
     execute,
-    tokenify
+    tokenify,
+    hasActiveSelection
 } = require("./utils")
 
 const { rasterizeLayer } = require("./layers").commandHandlers;
-const {hasActiveSelection} = require("./utils")
 
 const openFile = async (command) => {
 

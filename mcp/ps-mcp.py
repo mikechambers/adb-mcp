@@ -823,6 +823,44 @@ def translate_layer(
     return sendCommand(command)
 
 @mcp.tool()
+def remove_layer_mask(
+    layer_name: str
+    ):
+
+    """Removes the layer mask from the specified layer.
+
+    Args:
+        None
+    """
+    
+    command = createCommand("removeLayerMask", {
+        "layerName":layer_name
+    })
+
+    return sendCommand(command)
+
+@mcp.tool()
+def add_layer_mask_from_selection(
+    layer_name: str
+    ):
+
+    """Creates a layer mask on the specified layer defined by the active selection.
+    
+    This function takes the current active selection in the document and converts it into a layer mask
+    for the specified layer. Selected areas will be visible, while non-selected areas will be hidden.
+    An active selection must exist before calling this function.
+
+    Args:
+        layer_name (str): The name of the layer to which the mask will be applied
+    """
+    
+    command = createCommand("addLayerMask", {
+        "layerName":layer_name
+    })
+
+    return sendCommand(command)
+
+@mcp.tool()
 def set_layer_properties(
     layer_name: str,
     blend_mode: str = "NORMAL",
