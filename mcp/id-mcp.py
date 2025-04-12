@@ -57,7 +57,7 @@ def create_document(
     margins:dict = {"top":36, "bottom":36, "left":36, "right":36}):
 
     command = createCommand("createDocument", {
-        "intent":"DIGITAL",
+        "intent":"WEB_INTENT",
         "pageWidth":width,
         "pageHeight":height,
         "margins":margins,
