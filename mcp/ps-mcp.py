@@ -1127,6 +1127,40 @@ def add_brightness_contrast_adjustment_layer(
 
     return sendCommand(command)
 
+
+@mcp.tool()
+def add_stroke_layer_style(
+    layer_name: str,
+    size: int = 2,
+    color: dict = {"red": 0, "green": 0, "blue": 0},
+    opacity: int = 100,
+    position: str = "CENTER",
+    blend_mode: str = "NORMAL"
+    ):
+    """Adds a stroke layer style to the layer with the specified name.
+    
+    Args:
+        layer_name (str): The name of the layer to apply the stroke effect to.
+        size (int, optional): The width of the stroke in pixels. Defaults to 2.
+        color (dict, optional): The color of the stroke as RGB values. Defaults to black {"red": 0, "green": 0, "blue": 0}.
+        opacity (int, optional): The opacity of the stroke as a percentage (0-100). Defaults to 100.
+        position (str, optional): The position of the stroke relative to the layer content. 
+                                 Options include "CENTER", "INSIDE", or "OUTSIDE". Defaults to "CENTER".
+        blend_mode (str, optional): The blend mode for the stroke effect. Defaults to "NORMAL".
+    """
+
+    command = createCommand("addStrokeLayerStyle", {
+        "layerName":layer_name,
+        "strokeSize":size,
+        "color":color,
+        "opacity":opacity,
+        "position":position,
+        "blendMode":blend_mode
+    })
+
+    return sendCommand(command)
+
+
 @mcp.tool()
 def add_vibrance_adjustment_layer(
     layer_name: str,
@@ -1310,38 +1344,10 @@ def get_instructions() -> str:
     fonts: {", ".join(font_names)}
     """
 
-"""
-@mcp.resource("config://get_option_info")
-def get_option_info() -> dict:
-    Returns valid options for API calls
-    return {
-        "alignment_modes":alignment_modes,
-        "justification_modes":justification_modes,
-        "blend_modes":blend_modes,
-        "fonts": fonts,
-        "anchor_positions":anchor_positions,
-        "interpolation_methods":interpolation_methods
-    }
-"""
-
 
 
 def sendCommand(command:dict):
-    #url = "http://127.0.0.1:3030/commands/add/"
 
-    #data = json.dumps(command)
-
-    """
-    headers = {
-        'Content-Type': 'application/json'
-    }
-
-    response = requests.post(url, data=data, headers=headers)
-
-    print(f"Status Code: {response.status_code}")
-    print("Response Content:")
-    print(response.json())"
-    """
 
     response = socket_client.send_message_blocking(command)
     

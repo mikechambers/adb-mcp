@@ -463,67 +463,93 @@ const flattenAllLayers = async (command) => {
     });
 };
 
-/*
-let exportPng = async (command) => {
-    let options = command.options;
+const addStrokeLayerStyle = async (command) => {
+    const options = command.options
 
-    let filename = "foo";
+    const layerName = options.layerName
+
+    let layer = findLayer(layerName)
+
+    if (!layer) {
+        throw new Error(
+            `createMaskFromSelection : Could not find layerName : ${layerName}`
+        );
+    }
+
+    let position = "centeredFrame"
+
+    if (options.position == "INSIDE") {
+        position = "insetFrame"
+    } else if (options.position == "OUTSIDE") {
+        position = "outsetFrame"
+    }
+
 
     await execute(async () => {
-        ///Users/mesh/Library/Application Support/Adobe/UXP/PluginsStorage/PHSP/26/Developer/Photoshop MCP Agent/PluginData/foo.png
+        selectLayer(layer, true);
 
-        let fileName = "foo";
-        var saveFolder =
-            await require("uxp").storage.localFileSystem.getDataFolder();
-        var saveFile = await saveFolder.createFile(fileName + ".png");
-        console.log(saveFile.nativePath);
-        const saveFileToken =
-            await require("uxp").storage.localFileSystem.createSessionToken(
-                saveFile
-            );
+        let strokeColor = options.color
         let commands = [
+            // Set Layer Styles of current layer
             {
-                _obj: "save",
-                as: {
-                    _obj: "PNGFormat",
-                    method: {
-                        _enum: "PNGMethod",
-                        _value: "quick",
+                "_obj": "set",
+                "_target": [
+                    {
+                        "_property": "layerEffects",
+                        "_ref": "property"
                     },
-                    PNGInterlaceType: {
-                        _enum: "PNGInterlaceType",
-                        _value: "PNGInterlaceNone",
+                    {
+                        "_enum": "ordinal",
+                        "_ref": "layer",
+                        "_value": "targetEnum"
+                    }
+                ],
+                "to": {
+                    "_obj": "layerEffects",
+                    "frameFX": {
+                        "_obj": "frameFX",
+                        "color": {
+                            "_obj": "RGBColor",
+                            "blue": strokeColor.blue,
+                            "grain": strokeColor.green,
+                            "red": strokeColor.red
+                        },
+                        "enabled": true,
+                        "mode": {
+                            "_enum": "blendMode",
+                            "_value": options.blendMode.toLowerCase()
+                        },
+                        "opacity": {
+                            "_unit": "percentUnit",
+                            "_value": options.opacity
+                        },
+                        "overprint": false,
+                        "paintType": {
+                            "_enum": "frameFill",
+                            "_value": "solidColor"
+                        },
+                        "present": true,
+                        "showInDialog": true,
+                        "size": {
+                            "_unit": "pixelsUnit",
+                            "_value": options.strokeSize
+                        },
+                        "style": {
+                            "_enum": "frameStyle",
+                            "_value": position
+                        }
                     },
-                    PNGFilter: {
-                        _enum: "PNGFilter",
-                        _value: "PNGFilterAdaptive",
-                    },
-                    compression: 6,
-                },
-                in: {
-                    _path: saveFileToken,
-                    _kind: "local",
-                },
-                saveStage: {
-                    _enum: "saveStageType",
-                    _value: "saveBegin",
-                },
-                _isCommand: false,
-                _options: {
-                    dialogOptions: "dontDisplay",
-                },
-            },
+                    "scale": {
+                        "_unit": "percentUnit",
+                        "_value": 100.0
+                    }
+                }
+            }
         ];
+
         await action.batchPlay(commands, {});
     });
-};
-
-async function saveFileToFolder(userFolder, fileName = "test") {
-    const file = await userFolder.createFile(`${fileName}.jpg`);
-    const activeDocument = require("photoshop").app.activeDocument;
-    return activeDocument.save(file);
 }
-    */
 
 const createMaskFromSelection = async (command) => {
     console.log("createMaskFromSelection");
@@ -2004,6 +2030,7 @@ const groupLayers = async (command) => {
 }
 
 const commandHandlers = {
+    addStrokeLayerStyle,
     saveDocumentAs,
     saveDocument,
     groupLayers,
@@ -2028,7 +2055,6 @@ const commandHandlers = {
     flipLayer,
     deleteLayer,
     setLayerVisibility,
-    //exportPng,
     moveLayer,
     removeBackground,
     createDocument,
