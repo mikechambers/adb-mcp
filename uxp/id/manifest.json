@@ -1,0 +1,107 @@
+{
+  "id": "InDesign MCP Agent",
+  "name": "InDesign MCP Agent",
+  "version": "0.85.0",
+  "main": "index.html",
+  "host": [
+      {
+        "app": "ID",
+        "minVersion": "20.2.0"
+      }
+  ],
+  "manifestVersion": 5,
+  "entrypoints": [
+    {
+      "type": "panel",
+      "id": "vanilla",
+      "minimumSize": {
+        "width": 300,
+        "height": 200
+      },
+      "maximumSize": {
+        "width": 300,
+        "height": 200
+      },
+      "preferredDockedSize": {
+        "width": 300,
+        "height": 200
+      },
+      "preferredFloatingSize": {
+        "width": 300,
+        "height": 200
+      },
+      "icons": [
+        {
+          "width": 32,
+          "height": 32,
+          "path": "icons/icon_D.png",
+          "scale": [
+            1,
+            2
+          ],
+          "theme": [
+            "dark",
+            "darkest"
+          ],
+          "species": [
+            "generic"
+          ]
+        },
+        {
+          "width": 32,
+          "height": 32,
+          "path": "icons/icon_N.png",
+          "scale": [
+            1,
+            2
+          ],
+          "theme": [
+            "lightest",
+            "light"
+          ],
+          "species": [
+            "generic"
+          ]
+        }
+      ],
+      "label": {
+        "default": "Premiere MCP Agent"
+      }
+    }
+  ],
+  "requiredPermissions": {
+    "network": {
+      "domains": "all"
+    },
+    "localFileSystem": "fullAccess"
+  },
+  "icons": [
+    {
+      "width": 23,
+      "height": 23,
+      "path": "icons/dark.png",
+      "scale": [
+        1,
+        2
+      ],
+      "theme": [
+        "darkest",
+        "dark",
+        "medium"
+      ]
+    },
+    {
+      "width": 23,
+      "height": 23,
+      "path": "icons/light.png",
+      "scale": [
+        1,
+        2
+      ],
+      "theme": [
+        "lightest",
+        "light"
+      ]
+    }
+  ]
+}

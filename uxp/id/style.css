@@ -1,0 +1,22 @@
+body {
+  color: white;
+  padding: 16px;
+  font-family: Arial, sans-serif;
+}
+
+li:before {
+  content: '• ';
+  width: 3em;
+}
+
+#layers {
+  border: 1px solid #808080;
+  border-radius: 4px;
+  padding: 16px;
+}
+
+footer {
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
+}
