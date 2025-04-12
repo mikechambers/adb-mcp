@@ -38,7 +38,6 @@ const parseAndRouteCommands = async (commands) => {
     }
 
     for (let c of commands) {
-        console.log(c.name)
         await parseAndRouteCommand(c);
     }
 };
@@ -52,6 +51,7 @@ const parseAndRouteCommand = async (command) => {
         throw new Error(`Unknown Command: ${action}`);
     }
 
+    console.log(c.name)
     return f(command);
 };
 
