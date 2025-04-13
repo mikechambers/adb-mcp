@@ -1179,10 +1179,8 @@ def add_black_and_white_adjustment_layer(
                       conversion. Must include all keys: red, yellow, green, cyan, blue, magenta.
         tint (bool, optional): Whether to apply a color tint to the black and white result.
                               Defaults to False.
-        tint_color (dict, optional): The RGB color to use for tinting, specified as a dictionary
+        tint_color (dict, optional): The RGB color dict to use for tinting
                                     with "red", "green", and "blue" keys (values 0-255).
-                                    Defaults to a sepia tone {"red": 225, "green": 211, "blue": 179}.
-
     """
 
     command = createCommand("addAdjustmentLayerBlackAndWhite", {
