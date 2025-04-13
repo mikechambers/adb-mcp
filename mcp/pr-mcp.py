@@ -59,13 +59,8 @@ def create_project(directory_path: str, project_name: str):
     The function initializes an empty project with default settings.
 
     Args:
-        directory_path (str): The full path to the directory where the project file will be saved.
-                                This directory must exist before calling the function.
-        project_name (str): The name to be given to the project file. The '.prproj' extension
-                            will be added.
-
-    Returns:
-        None
+        directory_path (str): The full path to the directory where the project file will be saved. This directory must exist before calling the function.
+        project_name (str): The name to be given to the project file. The '.prproj' extension will be added.
     """
 
     command = createCommand("createProject", {
@@ -86,20 +81,6 @@ def set_audio_track_mute(audio_track_index: int, mute: bool):
             - True: Mutes the track (audio will not be played)
             - False: Unmutes the track (audio will be played normally)
 
-    Returns:
-        None
-
-    Example:
-        # Mute the first audio track (index 0)
-        set_audio_track_mute(audio_track_index=0, mute=True)
-
-        # Unmute the second audio track (index 1)
-        set_audio_track_mute(audio_track_index=1, mute=False)
-
-    Notes:
-        - This function affects the entire track, including all audio clips placed on it
-        - Muting a track is different from disabling individual clips - it's a global setting for the track
-        - This is useful for quickly toggling entire audio tracks without having to disable individual clips
     """
 
     command = createCommand("setAudioTrackMute", {
@@ -120,9 +101,6 @@ def create_sequence_from_media(item_names: list[str], sequence_name: str = "defa
     Args:
         item_names (list[str]): A list of project item names to include in the sequence in the desired order.
         sequence_name (str, optional): The name to give the new sequence. Defaults to "default".
-    
-    Returns:
-        None
     """
 
 
@@ -144,9 +122,6 @@ def add_media_to_active_sequence(item_name: str, video_track_index: int, audio_t
         audio_track_index (int, optional): The index of the audio track where the item should be inserted. Defaults to 0.0.
         insertion_time_ticks (int, optional): The position on the timeline in ticks, with 0 being the beginning. The API will return positions of existing clips in ticks
         overwrite (bool, optional): Whether to overwrite existing content at the insertion point. Defaults to True. If False, any existing clips that overlap will be split and item inserted.
-
-    Returns:
-        None
     """
 
 
@@ -172,9 +147,6 @@ def set_audio_clip_disabled(audio_track_index: int, track_item_index: int, disab
         disabled (bool): Whether to disable the clip.
             - True: Disables the clip (clip will not be visible during playback or export)
             - False: Enables the clip (normal visibility)
-    
-    Returns:
-        None
     """
 
     command = createCommand("setAudioClipDisabled", {
@@ -196,9 +168,6 @@ def set_video_clip_disabled(video_track_index: int, track_item_index: int, disab
         disabled (bool): Whether to disable the clip.
             - True: Disables the clip (clip will not be visible during playback or export)
             - False: Enables the clip (normal visibility)
-    
-    Returns:
-        None
     """
 
     command = createCommand("setVideoClipDisabled", {
@@ -221,9 +190,6 @@ def add_black_and_white_effect(video_track_index: int, track_item_index: int):
             
         track_item_index (int): The index of the clip within the track to apply the effect to.
             Clip indices start at 0 for the first clip in the track and increment from left to right.
-    
-    Returns:
-        None
     """
 
     command = createCommand("appendVideoFilter", {
@@ -318,9 +284,6 @@ def add_motion_blur_effect(video_track_index: int, track_item_index: int, direct
             - 270: Horizontal blur to the left
             
         length (int): The intensity or distance of the blur effect, ranging from 0 to 1000.
-    
-    Returns:
-        None
     """
 
     command = createCommand("appendVideoFilter", {
@@ -352,10 +315,7 @@ def append_video_transition(video_track_index: int, track_item_index: int, trans
                                 - 0.0 places transition entirely on the right (later) clip
                                 - 0.5 centers the transition equally between both clips (default)
                                 - 1.0 places transition entirely on the left (earlier) clip
-        
-    Returns:
-        None
-        
+ 
     Valid Transition Names:
         Basic Transitions (ADBE):
             - "ADBE Additive Dissolve"
@@ -417,9 +377,6 @@ def set_video_clip_properties(video_track_index: int, track_item_index: int, opa
         blend_mode (str, optional): The blend mode to apply to the clip.
             Must be one of the valid blend modes supported by Premiere Pro.
             Defaults to "NORMAL".
-
-    Returns:
-        None
     """
 
     command = createCommand("setVideoClipProperties", {
@@ -446,55 +403,6 @@ def import_media(file_paths:list):
     })
 
     return sendCommand(command)
-
-"""
-@mcp.tool()
-def get_sequences():
- 
-    Retrieves a list of sequences in the active Premiere project.
-
-    Args:
-        None
-
-    Returns:
-        list: A list containing dicts with the following information:
-            - name (str): The name of the sequences.
-            - id (str): The globally unique identifier (GUID) of the project as a string.
-
-
-    command = createCommand("getSequences", {
-
-    })
-
-    return sendCommand(command)
-
-   
-
-
-@mcp.tool()
-def get_active_project_info():
-
-    Retrieves basic information about the currently active Premiere project.
-
-    This function queries the currently open Premiere Pro project and returns 
-    information about the ative project.
-
-    Args:
-        None
-
-    Returns:
-        dict: A dictionary containing the following project information:
-            - name (str): The name of the project file.
-            - path (str): The full file path to the project.
-            - id (str): The globally unique identifier (GUID) of the project as a string.
-
-
-    command = createCommand("getActiveProjectInfo", {
-
-    })
-
-    return sendCommand(command)
-"""
 
 @mcp.resource("config://get_instructions")
 def get_instructions() -> str:

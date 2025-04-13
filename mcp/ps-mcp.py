@@ -57,48 +57,22 @@ def create_gradient_adjustment_layer(
     color_stops: list,
     opacity_stops: list):
     """
-    Creates a gradient on the specified layer.
+    Applies gradient to active selection or entire layer if no selection exists.
 
-    The gradient is applied either within the active selection or across the entire layer if no selection exists.
-
-    Color stops define specific points along the gradient where colors transition, with the first stop at location 0, the last at 100, and any additional stops in between determining how the gradient blends between colors.
-
-    Opacity stops work the same way, specifying points along the gradient where transparency levels change, controlling how smoothly or sharply the opacity transitions from one stop to another.
+    Color stops define transition points along the gradient (0-100), with color blending between stops. Opacity stops similarly control transparency transitions.
 
     Args:
-        layer_name (str): Name of the layer to apply the gradient to.
-        angle (int): The angle (-180 to 180) at which the gradient is applied.
-        type (str): The type of gradient. LINEAR or RADIAL.
-        color_stops (list): A list of dictionaries defining color stops.
-            Each dictionary contains:
-                - location (int): Position of the color stop (0 to 100) along the gradient.
-                - color (dict): RGB values defining the color at this stop.
-                    - red (int): 0-255
-                    - green (int): 0-255
-                    - blue (int): 0-255
-                - midpoint (int): Defines the bias of the transition between adjacent color stops (0-100, default is 50).
-        opacity_stops (list): A list of dictionaries defining opacity stops.
-            Each dictionary contains:
-                - location (int): Position of the opacity stop (0 to 100) along the gradient.
-                - opacity (int): Opacity level (0 = fully transparent, 100 = fully opaque).
-                - midpoint (int): Defines the transition bias between opacity stops (0-100, default is 50).
-
-    Example:
-        color_stops = [
-            {"location": 0, "color": {"red": 0, "green": 0, "blue": 0}, "midpoint": 50},
-            {"location": 100, "color": {"red": 255, "green": 255, "blue": 255}, "midpoint": 50}
-        ]
-
-        opacity_stops = [
-            {"location": 0, "opacity": 0, "midpoint": 50},
-            {"location": 100, "opacity": 100, "midpoint": 50}
-        ]
- 
-    Returns:
-        dict: Response from the Photoshop operation
-        
-    Raises:
-        RuntimeError: If the operation fails or times out
+        layer_name (str): Layer to apply gradient to.
+        angle (int): Gradient angle (-180 to 180).
+        type (str): LINEAR or RADIAL gradient.
+        color_stops (list): Dictionaries defining color stops:
+            - location (int): Position (0-100) along gradient.
+            - color (dict): RGB values (0-255 for red/green/blue).
+            - midpoint (int): Transition bias (0-100, default 50).
+        opacity_stops (list): Dictionaries defining opacity stops:
+            - location (int): Position (0-100) along gradient.
+            - opacity (int): Level (0=transparent, 100=opaque).
+            - midpoint (int): Transition bias (0-100, default 50).
     """
 
     command = createCommand("createGradientAdjustmentLayer", {
@@ -212,39 +186,12 @@ def get_layers() -> list:
             Each dict has at minimum a 'name' key with the layer name.
             If a layer has sublayers, they will be contained in a 'layers' key which contains another list of layer dicts.
             Example: [{'name': 'Group 1', 'layers': [{'name': 'Layer 1'}, {'name': 'Layer 2'}]}, {'name': 'Background'}]
-            
-    Raises:
-        RuntimeError: If the operation fails or times out
     """
 
     command = createCommand("getLayers", {})
 
     return sendCommand(command)
 
-"""
-@mcp.tool()
-def create_mask_from_selection(
-    layer_name: str
-):
-    Creates a mask from the current selection on the layer with the specified name.
-
-    Args:
-        layer_name (str): Name of the layer on which the mask will be created and applied.
-        
-    Returns:
-        dict: Response from the Photoshop operation
-        
-    Raises:
-        RuntimeError: If the operation fails or times out
-
-    
-    command = createCommand("createMaskFromSelection", {
-        "layerName":layer_name
-    })
-
-    return sendCommand(command)
-
-"""
 
 @mcp.tool()
 def place_image(
@@ -258,9 +205,6 @@ def place_image(
     Args:
         layer_name (str): The name of the layer where the image will be placed.
         image_path (str): The file path to the image that will be placed on the layer.
-
-    Raises:
-        RuntimeError: If the operation fails or times out
     """
     
     command = createCommand("placeImage", {
@@ -282,8 +226,6 @@ def rename_layer(
         layer_name (str): Name of the layer to be renamed.
         new_layer_name (str): New name for the layer.
 
-    Raises:
-        RuntimeError: If the operation fails or times out
     """
     
     command = createCommand("renameLayer", {
@@ -463,8 +405,6 @@ def get_document_info():
             - saved (bool): Whether the document has been saved (True if it has a valid file path).
             - hasUnsavedChanges (bool): Whether the document contains unsaved changes.
 
-    Raises:
-        RuntimeError: If the operation fails or times out or if there is not currently and active document
     """
 
     command = createCommand("getDocumentInfo", {})
@@ -593,9 +533,6 @@ def copy_selection_to_clipboard(layer_name: str):
         
     Returns:
         dict: Response from the Photoshop operation indicating success status.
-        
-    Raises:
-        RuntimeError: If no active selection exists or if the specified layer doesn't exist.
     """
 
     command = createCommand("copySelectionToClipboard", {
@@ -1233,8 +1170,7 @@ def add_black_and_white_adjustment_layer(
 ):
     """Adds a Black & White adjustment layer to the specified layer.
     
-    Creates an adjustment layer that converts the target layer to black and white with customizable
-    color channel conversions. Optionally applies a color tint to the result.
+    Creates an adjustment layer that converts the target layer to black and white. Optionally applies a color tint to the result.
     
     Args:
         layer_name (str): The name of the layer to apply the black and white adjustment to.
@@ -1246,23 +1182,7 @@ def add_black_and_white_adjustment_layer(
         tint_color (dict, optional): The RGB color to use for tinting, specified as a dictionary
                                     with "red", "green", and "blue" keys (values 0-255).
                                     Defaults to a sepia tone {"red": 225, "green": 211, "blue": 179}.
-    
-    Returns:
-        dict: Response from the Photoshop operation with status information.
-        
-    Raises:
-        RuntimeError: If the operation fails or times out.
-        
-    Example:
-        # Apply default black and white adjustment
-        add_black_and_white_adjustment_layer("Portrait")
-        
-        # Apply black and white with custom color conversion and sepia tint
-        add_black_and_white_adjustment_layer(
-            layer_name="Portrait",
-            colors={"red": 60, "yellow": 40, "green": 30, "cyan": 50, "blue": 10, "magenta": 80},
-            tint=True
-        )
+
     """
 
     command = createCommand("addAdjustmentLayerBlackAndWhite", {
