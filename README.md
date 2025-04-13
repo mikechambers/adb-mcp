@@ -16,7 +16,7 @@ Example use cases include:
 
 [View Video Examples](https://www.youtube.com/playlist?list=PLrZcuHfRluqt5JQiKzMWefUb0Xumb7MkI)
 
-Currently for Photoshop the AI agent can get some information back from Photoshop which enables it to check its work. However, it cannot automatically see its work (i.e. get images from Photoshop). This should be possible, but is not yet implemented. In the meantime, you can copy and past from Photoshop into Claude desktop.
+Currently for Photoshop the AI agent can get some information back from Photoshop which enables it to check its work. However, it cannot automatically see its work (i.e. get images from Photoshop). This should be possible, but is not yet implemented. In the meantime, you can copy and paste from Photoshop into Claude desktop.
 
 The Premiere agent is a bit more limited in functionality compared to the Photoshop agent, due to current limitations of the Premiere plugin API.
 
