@@ -50,7 +50,7 @@ socket_client.configure(
 )
 
 @mcp.tool()
-def create_gradient_adjustment_layer(
+def create_gradient_layer_style(
     layer_name: str,
     angle: int,
     type:str,
@@ -75,7 +75,7 @@ def create_gradient_adjustment_layer(
             - midpoint (int): Transition bias (0-100, default 50).
     """
 
-    command = createCommand("createGradientAdjustmentLayer", {
+    command = createCommand("createGradientLayerStyle", {
         "layerName":layer_name,
         "angle":angle,
         "colorStops":color_stops,
