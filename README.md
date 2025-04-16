@@ -247,6 +247,22 @@ By default, the AI cannot access files directly, although if you install the [Cl
 
 ### Troubleshooting
 
+#### Plugin won't install or connect
+
+1. Make sure the app is running before you try to load the plugin.
+2. In the UXP developer tool click the debug button next to load, and see if there are any errors.
+3. Make sure the node / proxy server is running. If you plugin connects you should see output similar to:
+
+```
+adb-mcp Command proxy server running on ws://localhost:3001
+User connected: Ud6L4CjMWGAeofYAAAAB
+Client Ud6L4CjMWGAeofYAAAAB registered for application: photoshop
+```
+
+4. When you press the connect button, if it still say connect it means there was either an error, or it can't connect to the proxy server.
+
+#### Errors within AI client
+
 * If something fails on the AI side, it will usually tell you the issue. If you click the command / code box, you can see the error.
 * The first thing to check if there is an issue is to make sure the plugin in Photoshop / Premiere is connected, and that the node proxy server is running.
 * If response times get really slow, check if the AI servers are under load, and that you do not have too much text in the current conversation (restarting a new chat can sometimes help speed up, but you will lose the context).
