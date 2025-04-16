@@ -249,9 +249,9 @@ By default, the AI cannot access files directly, although if you install the [Cl
 
 #### Plugin won't install or connect
 
-1. Make sure the app is running before you try to load the plugin.
-2. In the UXP developer tool click the debug button next to load, and see if there are any errors.
-3. Make sure the node / proxy server is running. If you plugin connects you should see output similar to:
+*   Make sure the app is running before you try to load the plugin.
+*   In the UXP developer tool click the debug button next to load, and see if there are any errors.
+*   Make sure the node / proxy server is running. If you plugin connects you should see output similar to:
 
 ```
 adb-mcp Command proxy server running on ws://localhost:3001
@@ -259,7 +259,7 @@ User connected: Ud6L4CjMWGAeofYAAAAB
 Client Ud6L4CjMWGAeofYAAAAB registered for application: photoshop
 ```
 
-4. When you press the connect button, if it still say connect it means there was either an error, or it can't connect to the proxy server.
+*   When you press the connect button, if it still say connect it means there was either an error, or it can't connect to the proxy server.
 
 #### Errors within AI client
 
