@@ -115,6 +115,31 @@ def create_document(document_name: str, width: int, height:int, resolution:int, 
     return sendCommand(command)
 
 @mcp.tool()
+def export_layer_as_png(layer_name: str, dir_path: str):
+    """Exports a specific layer from the Photoshop document as a PNG file.
+    
+    This function selects the specified layer and exports it as a PNG image file to the 
+    provided directory path. The layer must exist in the currently open document.
+    The exported PNG will have the same name as the layer.
+    
+    Args:
+        layer_name (str): The name of the layer to export as PNG.
+            This layer must exist in the current document.
+        dir_path (str): The absolute path to the directory where the PNG file will be saved.
+            If the directory does not exist, it will be created.
+            The filename will be generated from the layer name.
+    """
+    
+    command = createCommand("exportLayerAsPng", {
+        "layerName":layer_name,
+        "dirPath":dir_path
+        
+    })
+
+    return sendCommand(command)
+
+
+@mcp.tool()
 def save_document_as(file_path: str, file_type: str = "PSD"):
     """Saves the current Photoshop document to the specified location and format.
     

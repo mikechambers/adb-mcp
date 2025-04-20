@@ -23,6 +23,15 @@
 
 const { app, constants, core } = require("photoshop");
 const fs = require("uxp").storage.localFileSystem;
+const openfs = require('fs')
+
+const createFile = async (filePath) => {
+    let url = `file:${filePath}`
+    const fd = await openfs.open(url, "a+");
+    await openfs.close(fd)
+
+    return url
+}
 
 const parseColor = (color) => {
     try {
@@ -166,7 +175,69 @@ const hasActiveSelection = () => {
     return app.activeDocument.selection.bounds != null;
 };
 
+const getMostRecentlyModifiedFile = async (directoryPath)  => {
+    try {
+      // Get directory contents
+      const dirEntries = await openfs.readdir(directoryPath);
+      
+      const fileDetails = [];
+      
+      // Process each file
+      let i = 0
+      for (const entry of dirEntries) {
+        console.log(i++)
+        const filePath = window.path.join(directoryPath, entry);
+        
+        // Get file stats using lstat
+        try {
+          const stats = await openfs.lstat(filePath);
+
+          // Skip if it's a directory
+          if (stats.isDirectory()) {
+            continue;
+          }
+          
+          fileDetails.push({
+            name: entry,
+            path: filePath,
+            modifiedTime: stats.mtime,  // Date object
+            modifiedTimestamp: stats.mtimeMs  // Use mtimeMs directly instead of getTime()
+          });
+        } catch (err) {
+          console.log(`Error getting stats for ${filePath}:`, err);
+          // Continue to next file if there's an error with this one
+          continue;
+        }
+      }
+      
+      if (fileDetails.length === 0) {
+        return null;
+      }
+      
+      // Sort by modification timestamp (newest first)
+      fileDetails.sort((a, b) => b.modifiedTimestamp - a.modifiedTimestamp);
+      
+      // Return the most recently modified file
+      return fileDetails[0];
+    } catch (err) {
+      console.error('Error getting most recently modified file:', err);
+      return null;
+    }
+  }
+
+  const fileExists = async (filePath) => {
+    try {
+      await openfs.lstat(`file:${filePath}`);
+      return true;
+    } catch (error) {
+        return false;
+    }
+  }
+
 module.exports = {
+    getMostRecentlyModifiedFile,
+    fileExists,
+    createFile,
     parseColor,
     getAlignmentMode,
     getJustificationMode,

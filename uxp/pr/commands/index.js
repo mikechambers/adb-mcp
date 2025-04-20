@@ -22,7 +22,7 @@
  */
 
 const fs = require("uxp").storage.localFileSystem;
-const openfs = require('fs')
+//const openfs = require('fs')
 const app = require("premierepro");
 const {consts, BLEND_MODES} = require("./consts.js")
 

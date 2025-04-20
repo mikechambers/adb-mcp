@@ -22,7 +22,10 @@
  */
 
 const { app, constants, action } = require("photoshop");
+const fs = require("uxp").storage.localFileSystem;
+
 const {
+    createFile,
     findLayer,
     execute,
     parseColor,
@@ -32,7 +35,48 @@ const {
     getJustificationMode,
     selectLayer,
     hasActiveSelection,
+    tokenify,
 } = require("./utils");
+
+
+const exportLayerAsPng = async (command) => {
+    let options = command.options;
+    let layerName = options.layerName;
+    let layer = findLayer(layerName);
+
+    if (!layer) {
+        throw new Error(
+            `scaleLayer : Could not find layer named : [${layerName}]`
+        );
+    }
+
+    let dirPath = options.dirPath;
+
+    await execute(async () => {
+        
+        selectLayer(layer, true);
+ 
+        const command = {
+            _obj: 'exportSelectionAsFileTypePressed',
+            _target: { _ref: 'layer', _enum: 'ordinal', _value: 'targetEnum' },
+            fileType: 'png',
+            quality: 32,
+            metadata: 0,
+            destFolder: dirPath, //type: string not entry
+            sRGB: true,
+            openWindow: false,
+            _options: { dialogOptions: 'dontDisplay' }
+          };
+
+        await action.batchPlay([command], {});
+    });
+
+    //let f = await getMostRecentlyModifiedFile(path.dir)
+    return {
+        layerName: layerName,
+        filePath:window.path.join(dirPath, `${layerName}.png`)}
+};
+
 
 const scaleLayer = async (command) => {
     let options = command.options;
@@ -626,6 +670,7 @@ const addLayerMask = async (command) => {
 };
 
 const commandHandlers = {
+    exportLayerAsPng,
     removeLayerMask,
     addLayerMask,
     getLayers,
