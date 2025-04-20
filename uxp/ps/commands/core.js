@@ -322,40 +322,12 @@ const saveDocument = async (command) => {
     });
 };
 
+
+
 const saveDocumentAs = async (command) => {
     let options = command.options
 
-    let filePath = options.filePath
-
-    let url = await createFile(filePath)
-
-    let saveFile = await fs.getEntryWithUrl(url);
-
-    //let tmp = await openfs.rename(`file:${ps}.png`, `file:${ps}`);
-
-    return await execute(async () => {
-
-        let fileType = options.fileType.toUpperCase()
-        if (fileType == "JPG") {
-            await app.activeDocument.saveAs.jpg(saveFile, {
-                quality:9
-            }, true)
-        } else if (fileType == "PNG") {
-            await app.activeDocument.saveAs.png(saveFile, {
-            }, true)
-        } else {
-            await app.activeDocument.saveAs.psd(saveFile, {
-                alphaChannels:true,
-                annotations:true,
-                embedColorProfile:true,
-                layers:true,
-                maximizeCompatibility:true,
-                spotColor:true,
-            }, true)
-        }
-
-        return {savedFilePath:saveFile.nativePath}
-    });
+    return await _saveDocumentAs(options.filePath, options.fileType)
 };
 
 const createDocument = async (command) => {

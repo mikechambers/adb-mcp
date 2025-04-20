@@ -115,28 +115,30 @@ def create_document(document_name: str, width: int, height:int, resolution:int, 
     return sendCommand(command)
 
 @mcp.tool()
-def export_layer_as_png(layer_name: str, dir_path: str):
-    """Exports a specific layer from the Photoshop document as a PNG file.
+def export_layers_as_png(layers_info: list[dict[str, str]]):
+    """Exports multiple layers from the Photoshop document as PNG files.
     
-    This function selects the specified layer and exports it as a PNG image file to the 
-    provided directory path. The layer must exist in the currently open document.
-    The exported PNG will have the same name as the layer.
+    This function exports each specified layer as a separate PNG image file to its 
+    corresponding file path. During the export process, all other layers are temporarily 
+    hidden to ensure clean exports. The original visibility state of all layers is restored 
+    after the export completes.
     
     Args:
-        layer_name (str): The name of the layer to export as PNG.
-            This layer must exist in the current document.
-        dir_path (str): The absolute path to the directory where the PNG file will be saved.
-            If the directory does not exist, it will be created.
-            The filename will be generated from the layer name.
+        layers_info (list[dict[str, str]]): A list of dictionaries containing the export information.
+            Each dictionary must have the following keys:
+                - "layerName" (str): The name of the layer to export as PNG. 
+                   This layer must exist in the current document.
+                - "filePath" (str): The absolute file path including filename where the PNG
+                   will be saved (e.g., "/path/to/directory/layername.png").
+                   The parent directory must already exist or the export will fail.
     """
     
-    command = createCommand("exportLayerAsPng", {
-        "layerName":layer_name,
-        "dirPath":dir_path
-        
+    command = createCommand("exportLayersAsPng", {
+        "layersInfo":layers_info
     })
 
     return sendCommand(command)
+
 
 
 @mcp.tool()

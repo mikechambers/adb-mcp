@@ -127,6 +127,21 @@ const clearLayerSelections = (layers) => {
     }
 };
 
+const setVisibleAllLayers = (visible, layers) => {
+    if (!layers) {
+        layers = app.activeDocument.layers;
+    }
+
+    for (const layer of layers) {
+        layer.visible = visible
+
+        if (layer.layers && layer.layers.length > 0) {
+            setVisibleAllLayers(visible, layer.layers)
+        }
+    }
+};
+
+
 const findLayer = (name, layers) => {
     if (!layers) {
         layers = app.activeDocument.layers;
@@ -149,6 +164,36 @@ const findLayer = (name, layers) => {
     return null;
 };
 
+const _saveDocumentAs = async (filePath, fileType) => {
+
+    let url = await createFile(filePath)
+
+    let saveFile = await fs.getEntryWithUrl(url);
+
+    return await execute(async () => {
+
+        fileType = fileType.toUpperCase()
+        if (fileType == "JPG") {
+            await app.activeDocument.saveAs.jpg(saveFile, {
+                quality:9
+            }, true)
+        } else if (fileType == "PNG") {
+            await app.activeDocument.saveAs.png(saveFile, {
+            }, true)
+        } else {
+            await app.activeDocument.saveAs.psd(saveFile, {
+                alphaChannels:true,
+                annotations:true,
+                embedColorProfile:true,
+                layers:true,
+                maximizeCompatibility:true,
+                spotColor:true,
+            }, true)
+        }
+
+        return {savedFilePath:saveFile.nativePath}
+    });
+};
 
 const execute = async (callback, commandName = "Executing command...") => {
     try {
@@ -235,6 +280,8 @@ const getMostRecentlyModifiedFile = async (directoryPath)  => {
   }
 
 module.exports = {
+    setVisibleAllLayers,
+    _saveDocumentAs,
     getMostRecentlyModifiedFile,
     fileExists,
     createFile,
