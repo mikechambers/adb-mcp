@@ -79,7 +79,6 @@ const exportLayersAsPng = async (command) => {
     let options = command.options;
     let layersInfo = options.layersInfo;
 
-    console.log(options)
     const results = [];
 
     
@@ -91,7 +90,7 @@ const exportLayersAsPng = async (command) => {
     
     for(const info of layersInfo) {
         let result = {};
-        console.log(info)
+ 
         let layer = findLayer(info.layerName);
 
         try {
