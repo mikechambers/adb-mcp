@@ -25,7 +25,6 @@ const { app, constants, action } = require("photoshop");
 const fs = require("uxp").storage.localFileSystem;
 
 const {
-    createFile,
     findLayer,
     execute,
     parseColor,
