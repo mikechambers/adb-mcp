@@ -119,9 +119,7 @@ def export_layers_as_png(layers_info: list[dict[str, str]]):
     """Exports multiple layers from the Photoshop document as PNG files.
     
     This function exports each specified layer as a separate PNG image file to its 
-    corresponding file path. During the export process, all other layers are temporarily 
-    hidden to ensure clean exports. The original visibility state of all layers is restored 
-    after the export completes.
+    corresponding file path. The entire layer, including transparent space will be saved.
     
     Args:
         layers_info (list[dict[str, str]]): A list of dictionaries containing the export information.
