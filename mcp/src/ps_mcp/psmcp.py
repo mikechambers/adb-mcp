@@ -47,7 +47,7 @@ socket_client.configure(
 )
 
 @mcp.tool()
-def create_gradient_adjustment_layer(
+def create_gradient_layer_style(
     layer_name: str,
     angle: int,
     type:str,
@@ -72,7 +72,7 @@ def create_gradient_adjustment_layer(
             - midpoint (int): Transition bias (0-100, default 50).
     """
 
-    command = createCommand("createGradientAdjustmentLayer", {
+    command = createCommand("createGradientLayerStyle", {
         "layerName":layer_name,
         "angle":angle,
         "colorStops":color_stops,
@@ -110,6 +110,31 @@ def create_document(document_name: str, width: int, height:int, resolution:int, 
     })
 
     return sendCommand(command)
+
+@mcp.tool()
+def export_layers_as_png(layers_info: list[dict[str, str]]):
+    """Exports multiple layers from the Photoshop document as PNG files.
+    
+    This function exports each specified layer as a separate PNG image file to its 
+    corresponding file path. The entire layer, including transparent space will be saved.
+    
+    Args:
+        layers_info (list[dict[str, str]]): A list of dictionaries containing the export information.
+            Each dictionary must have the following keys:
+                - "layerName" (str): The name of the layer to export as PNG. 
+                   This layer must exist in the current document.
+                - "filePath" (str): The absolute file path including filename where the PNG
+                   will be saved (e.g., "/path/to/directory/layername.png").
+                   The parent directory must already exist or the export will fail.
+    """
+    
+    command = createCommand("exportLayersAsPng", {
+        "layersInfo":layers_info
+    })
+
+    return sendCommand(command)
+
+
 
 @mcp.tool()
 def save_document_as(file_path: str, file_type: str = "PSD"):

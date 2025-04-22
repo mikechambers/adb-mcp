@@ -22,7 +22,10 @@
  */
 
 const { app, constants, action } = require("photoshop");
+const fs = require("uxp").storage.localFileSystem;
+
 const {
+    setVisibleAllLayers,
     findLayer,
     execute,
     parseColor,
@@ -32,7 +35,105 @@ const {
     getJustificationMode,
     selectLayer,
     hasActiveSelection,
+    _saveDocumentAs,
 } = require("./utils");
+
+
+// Function to capture visibility state
+const _captureVisibilityState = (layers) => {
+    const state = new Map();
+    
+    const capture = (layerSet) => {
+        for (const layer of layerSet) {
+            state.set(layer.id, layer.visible);
+            if (layer.layers && layer.layers.length > 0) {
+                capture(layer.layers);
+            }
+        }
+    };
+    
+    capture(layers);
+    return state;
+};
+
+// Function to restore visibility state
+const _restoreVisibilityState = async (state) => {
+    const restore = (layerSet) => {
+        for (const layer of layerSet) {
+            if (state.has(layer.id)) {
+                layer.visible = state.get(layer.id);
+            }
+            
+            if (layer.layers && layer.layers.length > 0) {
+                restore(layer.layers);
+            }
+        }
+    };
+    
+    await execute(async () => {
+        restore(app.activeDocument.layers);
+    });
+};
+
+const exportLayersAsPng = async (command) => {
+    let options = command.options;
+    let layersInfo = options.layersInfo;
+
+    const results = [];
+
+    
+    let originalState;
+    await execute(async () => {
+        originalState = _captureVisibilityState(app.activeDocument.layers);
+        setVisibleAllLayers(false);
+    });
+    
+    for(const info of layersInfo) {
+        let result = {};
+ 
+        let layer = findLayer(info.layerName);
+
+        try {
+            if (!layer) {
+                throw new Error(
+                    `exportLayersAsPng: Could not find layer named: [${info.layerName}]` // Fixed error message
+                );
+            }
+            await execute(async () => {
+                layer.visible = true;
+            });
+
+            let tmp = await _saveDocumentAs(info.filePath, "PNG");
+
+            result = {
+                ...tmp,
+                layerName: info.layerName,
+                success: true
+            };
+
+        } catch (e) {
+            result = {
+                ...info,
+                success: false,
+                message: e.message
+            };
+        } finally {
+            if (layer) {
+                await execute(async () => {
+                    layer.visible = false;
+                });
+            }
+        }
+
+        results.push(result);
+    }
+
+    await execute(async () => {
+        await _restoreVisibilityState(originalState);
+    })
+
+    return results;
+};
 
 const scaleLayer = async (command) => {
     let options = command.options;
@@ -626,6 +727,7 @@ const addLayerMask = async (command) => {
 };
 
 const commandHandlers = {
+    exportLayersAsPng,
     removeLayerMask,
     addLayerMask,
     getLayers,

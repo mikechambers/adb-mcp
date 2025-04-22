@@ -23,9 +23,9 @@
 
 const { app, constants, action } = require("photoshop");
 const fs = require("uxp").storage.localFileSystem;
-const openfs = require('fs')
 
 const {
+    _saveDocumentAs,
     parseColor,
     getAlignmentMode,
     getNewDocumentMode,
@@ -322,42 +322,12 @@ const saveDocument = async (command) => {
     });
 };
 
+
+
 const saveDocumentAs = async (command) => {
     let options = command.options
 
-    let filePath = options.filePath
-    //var folder = await fs.getFolder();
-
-    //make sure the file 
-    let url = `file:${filePath}`
-    const fd = await openfs.open(url, "a+");
-    await openfs.close(fd)
-
-    let saveFile = await fs.getEntryWithUrl(url);
-
-    return await execute(async () => {
-
-        let fileType = options.fileType.toUpperCase()
-        if (fileType == "JPG") {
-            await app.activeDocument.saveAs.jpg(saveFile, {
-                quality:9
-            }, true)
-        } else if (fileType == "PNG") {
-            await app.activeDocument.saveAs.png(saveFile, {
-            }, true)
-        } else {
-            await app.activeDocument.saveAs.psd(saveFile, {
-                alphaChannels:true,
-                annotations:true,
-                embedColorProfile:true,
-                layers:true,
-                maximizeCompatibility:true,
-                spotColor:true,
-            }, true)
-        }
-
-        return {savedFilePath:saveFile.nativePath}
-    });
+    return await _saveDocumentAs(options.filePath, options.fileType)
 };
 
 const createDocument = async (command) => {
