@@ -23,7 +23,6 @@
 
 const { app } = require("photoshop");
 const fs = require("uxp").storage.localFileSystem;
-const openfs = require('fs')
 
 const adjustmentLayers = require("./adjustment_layers");
 const core = require("./core");

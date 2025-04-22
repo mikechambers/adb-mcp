@@ -29,103 +29,6 @@ const {
     execute
 } = require("./utils")
 
-const createGradientAdjustmentLayer = async (command) => {
-
-    let options = command.options;
-    let layerName = options.layerName;
-
-    let layer = findLayer(layerName);
-
-    if (!layer) {
-        throw new Error(
-            `createGradientAdjustmentLayer : Could not find layerName : ${layerName}`
-        );
-    }
-
-    await execute(async () => {
-        selectLayer(layer, true);
-
-        let angle = options.angle;
-        let colorStops = options.colorStops;
-        let opacityStops = options.opacityStops;
-
-        let colors = [];
-        for (let c of colorStops) {
-            colors.push({
-                _obj: "colorStop",
-                color: {
-                    _obj: "RGBColor",
-                    blue: c.color.blue,
-                    grain: c.color.green,
-                    red: c.color.red,
-                },
-                location: Math.round((c.location / 100) * 4096),
-                midpoint: c.midpoint,
-                type: {
-                    _enum: "colorStopType",
-                    _value: "userStop",
-                },
-            });
-        }
-
-        let opacities = [];
-        for (let o of opacityStops) {
-            opacities.push({
-                _obj: "transferSpec",
-                location: Math.round((o.location / 100) * 4096),
-                midpoint: o.midpoint,
-                opacity: {
-                    _unit: "percentUnit",
-                    _value: o.opacity,
-                },
-            });
-        }
-
-        let commands = [
-            // Make fill layer
-            {
-                _obj: "make",
-                _target: [
-                    {
-                        _ref: "contentLayer",
-                    },
-                ],
-                using: {
-                    _obj: "contentLayer",
-                    type: {
-                        _obj: "gradientLayer",
-                        angle: {
-                            _unit: "angleUnit",
-                            _value: angle,
-                        },
-                        gradient: {
-                            _obj: "gradientClassEvent",
-                            colors: colors,
-                            gradientForm: {
-                                _enum: "gradientForm",
-                                _value: "customStops",
-                            },
-                            interfaceIconFrameDimmed: 4096.0,
-                            name: "Custom",
-                            transparency: opacities,
-                        },
-                        gradientsInterpolationMethod: {
-                            _enum: "gradientInterpolationMethodType",
-                            _value: "smooth",
-                        },
-                        type: {
-                            _enum: "gradientType",
-                            _value: options.type.toLowerCase(),
-                        },
-                    },
-                },
-            },
-        ];
-
-        await action.batchPlay(commands, {});
-    });
-};
-
 const addAdjustmentLayerBlackAndWhite = async (command) => {
 
     let options = command.options;
@@ -353,7 +256,6 @@ const addColorBalanceAdjustmentLayer = async (command) => {
 };
 
 const commandHandlers = {
-    createGradientAdjustmentLayer,
     addAdjustmentLayerBlackAndWhite,
     addBrightnessContrastAdjustmentLayer,
     addAdjustmentLayerVibrance,

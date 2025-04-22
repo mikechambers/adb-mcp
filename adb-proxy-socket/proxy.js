@@ -28,6 +28,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { transports: ["websocket"] }); // Enforce WebSockets
 
+const PORT = 3001
 // Track clients by application
 const applicationClients = {};
 
@@ -124,6 +125,6 @@ function sendToApplication(packet) {
 // Example: Use this function elsewhere in your code
 // sendToApplication('photoshop', { message: 'Update available' });
 
-server.listen(3001, () => {
-  console.log('Photoshop MCP Command proxy server running on ws://localhost:3001');
+server.listen(PORT, () => {
+  console.log(`adb-mcp Command proxy server running on ws://localhost:${PORT}`);
 });
