@@ -21,11 +21,10 @@
 # SOFTWARE.
 
 import socketio
-import time
 import threading
 import json
 from queue import Queue
-import logger
+from . import logger
 
 # Global configuration variables
 proxy_url = None
