@@ -21,11 +21,8 @@
 # SOFTWARE.
 
 from mcp.server.fastmcp import FastMCP
-import requests
-import json
-import time
-import socket_client
-import logger
+from . import socket_client
+from . import logger
 import sys
 import os
 
@@ -1322,7 +1319,7 @@ def createCommand(action:str, options:dict) -> str:
 
     return command
 
-from fonts import list_all_fonts_postscript
+from .fonts import list_all_fonts_postscript
 font_names = list_all_fonts_postscript()
 
 interpolation_methods = [
