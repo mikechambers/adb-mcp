@@ -1,7 +1,7 @@
 {
   "id": "Photoshop MCP Agent",
   "name": "Photoshop MCP Agent",
-  "version": "0.85.0",
+  "version": "0.85.1",
   "main": "index.html",
   "host": [
     {
