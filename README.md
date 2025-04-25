@@ -247,6 +247,10 @@ By default, the AI cannot access files directly, although if you install the [Cl
 
 ### Troubleshooting
 
+#### MCP won't run in Claude
+
+If you get an error when running Claude that the MCP is not working, you may need to edit your Claud config file and put an abslute path for the UV command. More info [here](https://github.com/mikechambers/adb-mcp/issues/5#issuecomment-2829817624).
+
 #### Plugin won't install or connect
 
 *   Make sure the app is running before you try to load the plugin.
