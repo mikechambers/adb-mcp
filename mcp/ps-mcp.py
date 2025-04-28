@@ -30,14 +30,15 @@ import sys
 import os
 
 
-logger.log(f"Python path: {sys.executable}")
-logger.log(f"PYTHONPATH: {os.environ.get('PYTHONPATH')}")
-logger.log(f"Current working directory: {os.getcwd()}")
-logger.log(f"Sys.path: {sys.path}")
+#logger.log(f"Python path: {sys.executable}")
+#logger.log(f"PYTHONPATH: {os.environ.get('PYTHONPATH')}")
+#logger.log(f"Current working directory: {os.getcwd()}")
+#logger.log(f"Sys.path: {sys.path}")
 
 
-# Create an MCP server
-mcp = FastMCP("Adobe Photoshop", log_level="ERROR")
+mcp_name = "Adobe Photoshop MCP Server"
+mcp = FastMCP(mcp_name, log_level="ERROR")
+print(f"{mcp_name} running on stdio", file=sys.stderr)
 
 APPLICATION = "photoshop"
 PROXY_URL = 'http://localhost:3001'
