@@ -46,6 +46,28 @@ socket_client.configure(
     timeout=PROXY_TIMEOUT
 )
 
+@mcp.resource(
+    uri="image://{document_id}/{layer_id}",
+    name="get_layer_rendition",
+    description="Returns the png image for the layer with the specified id.",
+    mime_type="image/png"
+    )
+def get_layer_rendition(document_id: str, layer_id: str) -> bytes:
+    """Returns the png image for the layer with the specified id.
+    """
+
+    command = createCommand("getLayerImageData", {"layerID": layer_id})
+    response = sendCommand(command)
+    res = response["response"]
+    width = res["targetBounds"]["right"] - res["targetBounds"]["left"]
+    height = res["targetBounds"]["bottom"] - res["targetBounds"]["top"]
+    image = PILImage.frombytes("RGBA", 
+                (width, height), 
+                 res["imageData"])
+    buffer = BytesIO()
+    image.save(buffer, format="PNG")
+    return buffer.getvalue()
+
 @mcp.tool()
 def create_gradient_layer_style(
     layer_name: str,
@@ -205,7 +227,7 @@ def get_layers() -> list:
         
     Returns:
         list: A nested list of dictionaries containing layer information and hierarchy.
-            Each dict has at minimum a 'name' key with the layer name.
+            Each dict has at minimum a 'name' and 'id' key with the layer name and id.
             If a layer has sublayers, they will be contained in a 'layers' key which contains another list of layer dicts.
             Example: [{'name': 'Group 1', 'layers': [{'name': 'Layer 1'}, {'name': 'Layer 2'}]}, {'name': 'Background'}]
     """
@@ -213,7 +235,6 @@ def get_layers() -> list:
     command = createCommand("getLayers", {})
 
     return sendCommand(command)
-
 
 @mcp.tool()
 def place_image(

@@ -21,7 +21,7 @@
  * SOFTWARE.
  */
 
-const { app, constants, action } = require("photoshop");
+const { app, constants, action, imaging } = require("photoshop");
 const fs = require("uxp").storage.localFileSystem;
 
 const {
@@ -618,37 +618,103 @@ const createPixelLayer = async (command) => {
     });
 };
 
+async function getLayerPixels(layer) {
+    const { bounds } = layer;
+    const layerWidth = bounds.right - bounds.left;
+    const layerHeight = bounds.bottom - bounds.top;
+    if (layerWidth <= 0 || layerHeight <= 0) {
+        return [];
+    }
+    console.log(bounds);
+    const pixelsOpt = {
+      layerID: layer.id,
+      sourceBounds: {
+        left: bounds.left,
+        top: bounds.top,
+        right: bounds.right,
+        bottom: bounds.bottom,
+      },
+      // ,applyAlpha: true
+    }
+    
+    const imageObj = await imaging.getPixels(pixelsOpt);
+    console.log("imageObj", imageObj);
+    const pixels = await imageObj.imageData.getData();
+    const targetBounds = imageObj.sourceBounds;
+
+    // Clean memory usage faster than waiting for Javascript garbage collector to run. 
+    // This is the correct memory management for this process
+    imageObj.imageData.dispose();
+
+    // const bitDepth = parseInt(app.activeDocument.bitsPerChannel.replace("bitDepth", ""));
+    // Return the imageData buffer in bytes, this handles automatically the bitDepth of the PS document.
+    return [pixels, targetBounds];
+  }
+  const getLayerImageData = async (command) => {
+    const options = command.options;
+    const layerID = options.layerID;
+
+    let out = await execute(async () => {
+        let layersList = app.activeDocument.layers;
+        for (let i = 0; i < layersList.length; i++) {
+            let layer = layersList[i];
+            console.log("layer.id", layer.id, layerID);
+            if (layer.id != layerID) {
+                continue;
+            }
+            const [imageData, targetBounds]  = await getLayerPixels(layer);
+            let layerInfo = {
+                id: layer.id,
+                name: layer.name,
+                bounds: layer.bounds,
+                targetBounds: targetBounds,
+                imageData: imageData,
+            };
+
+            return layerInfo;
+        }
+        return {};
+    });
+
+    console.log(out);
+    return out;
+};
+
 const getLayers = async (command) => {
     let out = await execute(async () => {
         let result = [];
 
         // Function to recursively process layers
-        const processLayers = (layersList) => {
+        const processLayers = async (layersList) => {
             let layersArray = [];
 
             for (let i = 0; i < layersList.length; i++) {
                 let layer = layersList[i];
                 let layerInfo = {
+                    id: layer.id,
+                    index: i,
                     name: layer.name,
                     type: layer.kind.toUpperCase().toString(),
                     isClippingMask: layer.isClippingMask,
                     opacity: layer.opacity,
+                    visible: layer.visible,
                     blendMode: layer.blendMode.toString().toUpperCase(),
+                    bounds: layer.bounds,
+                    imageUrl: "image://" + app.activeDocument.id + "/" + layer.id, 
                 };
 
                 // Check if this layer has sublayers (is a group)
                 if (layer.layers && layer.layers.length > 0) {
-                    layerInfo.layers = processLayers(layer.layers);
+                    layerInfo.layers = await processLayers(layer.layers);
                 }
 
                 layersArray.push(layerInfo);
             }
-
             return layersArray;
         };
 
         // Start with the top-level layers
-        result = processLayers(app.activeDocument.layers);
+        result = await processLayers(app.activeDocument.layers);
 
         return result;
     });
@@ -731,6 +797,7 @@ const commandHandlers = {
     removeLayerMask,
     addLayerMask,
     getLayers,
+    getLayerImageData,
     scaleLayer,
     rotateLayer,
     flipLayer,

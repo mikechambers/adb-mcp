@@ -58,6 +58,13 @@ const onCommandPacket = async (packet) => {
       out.response = response;
       out.status = "SUCCESS";
 
+      out.document = {
+        width: app.activeDocument.width,
+        height: app.activeDocument.height,
+        resolution: app.activeDocument.resolution,
+        name: app.activeDocument.name,
+        id: app.activeDocument.id,
+      }
       out.layers = await getLayers()
       out.hasActiveSelection = hasActiveSelection()
 
@@ -73,6 +80,7 @@ function connectToServer() {
 
     // Create new Socket.IO connection
     socket = io(PROXY_URL, {
+        maxHttpBufferSize: 5e8,
         transports: ["websocket"],
     });
 
