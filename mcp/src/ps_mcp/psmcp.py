@@ -20,11 +20,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from mcp.server.fastmcp import FastMCP
+from mcp.server.fastmcp import FastMCP, Image
 from . import socket_client
 from . import logger
 import sys
 import os
+from io import BytesIO
+try:
+    from PIL import Image as PILImage
+except ImportError:
+    raise ImportError("Please install the `pillow` library to run this example.")
 
 
 logger.log(f"Python path: {sys.executable}")
