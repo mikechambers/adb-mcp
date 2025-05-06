@@ -700,7 +700,7 @@ const getLayers = async (command) => {
                     visible: layer.visible,
                     blendMode: layer.blendMode.toString().toUpperCase(),
                     bounds: layer.bounds,
-                    imageUrl: "image://" + app.activeDocument.id + "/" + layer.id, 
+                    imageUrl: "image://" + app.activeDocument.id + "/" + layer.id + "/0", 
                 };
 
                 // Check if this layer has sublayers (is a group)
