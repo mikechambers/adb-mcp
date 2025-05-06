@@ -55,11 +55,10 @@ socket_client.configure(
 
 @mcp.resource(
     uri="image://{document_id}/{layer_id}/{size}",
-    name="get_layer_rendition",
-    description="Returns the png image for the layer with the specified id.",
+    description="Returns the png image for the layer. Arguments are document_id, layer_id, and size. If size is provided, the image will be resized to the specified size.",
     mime_type="image/png"
     )
-def get_layer_rendition(document_id: str, layer_id: str, size: int = 0) -> bytes:
+def get_layer_rendition(document_id: str, layer_id: str, size: int) -> bytes:
     """Returns the png image for the layer with the specified id.
     """
 
