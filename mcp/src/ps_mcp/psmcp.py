@@ -54,12 +54,12 @@ socket_client.configure(
 )
 
 @mcp.resource(
-    uri="image://{document_id}/{layer_id}",
+    uri="image://{document_id}/{layer_id}/{size}",
     name="get_layer_rendition",
     description="Returns the png image for the layer with the specified id.",
     mime_type="image/png"
     )
-def get_layer_rendition(document_id: str, layer_id: str) -> bytes:
+def get_layer_rendition(document_id: str, layer_id: str, size: int = 0) -> bytes:
     """Returns the png image for the layer with the specified id.
     """
 
@@ -71,6 +71,13 @@ def get_layer_rendition(document_id: str, layer_id: str) -> bytes:
     image = PILImage.frombytes("RGBA", 
                 (width, height), 
                  res["imageData"])
+    ratio = width / height
+    if size != 0 and size < width and size < height:
+        image = image.resize((int(size), int(size / ratio)))
+    elif size != 0 and size < width:
+        image = image.resize((int(size), int(size * ratio)))
+    elif size != 0 and size < height:
+        image = image.resize((int(size * ratio), int(size)))
     buffer = BytesIO()
     image.save(buffer, format="PNG")
     return buffer.getvalue()
