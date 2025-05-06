@@ -1,6 +1,6 @@
 [project]
 name = "ps-mcp"
-version = "0.85.1"
+version = "0.85.2"
 description = "Adobe Photoshop automation using MCP"
 requires-python = ">=3.10"
 license = "MIT"
@@ -13,6 +13,7 @@ dependencies = [
     "mcp[cli]",
     "requests",
     "websocket-client>=1.8.0",
+    "pillow>=11.2.1",
 ]
 
 [project.scripts]

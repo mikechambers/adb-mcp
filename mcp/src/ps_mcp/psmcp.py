@@ -20,21 +20,28 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from mcp.server.fastmcp import FastMCP
+from mcp.server.fastmcp import FastMCP, Image
 from . import socket_client
 from . import logger
 import sys
 import os
+from io import BytesIO
+try:
+    from PIL import Image as PILImage
+except ImportError:
+    raise ImportError("Please install the `pillow` library to run this example.")
 
 
-logger.log(f"Python path: {sys.executable}")
-logger.log(f"PYTHONPATH: {os.environ.get('PYTHONPATH')}")
-logger.log(f"Current working directory: {os.getcwd()}")
-logger.log(f"Sys.path: {sys.path}")
+#logger.log(f"Python path: {sys.executable}")
+#logger.log(f"PYTHONPATH: {os.environ.get('PYTHONPATH')}")
+#logger.log(f"Current working directory: {os.getcwd()}")
+#logger.log(f"Sys.path: {sys.path}")
 
 
 # Create an MCP server
-mcp = FastMCP("Adobe Photoshop", log_level="ERROR")
+mcp_name = "Adobe Photoshop MCP Server"
+mcp = FastMCP(mcp_name, log_level="ERROR")
+print(f"{mcp_name} running on stdio", file=sys.stderr)
 
 APPLICATION = "photoshop"
 PROXY_URL = 'http://localhost:3001'
@@ -45,6 +52,35 @@ socket_client.configure(
     url=PROXY_URL,
     timeout=PROXY_TIMEOUT
 )
+
+@mcp.resource(
+    uri="image://{document_id}/{layer_id}/{size}",
+    name="get_layer_rendition",
+    description="Returns the png image for the layer with the specified id.",
+    mime_type="image/png"
+    )
+def get_layer_rendition(document_id: str, layer_id: str, size: int = 0) -> bytes:
+    """Returns the png image for the layer with the specified id.
+    """
+
+    command = createCommand("getLayerImageData", {"layerID": layer_id})
+    response = sendCommand(command)
+    res = response["response"]
+    width = res["targetBounds"]["right"] - res["targetBounds"]["left"]
+    height = res["targetBounds"]["bottom"] - res["targetBounds"]["top"]
+    image = PILImage.frombytes("RGBA", 
+                (width, height), 
+                 res["imageData"])
+    ratio = width / height
+    if size != 0 and size < width and size < height:
+        image = image.resize((int(size), int(size / ratio)))
+    elif size != 0 and size < width:
+        image = image.resize((int(size), int(size * ratio)))
+    elif size != 0 and size < height:
+        image = image.resize((int(size * ratio), int(size)))
+    buffer = BytesIO()
+    image.save(buffer, format="PNG")
+    return buffer.getvalue()
 
 @mcp.tool()
 def create_gradient_layer_style(
@@ -205,7 +241,7 @@ def get_layers() -> list:
         
     Returns:
         list: A nested list of dictionaries containing layer information and hierarchy.
-            Each dict has at minimum a 'name' key with the layer name.
+            Each dict has at minimum a 'name' and 'id' key with the layer name and id.
             If a layer has sublayers, they will be contained in a 'layers' key which contains another list of layer dicts.
             Example: [{'name': 'Group 1', 'layers': [{'name': 'Layer 1'}, {'name': 'Layer 2'}]}, {'name': 'Background'}]
     """
@@ -213,7 +249,6 @@ def get_layers() -> list:
     command = createCommand("getLayers", {})
 
     return sendCommand(command)
-
 
 @mcp.tool()
 def place_image(
