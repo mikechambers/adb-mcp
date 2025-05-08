@@ -149,7 +149,7 @@ const findLayer = (name, layers) => {
 
     //todo there is a later.getByName we can use
     for (const layer of layers) {
-        if (layer.name === name) {
+        if (layer.name === name || layer.id === parseInt(name)) {
             return layer;
         }
 
@@ -162,6 +162,17 @@ const findLayer = (name, layers) => {
     }
 
     return null;
+};
+
+const findLayerInDocumentByID = (documentID, layerID) => {
+    let document = app.activeDocument;
+    for (const doc of app.documents) {
+        if (doc.id === documentID) {
+            document = doc;
+            break;
+        }
+    }
+    return findLayer(layerID, document.layers);
 };
 
 const _saveDocumentAs = async (filePath, fileType) => {
@@ -296,6 +307,7 @@ module.exports = {
     selectLayer,
     clearLayerSelections,
     findLayer,
+    findLayerInDocumentByID,
     execute,
     tokenify,
     getElementPlacement,

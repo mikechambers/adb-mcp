@@ -76,7 +76,11 @@ def send_message_blocking(command, timeout=None):
     
     @sio.event
     def packet_response(data):
-        logger.log(f"Received response: {data}")
+        # Limit data output to 200 characters
+        data_str = str(data)
+        if len(data_str) > 500:
+            data_str = data_str[:497] + "..."
+        logger.log(f"Received response: {data_str}")
         response_queue.put(data)
         # Disconnect after receiving the response
         sio.disconnect()
@@ -122,11 +126,11 @@ def send_message_blocking(command, timeout=None):
             raise RuntimeError(f"Error: Could not connect to {application} command proxy server. Make sure that the proxy server is running listening on the correct url {proxy_url}.")
 
         if response:
-            logger.log("response received...")
+            logger.log(f"response received... {type(response)}")
             try:
                 logger.log(json.dumps(response))
             except:
-                logger.log(f"Response (not JSON-serializable): {response}")
+                logger.log(f"Response (not JSON-serializable): {len(response)}")
 
             if response["status"] == "FAILURE":
                 raise AppError(f"Error returned from {application}: {response['message']}")

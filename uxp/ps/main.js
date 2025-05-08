@@ -59,13 +59,14 @@ const onCommandPacket = async (packet) => {
       out.status = "SUCCESS";
 
       out.document = {
-        width: app.activeDocument.width,
-        height: app.activeDocument.height,
+        width: app.activeDocument.width / 4,
+        height: app.activeDocument.height / 4,
         resolution: app.activeDocument.resolution,
         name: app.activeDocument.name,
         id: app.activeDocument.id,
       }
-      out.layers = await getLayers()
+      console.log("app.activeDocument.id", app.activeDocument.id);
+      // out.layers = await getLayers()
       out.hasActiveSelection = hasActiveSelection()
 
     } catch (e) {
