@@ -62,21 +62,29 @@ def get_layer_rendition(document_id: str, layer_id: str, size: int) -> bytes:
     """Returns the png image for the layer with the specified id.
     """
 
-    command = createCommand("getLayerImageData", {"layerID": layer_id})
+    command = createCommand("getLayerImageData", {"layerID": layer_id, "documentID": document_id, "size": size})
     response = sendCommand(command)
     res = response["response"]
-    width = res["targetBounds"]["right"] - res["targetBounds"]["left"]
-    height = res["targetBounds"]["bottom"] - res["targetBounds"]["top"]
+    
+    # Check if imageBounds is present and valid
+    if "imageSize" not in res:
+        return bytes()
+        
+    width = res["imageSize"]["width"]
+    height = res["imageSize"]["height"]
+
     image = PILImage.frombytes("RGBA", 
                 (width, height), 
                  res["imageData"])
-    ratio = width / height
-    if size != 0 and size < width and size < height:
-        image = image.resize((int(size), int(size / ratio)))
-    elif size != 0 and size < width:
-        image = image.resize((int(size), int(size * ratio)))
-    elif size != 0 and size < height:
-        image = image.resize((int(size * ratio), int(size)))
+    
+    # ratio = width / height
+    # if size != 0 and size < width and size < height:
+    #     image = image.resize((int(size), int(size / ratio)))
+    # elif size != 0 and size < width:
+    #     image = image.resize((int(size), int(size * ratio)))
+    # elif size != 0 and size < height:
+    #     image = image.resize((int(size * ratio), int(size)))
+    
     buffer = BytesIO()
     image.save(buffer, format="PNG")
     return buffer.getvalue()
@@ -1146,11 +1154,12 @@ def add_brightness_contrast_adjustment_layer(
     brightness:int = 0,
     contrast:int = 0):
     """Adds an adjustment layer to the layer with the specified name to adjust brightness and contrast
+    @ComposerAIUI Level 
 
     Args:
         layer_name (str): The name of the layer to apply the brightness and contrast adjustment layer
-        brightness (int): The brightness value (-150 to 150)
-        contrasts (int): The contrast value (-50 to 100)
+        brightness (int): The brightness value (-150 to 150) @ComposerAIUI Slider
+        contrasts (int): The contrast value (-50 to 100) @ComposerAIUI Slider
     """
 
     command = createCommand("addBrightnessContrastAdjustmentLayer", {

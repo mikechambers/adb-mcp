@@ -242,7 +242,7 @@ const generateImage = async (command) => {
 
     let options = command.options;
 
-    await execute(async () => {
+    let out = await execute(async () => {
         //layer.selected = true
         let doc = app.activeDocument;
         await doc.selection.selectAll();
@@ -310,9 +310,22 @@ const generateImage = async (command) => {
         ];
         await action.batchPlay(commands, {});
 
-        let l = findLayer(options.prompt);
-        l.name = options.layerName;
+        let layer = findLayer(options.prompt);
+        layer.name = options.layerName;
+        let max = Math.round(Math.max(layer.bounds.width, layer.bounds.height) / 4);
+        return {
+            id: layer.id,
+            type: layer.kind.toUpperCase().toString(),
+            opacity: layer.opacity,
+            width: layer.bounds.width / 4,
+            height: layer.bounds.height / 4,
+            x: layer.bounds._left / 4,
+            y: layer.bounds._top / 4,
+            url: "image://" + app.activeDocument.id + "/" + layer.id + "/" + max, 
+            renderToCanvas: true
+        };
     });
+    return out;
 };
 
 const saveDocument = async (command) => {

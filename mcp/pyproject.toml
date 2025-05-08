@@ -1,6 +1,6 @@
 [project]
 name = "ps-mcp"
-version = "0.85.3"
+version = "0.85.5"
 description = "Adobe Photoshop automation using MCP"
 requires-python = ">=3.10"
 license = "MIT"

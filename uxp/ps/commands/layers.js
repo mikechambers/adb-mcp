@@ -27,6 +27,7 @@ const fs = require("uxp").storage.localFileSystem;
 const {
     setVisibleAllLayers,
     findLayer,
+    findLayerInDocumentByID,
     execute,
     parseColor,
     getAnchorPosition,
@@ -618,65 +619,88 @@ const createPixelLayer = async (command) => {
     });
 };
 
-async function getLayerPixels(layer) {
+async function getLayerPixels(layer, targetSize = { width: 0, height: 0 }) {
     const { bounds } = layer;
     const layerWidth = bounds.right - bounds.left;
     const layerHeight = bounds.bottom - bounds.top;
     if (layerWidth <= 0 || layerHeight <= 0) {
         return [];
     }
+    /*
+
     console.log(bounds);
-    const pixelsOpt = {
-      layerID: layer.id,
       sourceBounds: {
         left: bounds.left,
         top: bounds.top,
         right: bounds.right,
         bottom: bounds.bottom,
       },
+      */
+    const pixelsOpt = {
+      layerID: layer.id,
+      targetSize: {
+        width: targetSize.width > 0 ? targetSize.width : layerWidth,
+        height: targetSize.height > 0 ? targetSize.height : layerHeight,
+      },
       // ,applyAlpha: true
     }
     
     const imageObj = await imaging.getPixels(pixelsOpt);
-    console.log("imageObj", imageObj);
     const pixels = await imageObj.imageData.getData();
-    const targetBounds = imageObj.sourceBounds;
+    // console.log("imageObj", imageObj, pixels.length, imageObj.componentSize, imageObj.components);
 
-    // Clean memory usage faster than waiting for Javascript garbage collector to run. 
-    // This is the correct memory management for this process
     imageObj.imageData.dispose();
-
-    // const bitDepth = parseInt(app.activeDocument.bitsPerChannel.replace("bitDepth", ""));
-    // Return the imageData buffer in bytes, this handles automatically the bitDepth of the PS document.
-    return [pixels, targetBounds];
+    return pixels;
   }
+
+
   const getLayerImageData = async (command) => {
     const options = command.options;
     const layerID = options.layerID;
+    const documentID = options.documentID;
+    const size = options.size;
 
     let out = await execute(async () => {
-        let layersList = app.activeDocument.layers;
-        for (let i = 0; i < layersList.length; i++) {
-            let layer = layersList[i];
-            console.log("layer.id", layer.id, layerID);
-            if (layer.id != layerID) {
-                continue;
+        let layer = findLayerInDocumentByID(documentID, layerID);
+
+        if (layer) {
+            let width = layer.bounds.right - layer.bounds.left;
+            let height = layer.bounds.bottom - layer.bounds.top;
+            const ratio = width / height;
+
+            if (size < width && size < height) {
+                width = size;
+                height = Math.round(size / ratio);
+            } else if (size < width) {
+                height = Math.round(size * ratio);
+            } else if (size < height) {
+                width = Math.round(size * ratio);
             }
-            const [imageData, targetBounds]  = await getLayerPixels(layer);
+            const targetSize = {
+                width: size > 0 && size < width ? size : width,
+                height: size > 0 && size < height ? size : height,
+            };
+            
+            const imageData = await getLayerPixels(layer, targetSize);
             let layerInfo = {
                 id: layer.id,
                 name: layer.name,
-                bounds: layer.bounds,
-                targetBounds: targetBounds,
+                bounds: {
+                    left: layer.bounds._left,
+                    top: layer.bounds._top,
+                    right: layer.bounds._right,
+                    bottom: layer.bounds._bottom,
+                },
+                imageSize: targetSize,
                 imageData: imageData,
             };
 
+            console.log("getLayerImageData: ", layerID, targetSize, imageData.length);
             return layerInfo;
         }
         return {};
     });
 
-    console.log(out);
     return out;
 };
 
@@ -690,6 +714,8 @@ const getLayers = async (command) => {
 
             for (let i = 0; i < layersList.length; i++) {
                 let layer = layersList[i];
+
+                let max = Math.round(Math.max(layer.bounds.width, layer.bounds.height) / 4);
                 let layerInfo = {
                     id: layer.id,
                     index: i,
@@ -699,8 +725,12 @@ const getLayers = async (command) => {
                     opacity: layer.opacity,
                     visible: layer.visible,
                     blendMode: layer.blendMode.toString().toUpperCase(),
-                    bounds: layer.bounds,
-                    imageUrl: "image://" + app.activeDocument.id + "/" + layer.id + "/0", 
+                    width: layer.bounds.width / 4,
+                    height: layer.bounds.height / 4,
+                    x: layer.bounds._left / 4,
+                    y: layer.bounds._top / 4,
+                    url: "image://" + app.activeDocument.id + "/" + layer.id + "/" + max,
+                    renderToCanvas: true
                 };
 
                 // Check if this layer has sublayers (is a group)
