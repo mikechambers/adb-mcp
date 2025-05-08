@@ -619,13 +619,8 @@ const createPixelLayer = async (command) => {
     });
 };
 
-async function getLayerPixels(layer, targetSize = { width: 0, height: 0 }) {
-    const { bounds } = layer;
-    const layerWidth = bounds.right - bounds.left;
-    const layerHeight = bounds.bottom - bounds.top;
-    if (layerWidth <= 0 || layerHeight <= 0) {
-        return [];
-    }
+async function getLayerPixels(layerID, targetSize = { width: 0, height: 0 }) {
+
     /*
 
     console.log(bounds);
@@ -637,7 +632,7 @@ async function getLayerPixels(layer, targetSize = { width: 0, height: 0 }) {
       },
       */
     const pixelsOpt = {
-      layerID: layer.id,
+      layerID: layerID,
       targetSize: {
         width: targetSize.width > 0 ? targetSize.width : layerWidth,
         height: targetSize.height > 0 ? targetSize.height : layerHeight,
@@ -647,7 +642,7 @@ async function getLayerPixels(layer, targetSize = { width: 0, height: 0 }) {
     
     const imageObj = await imaging.getPixels(pixelsOpt);
     const pixels = await imageObj.imageData.getData();
-    // console.log("imageObj", imageObj, pixels.length, imageObj.componentSize, imageObj.components);
+    // console.log("imageObj", imageObj.sourceBounds, pixelsOpt);
 
     imageObj.imageData.dispose();
     return pixels;
@@ -681,7 +676,7 @@ async function getLayerPixels(layer, targetSize = { width: 0, height: 0 }) {
                 height: size > 0 && size < height ? size : height,
             };
             
-            const imageData = await getLayerPixels(layer, targetSize);
+            const imageData = await getLayerPixels(layer.id, targetSize);
             let layerInfo = {
                 id: layer.id,
                 name: layer.name,
@@ -697,8 +692,39 @@ async function getLayerPixels(layer, targetSize = { width: 0, height: 0 }) {
 
             console.log("getLayerImageData: ", layerID, targetSize, imageData.length);
             return layerInfo;
+        } else {
+            let width = app.activeDocument.width;
+            let height = app.activeDocument.height;
+            const ratio = width / height;
+
+            if (size < width && size < height) {
+                width = size;
+                height = Math.round(size / ratio);
+            } else if (size < width) {
+                height = Math.round(size * ratio);
+            } else if (size < height) {
+                width = Math.round(size * ratio);
+            }
+            const targetSize = {
+                width: size > 0 && size < width ? size : width,
+                height: size > 0 && size < height ? size : height,
+            };
+
+            const imageData = await getLayerPixels(-1, targetSize);
+            let layerInfo = {
+                id: -1,
+                name: "document",
+                bounds: {
+                    left: 0,
+                    top: 0,
+                    right: targetSize.width,
+                    bottom: targetSize.height,
+                },
+                imageSize: targetSize,
+                imageData: imageData,
+            };
+            return layerInfo;
         }
-        return {};
     });
 
     return out;
