@@ -27,7 +27,6 @@ const app = require("premierepro");
 const {consts, BLEND_MODES} = require("./consts.js")
 
 const createSequenceFromMedia = async (command) => {
-    console.log("createSequenceFromMedia")
 
     let options = command.options
 
@@ -56,13 +55,14 @@ const createSequenceFromMedia = async (command) => {
         items.push(insertItem)
     }
 
+    //todo: not sure if this is needed
+    const active = await project.getActiveSequence()
     let root = await project.getRootItem()
+    
     let sequence = await project.createSequenceFromMedia(sequenceName, items, root)
 
-    const active = project.getActiveSequence()
-
-    if(!active) {
-        await project.setActiveSequence(sequence)
+    if(active) {
+        await project.setActiveSequence(active)
     }
 }
 
@@ -79,23 +79,34 @@ const findSequenceByName = async (sequenceName) => {
     return
 }
 
+const getProjectInfo = async (command) => {
+    return {}
+}
+
+const _getSequenceFromId = async (id) => {
+    let project = await app.Project.getActiveProject()
+
+    let guid = app.Guid.fromString(id)
+    let sequence = await project.getSequence(guid)
+
+    if(!sequence) {
+        throw new Error(`_getSequenceFromId : Could not find sequence with id : ${id}`)
+    }
+
+    return sequence
+}
+
 const setActiveSequence = async (command) => {
     let options = command.options
     let id = options.sequenceId
 
+    let sequence = await _getSequenceFromId(id)
+
     let project = await app.Project.getActiveProject()
-    let sequence = await project.getSequence(id)
-
-    if(!sequence) {
-        throw new Error(`setActiveSequence : Could not find sequence with id : ${id}`)
-    }
-
     await project.setActiveSequence(sequence)
 }
 
 const createProject = async (command) => {
-
-    console.log("createProject")
 
     let options = command.options
     let path = options.path
@@ -120,9 +131,9 @@ const createProject = async (command) => {
 
 const exportFrame = async (command) => {
     const options = command.options
+    let id = options.sequenceId
 
-    let project = await app.Project.getActiveProject()
-    let sequence = await project.getActiveSequence()
+    let sequence = await _getSequenceFromId(id)
 
     let size = await sequence.getFrameSize()
 
@@ -147,12 +158,12 @@ const exportFrame = async (command) => {
 }
 
 const setAudioClipDisabled = async (command) => {
-    console.log("setAudioClipDisabled")
 
     let options = command.options
+    let id = options.sequenceId
 
     let project = await app.Project.getActiveProject()
-    let sequence = await project.getActiveSequence()
+    let sequence = await _getSequenceFromId(id)
 
     if(!sequence) {
         throw new Error(`setAudioClipDisabled : Requires an active sequence.`)
@@ -162,19 +173,18 @@ const setAudioClipDisabled = async (command) => {
 
     execute(() => {
         let action = trackItem.createSetDisabledAction(options.disabled)
-        console.log(action)
         return [action]
     }, project)
 
 }
 
 const setVideoClipDisabled = async (command) => {
-    console.log("setVideoClipDisabled")
 
     let options = command.options
+    let id = options.sequenceId
 
     let project = await app.Project.getActiveProject()
-    let sequence = await project.getActiveSequence()
+    let sequence = await _getSequenceFromId(id)
 
     if(!sequence) {
         throw new Error(`setVideoClipDisabled : Requires an active sequence.`)
@@ -189,12 +199,12 @@ const setVideoClipDisabled = async (command) => {
 }
 
 const appendVideoTransition = async (command) => {
-    console.log("appendVideoTransition")
 
     let options = command.options
+    let id = options.sequenceId
 
     let project = await app.Project.getActiveProject()
-    let sequence = await project.getActiveSequence()
+    let sequence = await _getSequenceFromId(id)
 
     if(!sequence) {
         throw new Error(`appendVideoTransition : Requires an active sequence.`)
@@ -217,52 +227,6 @@ const appendVideoTransition = async (command) => {
     }, project)
 }
 
-/*
-const appendAudioFilter = async (command) => {
-    console.log("addAudioFilter")
-
-    let options = command.options
-
-    let project = await app.Project.getActiveProject()
-    let sequence = await project.getActiveSequence()
-
-    if(!sequence) {
-        throw new Error(`appendAudioFilter : Requires an active sequence.`)
-    }
-
-    //todo: pass this in
-    let audioTrack = await sequence.getAudioTrack(options.audioTrackIndex)
- 
-    if(!audioTrack) {
-        throw new Error(`appendAudioFilter : audioTrackIndex [${options.audioTrackIndex}] does not exist`)
-    }
-
-    let trackItems = await audioTrack.getTrackItems(1, false)
-
-    let trackItem;
-    for(const t of trackItems) {
-        let index = await t.getTrackIndex()
-        if(index === options.trackItemIndex) {
-            trackItem = t
-            break
-        }
-    }
-    
-    if(!trackItem) {
-        throw new Error(`appendAudioFilter : trackItemIndex [${options.trackItemIndex}] does not exist`)
-    }
-
-    const mosaic = await app.VideoFilterFactory.createComponent(
-        options.effectName);
-
-    let componentChain = await trackItem.getComponentChain()
-
-    let action = await componentChain.createAppendComponentAction(
-        mosaic, 0)
-
-    executeAction(project, action)
-}
-    */
 
 const setParam = async(trackItem, componentName, paramName, value) => {
 
@@ -315,11 +279,12 @@ const getParam = async (trackItem, componentName, paramName) => {
 
 
 const setVideoClipProperties = async (command) => {
-    console.log("setVideoClipProperties")
 
     const options = command.options
-    const project = await app.Project.getActiveProject()
-    const sequence = await project.getActiveSequence()
+    let id = options.sequenceId
+
+    let project = await app.Project.getActiveProject()
+    let sequence = await _getSequenceFromId(id)
 
     if(!sequence) {
         throw new Error(`setVideoClipProperties : Requires an active sequence.`)
@@ -348,12 +313,11 @@ const setVideoClipProperties = async (command) => {
 }
 
 const appendVideoFilter = async (command) => {
-    console.log("appendVideoFilter")
 
     let options = command.options
+    let id = options.sequenceId
 
-    let project = await app.Project.getActiveProject()
-    let sequence = await project.getActiveSequence()
+    let sequence = await _getSequenceFromId(id)
 
     if(!sequence) {
         throw new Error(`appendVideoFilter : Requires an active sequence.`)
@@ -386,13 +350,12 @@ const addEffect = async (trackItem, effectName) => {
 
 
 const setAudioTrackMute = async (command) => {
-    console.log("setAudioTrackMute")
-
 
     let options = command.options
+    let id = options.sequenceId
 
-    let project = await app.Project.getActiveProject()
-    let sequence = await project.getActiveSequence()
+    let sequence = await _getSequenceFromId(id)
+
     let track = await sequence.getAudioTrack(options.audioTrackIndex)
     track.setMute(options.mute)
 }
@@ -422,19 +385,13 @@ const findProjectItem = async (itemName, project) => {
 //note: right now, we just always add to the active sequence. Need to add support
 //for specifying sequence
 const addMediaToSequence = async (command) => {
-    console.log("addMediaToSequence")
 
     let options = command.options
     let itemName = options.itemName
+    let id = options.sequenceId
 
-    //find project item by name
     let project = await app.Project.getActiveProject()
-
-    let sequence = await project.getActiveSequence()
-
-    if(!sequence) {
-        throw new Error(`addMediaToSequence : Requires an active sequence.`)
-    }
+    let sequence = await _getSequenceFromId(id)
 
     let insertItem = await findProjectItem(itemName, project)
 
@@ -484,7 +441,6 @@ const executeAction = (project, action) => {
 };
 
 const importMedia = async (command) => {
-    console.log("importMedia")
 
     let options = command.options
     let paths = command.options.filePaths
@@ -516,10 +472,7 @@ const importMedia = async (command) => {
 }
 
 
-const getAudioTracks = async () => {
-    let project = await app.Project.getActiveProject()
-    let sequence = await project.getActiveSequence()
-
+const getAudioTracks = async (sequence) => {
     let audioCount = await sequence.getAudioTrackCount()
 
     let audioTracks = []
@@ -537,7 +490,6 @@ const getAudioTracks = async () => {
         if(clips.length === 0) {
             continue
         }
-
 
         let k = 0
         for (const c of clips) {
@@ -572,22 +524,22 @@ const getSequences = async () => {
     let sequences = await project.getSequences()
 
     let out = []
-    for(const sequence in sequences) {
+    for(const sequence of sequences) {
         let size = await sequence.getFrameSize()
         //let settings = await sequence.getSettings()
     
         //let projectItem = await sequence.getProjectItem()
         //let name = projectItem.name
         let name = sequence.name
-        let id = sequence.guid
+        let id = sequence.guid.toString()
     
-        let videoTracks = await getVideoTracks()
-        let audioTracks = await getAudioTracks()
+        let videoTracks = await getVideoTracks(sequence)
+        let audioTracks = await getAudioTracks(sequence)
     
         let isActive = active == sequence
 
         out.push( {
-            isActive:
+            isActive,
             name,
             id,
             frameSize:{width:size.width, height:size.height},
@@ -599,10 +551,7 @@ const getSequences = async () => {
     return out
 }
 
-const getVideoTracks = async () => {
-    let project = await app.Project.getActiveProject()
-    let sequence = await project.getActiveSequence()
-
+const getVideoTracks = async (sequence) => {
     let videoCount = await sequence.getVideoTrackCount()
 
     let videoTracks = []
@@ -676,43 +625,6 @@ const getAudioTrack = async (sequence, trackIndex, clipIndex) => {
     return trackItem
 }
 
-/*
-const cleanVideoTrackGaps = async (project, sequence, trackIndex) => {
-
-    console.log("cleanVideoTrackGaps")
-
-    let videoTrack = await sequence.getVideoTrack(trackIndex)
-
-    if(!videoTrack) {
-        throw new Error(`getVideoTrack : videoTrackIndex [${trackIndex}] does not exist`)
-    }
-
-    console.log(trackIndex)
-    let emptyItems = await videoTrack.getTrackItems(1, false)
-
-    let g = await emptyItems[2].getEndTime()
-    console.log(g)
-    if (!Array.isArray(emptyItems) || emptyItems.length === 0) {
-        console.log("returning")
-        return;
-    }
-
-    console.log("a")
-
-    let editor = await app.SequenceEditor.getEditor(sequence)
-    console.log("b")
-    execute(() => {
-        let out = []
-        for (let i = emptyItems.length - 1; i >= 0; i--) {
-            console.log("c")
-            let action = editor.createRemoveItemsAction(emptyItems[i], true, 0, false)
-            console.log(action)
-            out.push(action)
-        }
-        return out
-    }, project)
-}
-    */
 
 const getVideoTrack = async (sequence, trackIndex, clipIndex) => {
 
@@ -749,7 +661,6 @@ const getProjectContentInfo = async () => {
 
     let out = []
     for(const item of items) {
-
         //todo: it would be good to get more data / info here
         out.push({name:item.name})
     }
@@ -766,20 +677,20 @@ const parseAndRouteCommand = async (command) => {
         throw new Error(`Unknown Command: ${action}`);
     }
 
+    console.log(f.name)
     return f(command);
 };
 
 const commandHandlers = {
+    getProjectInfo,
     setActiveSequence,
     exportFrame,
     setVideoClipProperties,
     createSequenceFromMedia,
     setAudioTrackMute,
-    //setAudioClipOutPoint,
     setAudioClipDisabled,
     setVideoClipDisabled,
     appendVideoTransition,
-    //appendAudioFilter,
     appendVideoFilter,
     addMediaToSequence,
     importMedia,

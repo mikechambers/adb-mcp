@@ -51,6 +51,18 @@ socket_client.configure(
 )
 
 @mcp.tool()
+def get_project_info():
+    """
+    Returns info on the currently active project in Premiere Pro.
+    """
+
+    command = createCommand("getProjectInfo", {
+    })
+
+    return sendCommand(command)
+
+
+@mcp.tool()
 def create_project(directory_path: str, project_name: str):
     """
     Create a new Premiere project.
@@ -72,11 +84,12 @@ def create_project(directory_path: str, project_name: str):
     return sendCommand(command)
 
 @mcp.tool()
-def set_audio_track_mute(audio_track_index: int, mute: bool):
+def set_audio_track_mute(sequence_id:str, audio_track_index: int, mute: bool):
     """
     Sets the mute property on the specified audio track. If mute is true, all clips on the track will be muted and not played.
 
     Args:
+        sequence_id (str) : The id of the sequence on which to set the audio track mute.
         audio_track_index (int): The index of the audio track to mute or unmute. Indices start at 0 for the first audio track.
         mute (bool): Whether the track should be muted.
             - True: Mutes the track (audio will not be played)
@@ -85,6 +98,7 @@ def set_audio_track_mute(audio_track_index: int, mute: bool):
     """
 
     command = createCommand("setAudioTrackMute", {
+        "sequenceId": sequence_id,
         "audioTrackIndex":audio_track_index,
         "mute":mute
     })
@@ -129,11 +143,12 @@ def create_sequence_from_media(item_names: list[str], sequence_name: str = "defa
     return sendCommand(command)
 
 @mcp.tool()
-def add_media_to_active_sequence(item_name: str, video_track_index: int, audio_track_index: int, insertion_time_ticks: int = 0, overwrite: bool = True):
+def add_media_to_sequence(sequence_id:str, item_name: str, video_track_index: int, audio_track_index: int, insertion_time_ticks: int = 0, overwrite: bool = True):
     """
     Adds a specified media item to the active sequence's timeline.
 
     Args:
+        sequence_id (str) : The id for the sequence to add the media to
         item_name (str): The name or identifier of the media item to add.
         video_track_index (int, optional): The index of the video track where the item should be inserted. Defaults to 0.0.
         audio_track_index (int, optional): The index of the audio track where the item should be inserted. Defaults to 0.0.
@@ -143,6 +158,7 @@ def add_media_to_active_sequence(item_name: str, video_track_index: int, audio_t
 
 
     command = createCommand("addMediaToSequence", {
+        "sequenceId": sequence_id,
         "itemName":item_name,
         "videoTrackIndex":video_track_index,
         "audioTrackIndex":audio_track_index,
@@ -154,11 +170,12 @@ def add_media_to_active_sequence(item_name: str, video_track_index: int, audio_t
 
 
 @mcp.tool()
-def set_audio_clip_disabled(audio_track_index: int, track_item_index: int, disabled: bool):
+def set_audio_clip_disabled(sequence_id:str, audio_track_index: int, track_item_index: int, disabled: bool):
     """
     Enables or disables a audio clip in the timeline.
     
     Args:
+        sequence_id (str) : The id for the sequence to set the audio clip disabled property.
         audio_track_index (int): The index of the audio track containing the target clip.
         track_item_index (int): The index of the clip within the track to enable/disable.
         disabled (bool): Whether to disable the clip.
@@ -167,6 +184,7 @@ def set_audio_clip_disabled(audio_track_index: int, track_item_index: int, disab
     """
 
     command = createCommand("setAudioClipDisabled", {
+        "sequenceId": sequence_id,
         "audioTrackIndex":audio_track_index,
         "trackItemIndex":track_item_index,
         "disabled":disabled
@@ -175,11 +193,12 @@ def set_audio_clip_disabled(audio_track_index: int, track_item_index: int, disab
     return sendCommand(command)
 
 @mcp.tool()
-def set_video_clip_disabled(video_track_index: int, track_item_index: int, disabled: bool):
+def set_video_clip_disabled(sequence_id:str, video_track_index: int, track_item_index: int, disabled: bool):
     """
     Enables or disables a video clip in the timeline.
     
     Args:
+        sequence_id (str) : The id for the sequence to set the video clip disabled property.
         video_track_index (int): The index of the video track containing the target clip.
         track_item_index (int): The index of the clip within the track to enable/disable.
         disabled (bool): Whether to disable the clip.
@@ -188,6 +207,7 @@ def set_video_clip_disabled(video_track_index: int, track_item_index: int, disab
     """
 
     command = createCommand("setVideoClipDisabled", {
+        "sequenceId": sequence_id,
         "videoTrackIndex":video_track_index,
         "trackItemIndex":track_item_index,
         "disabled":disabled
@@ -197,19 +217,20 @@ def set_video_clip_disabled(video_track_index: int, track_item_index: int, disab
 
 
 @mcp.tool()
-def add_black_and_white_effect(video_track_index: int, track_item_index: int):
+def add_black_and_white_effect(sequence_id:str, video_track_index: int, track_item_index: int):
     """
     Adds a black and white effect to a clip at the specified track and position.
     
     Args:
+        sequence_id (str) : The id for the sequence to add the effect to
         video_track_index (int): The index of the video track containing the target clip.
             Track indices start at 0 for the first video track and increment upward.
-            
         track_item_index (int): The index of the clip within the track to apply the effect to.
             Clip indices start at 0 for the first clip in the track and increment from left to right.
     """
 
     command = createCommand("appendVideoFilter", {
+        "sequenceId": sequence_id,
         "videoTrackIndex":video_track_index,
         "trackItemIndex":track_item_index,
         "effectName":"AE.ADBE Black & White",
@@ -220,14 +241,14 @@ def add_black_and_white_effect(video_track_index: int, track_item_index: int):
     return sendCommand(command)
 
 @mcp.tool()
-def export_frame(file_path: str, seconds: int):
-    """Captures a specific frame from the active sequence at the given timestamp
+def export_frame(sequence_id:str, file_path: str, seconds: int):
+    """Captures a specific frame from the sequence at the given timestamp
     and exports it as a PNG image file to the specified path.
     
     Args:
+        sequence_id (str) : The id for the sequence to export the frame from
         file_path (str): The destination path where the exported PNG image will be saved.
             Must include the full directory path and filename with .png extension.
-            
         seconds (int): The timestamp in seconds from the beginning of the sequence
             where the frame should be captured. The frame closest to this time position
             will be extracted.
@@ -235,17 +256,23 @@ def export_frame(file_path: str, seconds: int):
     if not file_path.lower().endswith(".png"):
         file_path += ".png"
     
-    command = createCommand("exportFrame", {"filePath": file_path, "seconds":seconds})
+    command = createCommand("exportFrame", {
+        "sequenceId": sequence_id,
+        "filePath": file_path,
+        "seconds":seconds
+        }
+    )
 
     return sendCommand(command)
 
 
 @mcp.tool()
-def add_gaussian_blur_effect(video_track_index: int, track_item_index: int, blurriness: float, blur_dimensions: str = "HORIZONTAL_VERTICAL"):
+def add_gaussian_blur_effect(sequence_id: str, video_track_index: int, track_item_index: int, blurriness: float, blur_dimensions: str = "HORIZONTAL_VERTICAL"):
     """
     Adds a gaussian blur effect to a clip at the specified track and position.
 
     Args:
+        sequence_id (str) : The id for the sequence to add the effect to
         video_track_index (int): The index of the video track containing the target clip.
             Track indices start at 0 for the first video track and increment upward.
             
@@ -268,6 +295,7 @@ def add_gaussian_blur_effect(video_track_index: int, track_item_index: int, blur
         raise ValueError(f"Invalid blur_dimensions. ")
 
     command = createCommand("appendVideoFilter", {
+        "sequenceId": sequence_id,
         "videoTrackIndex": video_track_index,
         "trackItemIndex": track_item_index,
         "effectName": "AE.ADBE Gaussian Blur 2",
@@ -281,13 +309,14 @@ def add_gaussian_blur_effect(video_track_index: int, track_item_index: int, blur
 
 
 @mcp.tool()
-def add_motion_blur_effect(video_track_index: int, track_item_index: int, direction: int, length: int):
+def add_motion_blur_effect(sequence_id: str, video_track_index: int, track_item_index: int, direction: int, length: int):
     """
     Adds the directional blur effect to a clip at the specified track and position.
     
     This function applies a motion blur effect that simulates movement in a specific direction.
     
     Args:
+        sequence_id (str) : The id for the sequence to add the effect to
         video_track_index (int): The index of the video track containing the target clip.
             Track indices start at 0 for the first video track and increment upward.
             
@@ -304,6 +333,7 @@ def add_motion_blur_effect(video_track_index: int, track_item_index: int, direct
     """
 
     command = createCommand("appendVideoFilter", {
+        "sequenceId": sequence_id,
         "videoTrackIndex":video_track_index,
         "trackItemIndex":track_item_index,
         "effectName":"AE.ADBE Motion Blur",
@@ -316,13 +346,14 @@ def add_motion_blur_effect(video_track_index: int, track_item_index: int, direct
     return sendCommand(command)
 
 @mcp.tool()
-def append_video_transition(video_track_index: int, track_item_index: int, transition_name: str, duration: int = 1.0, clip_alignment: float = 0.5):
+def append_video_transition(sequence_id: str, video_track_index: int, track_item_index: int, transition_name: str, duration: int = 1.0, clip_alignment: float = 0.5):
     """
     Creates a transition between the specified clip and the adjacent clip on the timeline.
     
     In general, you should keep transitions short (no more than 2 seconds is a good rule).
 
     Args:
+        sequence_id (str) : The id for the sequence to add the transition to
         video_track_index (int): The index of the video track containing the target clips.
         track_item_index (int): The index of the clip within the track to apply the transition to.
         transition_name (str): The name of the transition to apply. Must be a valid transition name (see below).
@@ -364,6 +395,7 @@ def append_video_transition(video_track_index: int, track_item_index: int, trans
     """
 
     command = createCommand("appendVideoTransition", {
+        "sequenceId": sequence_id,
         "videoTrackIndex":video_track_index,
         "trackItemIndex":track_item_index,
         "transitionName":transition_name,
@@ -375,7 +407,7 @@ def append_video_transition(video_track_index: int, track_item_index: int, trans
 
 
 @mcp.tool()
-def set_video_clip_properties(video_track_index: int, track_item_index: int, opacity: int = 100, blend_mode: str = "NORMAL"):
+def set_video_clip_properties(sequence_id: str, video_track_index: int, track_item_index: int, opacity: int = 100, blend_mode: str = "NORMAL"):
     """
     Sets opacity and blend mode properties for a video clip in the timeline.
 
@@ -384,6 +416,7 @@ def set_video_clip_properties(video_track_index: int, track_item_index: int, opa
     within that track.
 
     Args:
+        sequence_id (str) : The id for the sequence to set the video clip properties
         video_track_index (int): The index of the video track containing the target clip.
             Track indices start at 0 for the first video track.
         track_item_index (int): The index of the clip within the track to modify.
@@ -397,6 +430,7 @@ def set_video_clip_properties(video_track_index: int, track_item_index: int, opa
     """
 
     command = createCommand("setVideoClipProperties", {
+        "sequenceId": sequence_id,
         "videoTrackIndex":video_track_index,
         "trackItemIndex":track_item_index,
         "opacity":opacity,

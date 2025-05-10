@@ -76,7 +76,8 @@ const parseAndRouteCommand = async (command) => {
     if (typeof f !== "function") {
         throw new Error(`Unknown Command: ${action}`);
     }
-
+    
+    console.log(f.name)
     return f(command);
 };
 
