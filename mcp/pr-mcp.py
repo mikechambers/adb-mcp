@@ -473,10 +473,8 @@ def get_instructions() -> str:
     IMPORTANT: To create a new project and add clips:
     1. Create new project (create_project)
     2. Add media to the project (import_media)
-    3. Create a new sequence with media (should always add video / image clips before audio.(create_sequence_from_media). This will create a sequence with the clips, and set the sequence to the the active sequence.
+    3. Create a new sequence with media (should always add video / image clips before audio.(create_sequence_from_media). This will create a sequence with the clips.
     4. The first clip you add will determine the dimensions / resolution of the sequence
-
-    There must be an active sequence for most API calls
 
     Here are some general tips for when working with Premiere.
 
