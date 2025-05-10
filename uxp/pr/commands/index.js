@@ -59,6 +59,37 @@ const createSequenceFromMedia = async (command) => {
     let root = await project.getRootItem()
     let sequence = await project.createSequenceFromMedia(sequenceName, items, root)
 
+    const active = project.getActiveSequence()
+
+    if(!active) {
+        await project.setActiveSequence(sequence)
+    }
+}
+
+const findSequenceByName = async (sequenceName) => {
+    let project = await app.Project.getActiveProject()
+    let sequences = await project.getSequences()
+
+    for(const s of sequences) {
+        if(s.name == sequenceName) {
+            return s
+        }
+    }
+
+    return
+}
+
+const setActiveSequence = async (command) => {
+    let options = command.options
+    let id = options.sequenceId
+
+    let project = await app.Project.getActiveProject()
+    let sequence = await project.getSequence(id)
+
+    if(!sequence) {
+        throw new Error(`setActiveSequence : Could not find sequence with id : ${id}`)
+    }
+
     await project.setActiveSequence(sequence)
 }
 
@@ -534,30 +565,38 @@ const getAudioTracks = async () => {
     return audioTracks
 }
 
-const getActiveSequenceInfo = async () => {
+const getSequences = async () => {
     let project = await app.Project.getActiveProject()
-    let sequence = await project.getActiveSequence()
+    let active = await project.getActiveSequence()
 
-    if(!sequence) {
-        return {}
+    let sequences = await project.getSequences()
+
+    let out = []
+    for(const sequence in sequences) {
+        let size = await sequence.getFrameSize()
+        //let settings = await sequence.getSettings()
+    
+        //let projectItem = await sequence.getProjectItem()
+        //let name = projectItem.name
+        let name = sequence.name
+        let id = sequence.guid
+    
+        let videoTracks = await getVideoTracks()
+        let audioTracks = await getAudioTracks()
+    
+        let isActive = active == sequence
+
+        out.push( {
+            isActive:
+            name,
+            id,
+            frameSize:{width:size.width, height:size.height},
+            videoTracks,
+            audioTracks
+        })
     }
 
-    let size = await sequence.getFrameSize()
-    //let settings = await sequence.getSettings()
-
-    let projectItem = await sequence.getProjectItem()
-    let name = projectItem.name
-
-    let videoTracks = await getVideoTracks()
-    let audioTracks = await getAudioTracks()
-
-
-    return {
-        name,
-        frameSize:{width:size.width, height:size.height},
-        videoTracks,
-        audioTracks
-    }
+    return out
 }
 
 const getVideoTracks = async () => {
@@ -731,6 +770,7 @@ const parseAndRouteCommand = async (command) => {
 };
 
 const commandHandlers = {
+    setActiveSequence,
     exportFrame,
     setVideoClipProperties,
     createSequenceFromMedia,
@@ -764,7 +804,7 @@ const requiresActiveProject = (command) => {
 };
 
 module.exports = {
-    getActiveSequenceInfo,
+    getSequences,
     getProjectContentInfo,
     getAudioTracks,
     getVideoTracks,

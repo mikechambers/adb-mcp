@@ -93,11 +93,27 @@ def set_audio_track_mute(audio_track_index: int, mute: bool):
 
 
 @mcp.tool()
+def set_active_sequence(sequence_id: str):
+    """
+    Sets the sequence with the specified id as the active sequence within Premiere Pro (currently selected and visible in timeline)
+    
+    Args:
+        sequence_id (str): ID for the sequence to be set as active
+    """
+
+    command = createCommand("setActiveSequence", {
+        "sequenceId":sequence_id
+    })
+
+    return sendCommand(command)
+
+
+@mcp.tool()
 def create_sequence_from_media(item_names: list[str], sequence_name: str = "default"):
     """
     Creates a new sequence from the specified project items, placing clips on the timeline in the order they are provided.
     
-    The sequence will be set as the active sequence when created.
+    If there is not an active sequence the newly created sequence will be set as the active sequence when created.
     
     Args:
         item_names (list[str]): A list of project item names to include in the sequence in the desired order.

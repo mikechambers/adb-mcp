@@ -26,7 +26,7 @@ const { io } = require("./socket.io.js");
 const app = require("premierepro");
 
 const {
-    getActiveSequenceInfo,
+    getSequences,
     getProjectContentInfo,
     getAudioTracks,
     getVideoTracks,
@@ -54,7 +54,7 @@ const onCommandPacket = async (packet) => {
 
         out.response = response;
         out.status = "SUCCESS";
-        out.activeSequence = await getActiveSequenceInfo();
+        out.activeSequence = await getSequences();
         out.projectItems = await getProjectContentInfo();
         
     } catch (e) {
