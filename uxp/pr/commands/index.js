@@ -55,15 +55,12 @@ const createSequenceFromMedia = async (command) => {
         items.push(insertItem)
     }
 
-    //todo: not sure if this is needed
-    const active = await project.getActiveSequence()
+
     let root = await project.getRootItem()
     
     let sequence = await project.createSequenceFromMedia(sequenceName, items, root)
 
-    if(active) {
-        await project.setActiveSequence(active)
-    }
+    await _setActiveSequence(sequence)
 }
 
 const findSequenceByName = async (sequenceName) => {
@@ -96,14 +93,22 @@ const _getSequenceFromId = async (id) => {
     return sequence
 }
 
+
+const _setActiveSequence = async (sequence) => {
+    let project = await app.Project.getActiveProject()
+    await project.setActiveSequence(sequence)
+
+    let item = await findProjectItem(sequence.name, project)
+    await app.SourceMonitor.openProjectItem(item)
+}
+
 const setActiveSequence = async (command) => {
     let options = command.options
     let id = options.sequenceId
 
     let sequence = await _getSequenceFromId(id)
 
-    let project = await app.Project.getActiveProject()
-    await project.setActiveSequence(sequence)
+    await _setActiveSequence(sequence)
 }
 
 const createProject = async (command) => {
