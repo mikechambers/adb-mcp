@@ -312,16 +312,16 @@ const generateImage = async (command) => {
 
         let layer = findLayer(options.prompt);
         layer.name = options.layerName;
-        let max = Math.round(Math.max(layer.bounds.width, layer.bounds.height) / 4);
+        let max = Math.round(Math.max(layer.bounds.width, layer.bounds.height));
         return {
             id: layer.id,
             type: layer.kind.toUpperCase().toString(),
             opacity: layer.opacity,
-            width: layer.bounds.width / 4,
-            height: layer.bounds.height / 4,
-            x: layer.bounds._left / 4,
-            y: layer.bounds._top / 4,
-            url: "image://" + app.activeDocument.id + "/" + layer.id + "/" + max, 
+            width: layer.bounds.width,
+            height: layer.bounds.height,
+            x: layer.bounds._left,
+            y: layer.bounds._top,
+            url: "image://" + app.activeDocument.id + "/" + layer.id + "/0", 
             renderToCanvas: true
         };
     });

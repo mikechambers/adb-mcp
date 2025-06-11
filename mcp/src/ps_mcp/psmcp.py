@@ -87,6 +87,7 @@ def get_layer_rendition(document_id: str, layer_id: str, size: int) -> bytes:
     
     buffer = BytesIO()
     image.save(buffer, format="PNG")
+    # logger.log(f"get_layer_rendition22: {layer_id} {width} {height} {len(res['imageData'])}")
     return buffer.getvalue()
 
 @mcp.tool()

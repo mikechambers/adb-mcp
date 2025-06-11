@@ -35,11 +35,22 @@ const {getLayers} = require("./commands/layers.js").commandHandlers
 
 const { io } = require("./socket.io.js");
 const app = require("photoshop").app;
-
+const imaging = require("photoshop").imaging;
+const core = require("photoshop").core;
 const APPLICATION = "photoshop";
 const PROXY_URL = "http://localhost:3001";
+const manifest = require('./manifest.json');
+console.log(manifest.name); // Accessing the plugin name from the manifest
+console.log(manifest.version); // Accessing the plugin versio
 
 let socket = null;
+
+document.getElementById("version").textContent = `${manifest.name} v${manifest.version}`;
+
+const imageElement = document.createElement('img');
+imageElement.style.width = '200px';
+imageElement.style.height = '200px';
+document.body.appendChild(imageElement);
 
 const onCommandPacket = async (packet) => {
     let command = packet.command;
@@ -65,10 +76,34 @@ const onCommandPacket = async (packet) => {
         name: app.activeDocument.name,
         id: app.activeDocument.id,
       }
-      console.log("app.activeDocument.id", app.activeDocument.id);
       // out.layers = await getLayers()
       out.hasActiveSelection = hasActiveSelection()
 
+/*
+        let res = await execute(async () => {
+            console.log("here 11");
+            const pixelsOpt = {
+            layerID: 2,
+            applyAlpha: true
+            }
+            const imgObj = await imaging.getPixels(pixelsOpt);
+
+            console.log("here 22");
+            console.log("app.activeDocument.id", app.activeDocument.id);
+            const jpegData = await imaging.encodeImageData({"imageData": imgObj.imageData, "base64": true});
+
+            console.log("here 33");
+            const dataUrl = "data:image/jpeg;base64," + jpegData;
+            // console.log("dataUrl", dataUrl);
+            let layersList = app.activeDocument.layers;
+            for (let i = 0; i < layersList.length; i++) {
+                let layer = app.activeDocument.layers[i];
+                console.log("layer", layer);
+            }
+            return dataUrl;
+        });
+      imageElement.src = res;
+*/
     } catch (e) {
         out.status = "FAILURE";
         out.message = `Error calling ${command.action} : ${e}`;
@@ -78,10 +113,12 @@ const onCommandPacket = async (packet) => {
 };
 
 function connectToServer() {
+    
 
     // Create new Socket.IO connection
     socket = io(PROXY_URL, {
-        maxHttpBufferSize: 5e8,
+        maxHttpBufferSize: 5e9,
+        pingTimeout: 600000,
         transports: ["websocket"],
     });
 
@@ -118,6 +155,16 @@ function connectToServer() {
 
     return socket;
 }
+
+const execute = async (callback, commandName = "Executing command...") => {
+    try {
+        return await core.executeAsModal(callback, {
+            commandName: commandName,
+        });
+    } catch (e) {
+        throw new Error(`Error executing command [modal] : ${e}`);
+    }
+};
 
 function disconnectFromServer() {
     if (socket && socket.connected) {
@@ -221,7 +268,7 @@ document.getElementById("chkConnectOnLaunch").addEventListener("change", functio
 
 // Retrieve checkbox state
 const getConnectOnLaunch = () => {
-    return JSON.parse(window.localStorage.getItem(CONNECT_ON_LAUNCH)) || false;
+    return JSON.parse(window.localStorage.getItem(CONNECT_ON_LAUNCH)) || true;
 };
 
 // Set checkbox state on page load
