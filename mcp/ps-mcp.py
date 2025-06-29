@@ -719,8 +719,6 @@ def create_multi_line_text_layer(
     return sendCommand(command)
 
 
-
-
 @mcp.tool()
 def create_single_line_text_layer(
     layer_name:str, 
@@ -759,6 +757,43 @@ def create_single_line_text_layer(
     })
 
     return sendCommand(command)
+
+@mcp.tool()
+def edit_text_layer(
+    layer_name:str, 
+    text:str = None,
+    font_size:int = None,
+    postscript_font_name:str = None, 
+    text_color:dict = None,
+    ):
+
+    """
+    Edits the text content of an existing text layer in the current Photoshop document.
+    
+    Args:
+        layer_name (str): The name of the existing text layer to edit.
+        text (str): The new text content to replace the current text in the layer. If None, text will not be changed.
+        font_size (int): Font size. If None, size will not be changed.
+        postscript_font_name (string): Postscript Font Name to display the text in. Valid list available via get_option_info. If None, font will not will not be changed.
+        text_color (dict): Color of the text expressed in Red, Green, Blue values between 0 and 255 in format of {"red":255, "green":255, "blue":255}. If None, color will not be changed
+    
+    Returns:
+        Response from the Photoshop operation indicating success status.
+        
+    Raises:
+        RuntimeError: If the specified layer doesn't exist or is not a text layer.
+    """
+
+    command = createCommand("editTextLayer", {
+        "layerName":layer_name,
+        "contents":text,
+        "fontSize": font_size,
+        "fontName":postscript_font_name,
+        "textColor":text_color
+    })
+
+    return sendCommand(command)
+
 
 
 @mcp.tool()

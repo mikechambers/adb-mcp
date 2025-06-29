@@ -25,6 +25,15 @@ const { app, constants, core } = require("photoshop");
 const fs = require("uxp").storage.localFileSystem;
 const openfs = require('fs')
 
+
+const convertFontSize = (fontSize) => {
+    return (app.activeDocument.resolution / 72) * fontSize
+}
+
+const convertFromPhotoshopFontSize = (photoshopFontSize) => {
+    return photoshopFontSize / (app.activeDocument.resolution / 72);
+}
+
 const createFile = async (filePath) => {
     let url = `file:${filePath}`
     const fd = await openfs.open(url, "a+");
@@ -280,6 +289,8 @@ const getMostRecentlyModifiedFile = async (directoryPath)  => {
   }
 
 module.exports = {
+    convertFromPhotoshopFontSize,
+    convertFontSize,
     setVisibleAllLayers,
     _saveDocumentAs,
     getMostRecentlyModifiedFile,

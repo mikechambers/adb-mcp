@@ -36,6 +36,8 @@ const {
     selectLayer,
     hasActiveSelection,
     _saveDocumentAs,
+    convertFontSize,
+    convertFromPhotoshopFontSize
 } = require("./utils");
 
 
@@ -405,6 +407,50 @@ const rasterizeLayer = async (command) => {
     });
 };
 
+const editTextLayer = async (command) => {
+    let options = command.options;
+
+    let layerName = options.layerName;
+    let layer = findLayer(layerName);
+
+    if (!layer) {
+        throw new Error(`editTextLayer : Could not find layerName : ${layerName}`);
+    }
+
+    if (layer.kind.toUpperCase() != constants.LayerKind.TEXT.toUpperCase()) {
+        throw new Error(`editTextLayer : Layer type must be TEXT : ${layer.kind}`);
+    }
+
+    await execute(async () => {
+        const contents = options.contents;
+        const fontSize = options.fontSize;
+        const textColor = options.textColor;
+        const fontName = options.fontName;
+
+        if (contents != undefined) {
+            layer.textItem.contents = contents;
+        }
+
+        if (fontSize != undefined) {
+            let s = convertFontSize(fontSize);
+            layer.textItem.characterStyle.size =  s;
+        }
+
+        if (textColor != undefined) {
+            let c = parseColor(textColor);
+            layer.textItem.characterStyle.color = c;
+        }
+
+        if (fontName != undefined) {
+            layer.textItem.characterStyle.font = fontName;
+        }
+
+
+
+
+    });
+}
+
 const moveLayer = async (command) => {
     let options = command.options;
 
@@ -466,9 +512,7 @@ const createMultiLineTextLayer = async (command) => {
     await execute(async () => {
         let c = parseColor(options.textColor);
 
-        //need to adjust font size is DPI is anything other than 72.
-        //should document as part of createTextLayer call
-        let fontSize = (app.activeDocument.resolution / 72) * options.fontSize;
+        let fontSize = convertFontSize(options.fontSize);
 
         let contents = options.contents.replace(/\\n/g, "\n");
 
@@ -577,9 +621,7 @@ const createSingleLineTextLayer = async (command) => {
     await execute(async () => {
         let c = parseColor(options.textColor);
 
-        //need to adjust font size is DPI is anything other than 72.
-        //should document as part of createTextLayer call
-        let fontSize = (app.activeDocument.resolution / 72) * options.fontSize;
+        let fontSize = convertFontSize(options.fontSize);
 
         let a = await app.activeDocument.createTextLayer({
             //blendMode: constants.BlendMode.DISSOLVE,//ignored
@@ -618,6 +660,7 @@ const createPixelLayer = async (command) => {
     });
 };
 
+
 const getLayers = async (command) => {
     let out = await execute(async () => {
         let result = [];
@@ -628,13 +671,34 @@ const getLayers = async (command) => {
 
             for (let i = 0; i < layersList.length; i++) {
                 let layer = layersList[i];
+
+                let kind = layer.kind.toUpperCase()
                 let layerInfo = {
                     name: layer.name,
-                    type: layer.kind.toUpperCase().toString(),
+                    type: kind,
                     isClippingMask: layer.isClippingMask,
-                    opacity: layer.opacity,
-                    blendMode: layer.blendMode.toString().toUpperCase(),
+                    opacity: Math.round(layer.opacity),
+                    blendMode: layer.blendMode.toUpperCase(),
                 };
+
+                if(kind == constants.LayerKind.TEXT.toUpperCase()) {
+
+                    let _c = layer.textItem.characterStyle.color;
+                    let color = {
+                        red: Math.round(_c.rgb.red),
+                        green: Math.round(_c.rgb.green),
+                        blue: Math.round(_c.rgb.blue)
+                    }
+
+                    layerInfo.textInfo = {
+                        fontSize: convertFromPhotoshopFontSize(layer.textItem.characterStyle.size),
+                        fontName: layer.textItem.characterStyle.font,
+                        fontColor: color,
+                        text: layer.textItem.contents,
+                        isMultiLineText: layer.textItem.isParagraphText
+                    }
+                }
+
 
                 // Check if this layer has sublayers (is a group)
                 if (layer.layers && layer.layers.length > 0) {
@@ -727,6 +791,7 @@ const addLayerMask = async (command) => {
 };
 
 const commandHandlers = {
+    editTextLayer,
     exportLayersAsPng,
     removeLayerMask,
     addLayerMask,
