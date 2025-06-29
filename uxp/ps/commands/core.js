@@ -21,7 +21,7 @@
  * SOFTWARE.
  */
 
-const { app, constants, action } = require("photoshop");
+const { app, constants, action, imaging } = require("photoshop");
 const fs = require("uxp").storage.localFileSystem;
 
 const {
@@ -33,27 +33,27 @@ const {
     findLayer,
     execute,
     tokenify,
-    hasActiveSelection
-} = require("./utils")
+    hasActiveSelection,
+} = require("./utils");
 
 const { rasterizeLayer } = require("./layers").commandHandlers;
 
 const openFile = async (command) => {
-
-    let options = command.options    
+    let options = command.options;
 
     await execute(async () => {
-
-        let entry = null
+        let entry = null;
         try {
-            entry = await fs.getEntryWithUrl("file:" + options.filePath)
+            entry = await fs.getEntryWithUrl("file:" + options.filePath);
         } catch (e) {
-            throw new Error("openFile: Could not create file entry. File probably does not exist.");
+            throw new Error(
+                "openFile: Could not create file entry. File probably does not exist."
+            );
         }
-     
-        await app.open(entry)
+
+        await app.open(entry);
     });
-}
+};
 
 const placeImage = async (command) => {
     let options = command.options;
@@ -69,7 +69,6 @@ const placeImage = async (command) => {
         let layerId = layer.id;
 
         let imagePath = await tokenify(options.imagePath);
-
 
         let commands = [
             // Place
@@ -124,10 +123,44 @@ const placeImage = async (command) => {
     });
 };
 
+const getDocumentImage = async (command) => {
+    let out = await execute(async () => {
+        console.log("Starting capture...");
 
+        // Try the applyAlpha approach that works in your example
+        const pixelsOpt = {
+            applyAlpha: true, // This might flatten/apply alpha instead of preserving it
+            // Don't specify layerID to get the whole document
+        };
+
+        const imgObj = await imaging.getPixels(pixelsOpt);
+        console.log("Got pixels successfully");
+
+        // Try JPEG encoding with the alpha applied
+        const base64Data = await imaging.encodeImageData({
+            imageData: imgObj.imageData,
+            base64: true,
+        });
+        console.log("JPEG encoding successful");
+
+        const result = {
+            base64Image: base64Data,
+            dataUrl: `data:image/jpeg;base64,${base64Data}`,
+            width: imgObj.imageData.width,
+            height: imgObj.imageData.height,
+            colorSpace: imgObj.imageData.colorSpace,
+            components: imgObj.imageData.components,
+            format: "jpeg",
+        };
+
+        imgObj.imageData.dispose();
+        return result;
+    });
+
+    return out;
+};
 
 const getDocumentInfo = async (command) => {
-
     let doc = app.activeDocument;
     let path = doc.path;
 
@@ -146,7 +179,6 @@ const getDocumentInfo = async (command) => {
 };
 
 const cropDocument = async (command) => {
-
     let options = command.options;
 
     if (!hasActiveSelection()) {
@@ -166,10 +198,7 @@ const cropDocument = async (command) => {
     });
 };
 
-
-
 const removeBackground = async (command) => {
-
     let options = command.options;
     let layerName = options.layerName;
 
@@ -196,7 +225,6 @@ const removeBackground = async (command) => {
 };
 
 const alignContent = async (command) => {
-
     let options = command.options;
     let layerName = options.layerName;
 
@@ -239,7 +267,6 @@ const alignContent = async (command) => {
 };
 
 const generateImage = async (command) => {
-
     let options = command.options;
 
     await execute(async () => {
@@ -316,22 +343,18 @@ const generateImage = async (command) => {
 };
 
 const saveDocument = async (command) => {
-
     await execute(async () => {
-        await app.activeDocument.save()
+        await app.activeDocument.save();
     });
 };
 
-
-
 const saveDocumentAs = async (command) => {
-    let options = command.options
+    let options = command.options;
 
-    return await _saveDocumentAs(options.filePath, options.fileType)
+    return await _saveDocumentAs(options.filePath, options.fileType);
 };
 
 const createDocument = async (command) => {
-
     let options = command.options;
     let colorMode = getNewDocumentMode(command.options.colorMode);
     let fillColor = parseColor(options.fillColor);
@@ -355,6 +378,7 @@ const createDocument = async (command) => {
 };
 
 const commandHandlers = {
+    getDocumentImage,
     openFile,
     placeImage,
     getDocumentInfo,
@@ -364,9 +388,9 @@ const commandHandlers = {
     generateImage,
     saveDocument,
     saveDocumentAs,
-    createDocument
+    createDocument,
 };
 
 module.exports = {
-    commandHandlers
+    commandHandlers,
 };

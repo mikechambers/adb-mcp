@@ -83,7 +83,7 @@ Now we can install into Claude Desktop.
 #### Photoshop
 
 ```
-uv run mcp install --with fonttools --with python-socketio --with mcp --with requests --with websocket-client ps-mcp.py
+uv run mcp install --with fonttools --with python-socketio --with mcp --with requests --with websocket-client --with numpy ps-mcp.py
 ```
 
 #### Premiere

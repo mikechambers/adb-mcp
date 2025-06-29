@@ -20,10 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from mcp.server.fastmcp import FastMCP
-import requests
-import json
-import time
+from mcp.server.fastmcp import FastMCP, Image
+import numpy as np
+import base64
 import socket_client
 import logger
 import sys
@@ -199,6 +198,107 @@ def group_layers(group_name: str, layer_names: list[str]) -> list:
 
     return sendCommand(command)
 
+@mcp.tool()
+def get_document_image():
+    """Returns a jpeg of the current visible Photoshop document as an MCP Image object that can be displayed."""
+    command = createCommand("getDocumentImage", {})
+    response = sendCommand(command)
+
+    if response.get('status') == 'SUCCESS' and 'response' in response:
+        image_data = response['response']
+        data_url = image_data.get('dataUrl')
+
+        if data_url and data_url.startswith("data:image/jpeg;base64,"):
+            # Strip the data URL prefix and decode the base64 JPEG bytes
+            base64_data = data_url.split(",", 1)[1]
+            jpeg_bytes = base64.b64decode(base64_data)
+
+            return Image(data=jpeg_bytes, format="jpeg")
+
+    return response
+
+@mcp.tool()
+def save_document_image_as_png(file_path: str):
+    """
+    Capture the Photoshop document and save as PNG file
+    
+    Args:
+        file_path: Where to save the PNG file
+        
+    Returns:
+        dict: Status and file info
+    """
+    command = createCommand("getDocumentImage", {})
+    response = sendCommand(command)
+    
+    if response.get('format') == 'raw' and 'rawDataBase64' in response:
+        try:
+            # Decode raw data
+            raw_bytes = base64.b64decode(response['rawDataBase64'])
+            
+            # Extract metadata
+            width = response['width']
+            height = response['height']
+            components = response['components']
+            
+            # Convert to numpy array and reshape
+            pixel_array = np.frombuffer(raw_bytes, dtype=np.uint8)
+            image_array = pixel_array.reshape((height, width, components))
+            
+            # Create and save PNG
+            mode = 'RGBA' if components == 4 else 'RGB'
+            image = Image.fromarray(image_array, mode)
+            image.save(file_path, 'PNG')
+            
+            return {
+                'status': 'success',
+                'file_path': file_path,
+                'width': width,
+                'height': height,
+                'size_bytes': os.path.getsize(file_path)
+            }
+            
+        except Exception as e:
+            return {
+                'status': 'error',
+                'error': str(e)
+            }
+    else:
+        return {
+            'status': 'error',
+            'error': 'No raw image data received'
+        }
+
+
+
+def get_document_image2():
+    """Returns the visible Photoshop document as a base64-encoded image.
+
+    Args:
+        None
+        
+    Returns:
+        dict: A dictionary containing the document image data with the following keys:
+            - 'base64Image' (str): Raw base64-encoded JPEG image data
+            - 'dataUrl' (str): Complete data URL ready for use in HTML img elements
+            - 'width' (int): Image width in pixels
+            - 'height' (int): Image height in pixels
+            - 'colorSpace' (str): Color space of the image (typically "RGB")
+            - 'components' (int): Number of color components per pixel
+            - 'format' (str): Image format ("jpeg")
+            Example: {
+                'base64Image': '/9j/4AAQSkZJRgABAQEA...',
+                'dataUrl': 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEA...',
+                'width': 1024,
+                'height': 1024,
+                'colorSpace': 'RGB',
+                'components': 3,
+                'format': 'jpeg'
+            }
+    """
+    command = createCommand("getDocumentImage", {})
+
+    return sendCommand(command)
 
 @mcp.tool()
 def get_layers() -> list:
@@ -1319,7 +1419,7 @@ def get_instructions() -> str:
 
     1. Think deeply about how to solve the task
     2. Always check your work
-    3. You can ask the user to copy the content to clipboard and ask them to share with you
+    3. You can view the current visible photoshop file by calling get_document_image
     4. Pay attention to font size (dont make it too big)
     5. Always use alignment (align_content()) to position your text.
     6. Read the info for the API calls to make sure you understand the requirements and arguments
@@ -1330,7 +1430,6 @@ def get_instructions() -> str:
     In general, layers are created from bottom up, so keep that in mind as you figure out the order or operations. If you want you have lower layers show through higher ones you must either change the opacity of the higher layers and / or blend modes.
 
     When using fonts there are a couple of things to keep in mind. First, the font origin is the bottom left of the font, not the top right.
-
 
     Suggestions for sizes:
     Paragraph text : 8 to 12 pts

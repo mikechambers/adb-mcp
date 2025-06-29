@@ -26,7 +26,12 @@ const http = require('http');
 const { Server } = require('socket.io');
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, { transports: ["websocket"] }); // Enforce WebSockets
+const io = new Server(server, 
+  {
+    transports: ["websocket"],
+    maxHttpBufferSize: 50 * 1024 * 1024
+  }
+);
 
 const PORT = 3001
 // Track clients by application
