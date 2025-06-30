@@ -140,3 +140,7 @@ def _extract_postscript_name(font):
             pass
     
     return None
+
+if __name__ == "__main__":
+    font_names = list_all_fonts_postscript()
+    print(f"Number of fonts found: {len(font_names)}")

@@ -28,6 +28,7 @@ import logger
 import sys
 import os
 
+FONT_LIMIT = 1000 #max number of font names to return to AI
 
 #logger.log(f"Python path: {sys.executable}")
 #logger.log(f"PYTHONPATH: {os.environ.get('PYTHONPATH')}")
@@ -1460,7 +1461,7 @@ def get_instructions() -> str:
 
     interpolation_methods: {", ".join(interpolation_methods)}
 
-    fonts: {", ".join(font_names)}
+    fonts: {", ".join(font_names[:FONT_LIMIT])}
     """
 
 

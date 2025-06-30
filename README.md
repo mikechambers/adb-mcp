@@ -4,7 +4,7 @@ adb-mcp is a proof of concept project to create AI Agent for Adobe tools (Adobe 
 
 The project is not endorsed by nor supported by Adobe.
 
-It has been tested with Claude desktop (Mac and Windows) from Anthropic, and allows Claude to control Adobe Photoshop and Adobe Premiere. Theoretically, it should work with any AI App / LLM that supports the MCP protocol, and is built in a way to support multiple Adobe applications.
+It has been tested with Claude desktop (Mac and Windows) from Anthropic, as well as the OpenAI Agent SDK, and allows AI clients to control Adobe Photoshop and Adobe Premiere. Theoretically, it should work with any AI App / LLM that supports the MCP protocol, and is built in a way to support multiple Adobe applications.
 
 Example use cases include:
 
@@ -15,8 +15,6 @@ Example use cases include:
 -   Have Claude create new Premiere projects pre-populations with clips, transitions, effects and Audio
 
 [View Video Examples](https://www.youtube.com/playlist?list=PLrZcuHfRluqt5JQiKzMWefUb0Xumb7MkI)
-
-Currently for Photoshop the AI agent can get some information back from Photoshop which enables it to check its work. However, it cannot automatically see its work (i.e. get images from Photoshop). This should be possible, but is not yet implemented. In the meantime, you can copy and paste from Photoshop into Claude desktop.
 
 The Premiere agent is a bit more limited in functionality compared to the Photoshop agent, due to current limitations of the Premiere plugin API.
 
@@ -36,7 +34,7 @@ The proxy server is required because the public facing API for UXP Based JavaScr
 
 In order to run this, the following is required:
 
--   AI LLM with support for MCP Protocol (tested with Claude desktop on Mac & Windows)
+-   AI LLM with support for MCP Protocol (tested with Claude desktop on Mac & Windows, and OpenAI Agent SDK)
 -   Python 3, which is used to run the MCP server provided with this project
 -   NodeJS, used to provide a proxy between the MCP server and Photoshop
 -   Adobe UXP Developer tool (available via Creative Cloud) used to install and debug the Photoshop / Premiere plugin used to connect to the proxy
@@ -55,7 +53,24 @@ Download the adp-mcp project, and unzip into the location you want to save it.
 
 Download and install [Claude Desktop](https://claude.ai/download). Once you have done this, launch to make sure everything works.
 
-### MCP Server
+#### Photoshop
+
+```
+uv run mcp install --with fonttools --with python-socketio --with mcp --with requests --with websocket-client --with numpy ps-mcp.py
+```
+
+#### Premiere
+```
+uv run mcp install --with fonttools --with python-socketio --with mcp --with requests --with websocket-client pr-mcp.py
+```
+
+If you have Claude desktop running, close it (make sure its not running in the background) and restart it. If it starts without any errors, you are good to go.
+
+At this point, you still need to install a few more things.
+
+### Development
+
+This is only required if you want test the MCP servers directly.
 
 Make sure you have Python3 installed and configured on your system (in your system PATH). This assumes you are using [uv](https://github.com/astral-sh/uv) for package management and have it setup and configured on your system.
 
@@ -79,21 +94,6 @@ You can now load the dev interface at http://localhost:5173, click _"connect"_, 
 
 Now we can install into Claude Desktop.
 
-
-#### Photoshop
-
-```
-uv run mcp install --with fonttools --with python-socketio --with mcp --with requests --with websocket-client --with numpy ps-mcp.py
-```
-
-#### Premiere
-```
-uv run mcp install --with fonttools --with python-socketio --with mcp --with requests --with websocket-client pr-mcp.py
-```
-
-If you have Claude desktop running, close it (make sure its not running in the background) and restart it. If it starts without any errors, you are good to go.
-
-At this point, you still need to install a few more things.
 
 ### Command Proxy Node Sever
 
@@ -171,9 +171,11 @@ Note, you must reload the plugin via the UCP Developer app every time you restar
 
 ### Setting up session
 
-In the chat input field, click the "Attach from MCP" button (looks like two sockets). From there click "Choose and integration" and then under "Adobe Photoshop" or "Adobe Premiere"  select *config://get_instructions*. This will load the instructions into the prompt. Submit that to Claude and once it processes it, you are ready to go.
+In the chat input field, click the "+" button. From there click "Add from Adobe Photoshop / Premiere" then select *config://get_instructions*. This will load the instructions into the prompt. Submit that to Claude and once it processes it, you are ready to go.
 
-<img src="images/claud-attach-mcp.png" width="600">
+<img src="images/claud-attach-mcp.png" width="300">
+
+This will help reduce errors when the AI is using the app.
 
 
 ### Prompting
@@ -214,8 +216,6 @@ Add cross fade transitions between all of the clips on the timeline in Premiere
 ```
 
 
-
-
 ### Tips
 
 
@@ -234,7 +234,7 @@ By default, the AI cannot access files directly, although if you install the [Cl
 
 #### Photoshop
 
-* You can copy and paste images from Photoshop into the AI to give it more information on what is going on.
+* You can ask the AI to look at the content of the Photoshop file and it should be able to then see the output.
 * The AI currently has issue sizing and positioning text correctly, so giving it guidelines on font sizes to use will help, as well as telling it to align the text relative to the canvas.
 * The AI has access to all of the Postscript fonts on the system. If you want to specify a font, you must use its Postscript name (you may be able to ask the AI for it).
 * You can ask the AI for suggestions. It comes up with really useful ideas / feedback sometimes.
@@ -250,6 +250,12 @@ By default, the AI cannot access files directly, although if you install the [Cl
 #### MCP won't run in Claude
 
 If you get an error when running Claude that the MCP is not working, you may need to edit your Claud config file and put an abslute path for the UV command. More info [here](https://github.com/mikechambers/adb-mcp/issues/5#issuecomment-2829817624).
+
+#### All fonts not available
+
+The MCP server will return a list of available fonts, but depending on the number of fonts installed on your system, may omit some to work around the amount of data that can be send to the AI. By default it will list the first 1000 fonts sorted in alphabetical order.
+
+You can tell the AI to use a specific font, using its postscript name.
 
 #### Plugin won't install or connect
 
