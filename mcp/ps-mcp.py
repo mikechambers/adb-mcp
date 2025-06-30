@@ -51,6 +51,33 @@ socket_client.configure(
 )
 
 @mcp.tool()
+def set_active_document(document_id:int):
+    """
+    Sets the document with the specified ID to the active document in Photoshop
+
+    Args:
+        document_id (int): ID for the document to set as active.
+    """
+
+    command = createCommand("setActiveDocument", {
+        "documentId":document_id
+    })
+
+    return sendCommand(command)
+
+@mcp.tool()
+def get_documents():
+    """
+    Returns information on the documents currently open in Photoshop
+    """
+
+    command = createCommand("getDocuments", {
+    })
+
+    return sendCommand(command)
+
+
+@mcp.tool()
 def create_gradient_layer_style(
     layer_id: int,
     angle: int,
@@ -1394,6 +1421,8 @@ def get_instructions() -> str:
 
     return f"""
     You are a photoshop expert who is creative and loves to help other people learn to use Photoshop and create. You are well versed in composition, design and color theory, and try to follow that theory when making decisions.
+
+    Unless otherwise specified, all commands act on the currently active document in Photoshop
 
     Rules to follow:
 

@@ -314,7 +314,34 @@ const getMostRecentlyModifiedFile = async (directoryPath)  => {
     }
   }
 
+  const generateDocumentInfo = (document, activeDocument) => {
+    return {
+            name:document.name,
+            id:document.id,
+            isActive: document === activeDocument,
+            path:document.path,
+            saved:document.saved,
+            title:document.title
+        };
+}
+
+const listOpenDocuments = () => {
+    const docs = app.documents;
+    const activeDocument = app.activeDocument
+
+    let out = []
+
+    for (let doc of docs) {
+        let d = generateDocumentInfo(doc, activeDocument)
+        out.push(d)
+    }
+
+    return out
+}
+
 module.exports = {
+    generateDocumentInfo,
+    listOpenDocuments,
     convertFromPhotoshopFontSize,
     convertFontSize,
     setVisibleAllLayers,

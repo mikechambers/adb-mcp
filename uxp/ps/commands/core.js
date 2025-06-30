@@ -34,6 +34,7 @@ const {
     execute,
     tokenify,
     hasActiveSelection,
+    listOpenDocuments
 } = require("./utils");
 
 const { rasterizeLayer } = require("./layers").commandHandlers;
@@ -354,6 +355,27 @@ const saveDocumentAs = async (command) => {
     return await _saveDocumentAs(options.filePath, options.fileType);
 };
 
+const setActiveDocument = async (command) => {
+    
+    let options = command.options;
+    let documentId = options.documentId;
+    let docs = listOpenDocuments();
+
+    for(let doc of docs) {
+        if(doc.id === documentId) {
+            await execute(async () => {
+                app.activeDocument = doc;
+            });
+            
+            return
+        }
+    }
+}
+
+const getDocuments = async (command) => {
+    return listOpenDocuments()
+}
+
 const duplicateDocument = async (command) => {
     let options = command.options;
     let name = options.name
@@ -388,6 +410,8 @@ const createDocument = async (command) => {
 };
 
 const commandHandlers = {
+    setActiveDocument,
+    getDocuments,
     duplicateDocument,
     getDocumentImage,
     openFile,
