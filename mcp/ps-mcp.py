@@ -1064,20 +1064,23 @@ def clear_selection():
 
 @mcp.tool()
 def select_rectangle(
+    layer_id:int,
     feather:int = 0,
     anti_alias:bool = True,
     bounds:dict = {"top": 0, "left": 0, "bottom": 100, "right": 100}
     ):
     
-    """Creates a rectangular selection on the currently selected layer in the Photoshop document
+    """Creates a rectangular selection and selects the specified layer
     
     Args:
+        layer_id (int): The layer to do the select rectangle action on.
         feather (int): The amount of feathering in pixels to apply to the selection (0 - 1000)
         anti_alias (bool): Whether anti-aliases is applied to the selection
         bounds (dict): The bounds for the rectangle selection
     """
 
     command = createCommand("selectRectangle", {
+        "layerId":layer_id,
         "feather":feather,
         "antiAlias":anti_alias,
         "bounds":bounds
@@ -1087,20 +1090,23 @@ def select_rectangle(
 
 @mcp.tool()
 def select_polygon(
+    layer_id:int,
     feather:int = 0,
     anti_alias:bool = True,
     points:list[dict[str, int]] = [{"x": 50, "y": 10}, {"x": 100, "y": 90}, {"x": 10, "y": 40}]
     ):
     
-    """Creates an n-sided polygon selection on the currently selected layer in the Photoshop document
+    """Creates an n-sided polygon selection and selects the specified layer
     
     Args:
+        layer_id (int): The layer to do the selection action on.
         feather (int): The amount of feathering in pixels to apply to the selection (0 - 1000)
         anti_alias (bool): Whether anti-aliases is applied to the selection
         points (list): The points that define the sides of the selection, defined via a list of dicts with x, y values.
     """
 
     command = createCommand("selectPolygon", {
+        "layerId":layer_id,
         "feather":feather,
         "antiAlias":anti_alias,
         "points":points
@@ -1110,20 +1116,23 @@ def select_polygon(
 
 @mcp.tool()
 def select_ellipse(
+    layer_id:int,
     feather:int = 0,
     anti_alias:bool = True,
     bounds:dict = {"top": 0, "left": 0, "bottom": 100, "right": 100}
     ):
     
-    """Creates an elliptical selection on the currently selected layer
+    """Creates an elliptical selection and selects the specified layer
     
     Args:
+        layer_id (int): The layer to do the selection action on.
         feather (int): The amount of feathering in pixels to apply to the selection (0 - 1000)
         anti_alias (bool): Whether anti-aliases is applied to the selection
         bounds (dict): The bounds that will define the elliptical selection.
     """
 
     command = createCommand("selectEllipse", {
+        "layerId":layer_id,
         "feather":feather,
         "antiAlias":anti_alias,
         "bounds":bounds

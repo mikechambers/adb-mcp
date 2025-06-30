@@ -306,8 +306,19 @@ const fillSelection = async (command) => {
 const selectPolygon = async (command) => {
 
     let options = command.options;
+    let layerId = options.layerId;
+    let layer = findLayer(layerId);
+
+    if (!layer) {
+        throw new Error(
+            `selectPolygon : Could not find layerId : ${layerId}`
+        );
+    }
 
     await execute(async () => {
+
+        selectLayer(layer, true);
+
         await app.activeDocument.selection.selectPolygon(
             options.points,
             constants.SelectionType.REPLACE,
@@ -320,8 +331,19 @@ const selectPolygon = async (command) => {
 let selectEllipse = async (command) => {
 
     let options = command.options;
+    let layerId = options.layerId;
+    let layer = findLayer(layerId);
+
+    if (!layer) {
+        throw new Error(
+            `selectEllipse : Could not find layerId : ${layerId}`
+        );
+    }
 
     await execute(async () => {
+
+        selectLayer(layer, true);
+
         await app.activeDocument.selection.selectEllipse(
             options.bounds,
             constants.SelectionType.REPLACE,
@@ -332,10 +354,19 @@ let selectEllipse = async (command) => {
 };
 
 const selectRectangle = async (command) => {
-
     let options = command.options;
+    let layerId = options.layerId;
+    let layer = findLayer(layerId);
+
+    if (!layer) {
+        throw new Error(
+            `selectRectangle : Could not find layerId : ${layerId}`
+        );
+    }
 
     await execute(async () => {
+        selectLayer(layer, true);
+
         await app.activeDocument.selection.selectRectangle(
             options.bounds,
             constants.SelectionType.REPLACE,
