@@ -32,13 +32,13 @@ const {
 const addDropShadowLayerStyle = async (command) => {
 
     let options = command.options;
-    let layerName = options.layerName;
+    let layerId = options.layerId;
 
-    let layer = findLayer(layerName);
+    let layer = findLayer(layerId);
 
     if (!layer) {
         throw new Error(
-            `addDropShadowLayerStyle : Could not find layerName : ${layerName}`
+            `addDropShadowLayerStyle : Could not find layerId : ${layerId}`
         );
     }
 
@@ -128,13 +128,13 @@ const addDropShadowLayerStyle = async (command) => {
 const addStrokeLayerStyle = async (command) => {
     const options = command.options
 
-    const layerName = options.layerName
+    const layerId = options.layerId
 
-    let layer = findLayer(layerName)
+    let layer = findLayer(layerId)
 
     if (!layer) {
         throw new Error(
-            `addStrokeLayerStyle : Could not find layerName : ${layerName}`
+            `addStrokeLayerStyle : Could not find layerId : ${layerId}`
         );
     }
 
@@ -216,13 +216,13 @@ const addStrokeLayerStyle = async (command) => {
 const createGradientLayerStyle = async (command) => {
 
     let options = command.options;
-    let layerName = options.layerName;
+    let layerId = options.layerId;
 
-    let layer = findLayer(layerName);
+    let layer = findLayer(layerId);
 
     if (!layer) {
         throw new Error(
-            `createGradientAdjustmentLayer : Could not find layerName : ${layerName}`
+            `createGradientAdjustmentLayer : Could not find layerId : ${layerId}`
         );
     }
 

@@ -31,13 +31,13 @@ const {
 const applyMotionBlur = async (command) => {
 
     let options = command.options;
-    let layerName = options.layerName;
+    let layerId = options.layerId;
 
-    let layer = findLayer(layerName);
+    let layer = findLayer(layerId);
 
     if (!layer) {
         throw new Error(
-            `applyMotionBlur : Could not find layerName : ${layerName}`
+            `applyMotionBlur : Could not find layerId : ${layerId}`
         );
     }
 
@@ -49,13 +49,13 @@ const applyMotionBlur = async (command) => {
 const applyGaussianBlur = async (command) => {
 
     let options = command.options;
-    let layerName = options.layerName;
+    let layerId = options.layerId;
 
-    let layer = findLayer(layerName);
+    let layer = findLayer(layerId);
 
     if (!layer) {
         throw new Error(
-            `applyGaussianBlur : Could not find layerName : ${layerName}`
+            `applyGaussianBlur : Could not find layerId : ${layerId}`
         );
     }
 

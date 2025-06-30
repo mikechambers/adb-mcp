@@ -151,14 +151,39 @@ const setVisibleAllLayers = (visible, layers) => {
 };
 
 
-const findLayer = (name, layers) => {
+const findLayer = (id, layers) => {
     if (!layers) {
         layers = app.activeDocument.layers;
     }
 
     //todo there is a later.getByName we can use
     for (const layer of layers) {
-        if (layer.name === name) {
+        if (layer.id === id) {
+            return layer;
+        }
+
+        if (layer.layers && layer.layers.length > 0) {
+            const found = findLayer(id, layer.layers);
+            if (found) {
+                return found; // Stop as soon as we’ve found the target layer
+            }
+        }
+    }
+
+    return null;
+};
+
+
+const findLayerByName = (name, layers) => {
+    if (!layers) {
+        layers = app.activeDocument.layers;
+    }
+
+    return app.activeDocument.layers.getByName(name);
+/*
+    //todo there is a later.getByName we can use
+    for (const layer of layers) {
+        if (layer.name == name) {
             return layer;
         }
 
@@ -171,6 +196,7 @@ const findLayer = (name, layers) => {
     }
 
     return null;
+    */
 };
 
 const _saveDocumentAs = async (filePath, fileType) => {

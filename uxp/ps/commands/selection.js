@@ -20,13 +20,13 @@ const clearSelection = async () => {
 const createMaskFromSelection = async (command) => {
 
     let options = command.options;
-    let layerName = options.layerName;
+    let layerId = options.layerId;
 
-    let layer = findLayer(layerName);
+    let layer = findLayer(layerId);
 
     if (!layer) {
         throw new Error(
-            `createMaskFromSelection : Could not find layerName : ${layerName}`
+            `createMaskFromSelection : Could not find layerId : ${layerId}`
         );
     }
 
@@ -58,13 +58,13 @@ const createMaskFromSelection = async (command) => {
 const selectSubject = async (command) => {
 
     let options = command.options;
-    let layerName = options.layerName;
+    let layerId = options.layerId;
 
-    let layer = findLayer(layerName);
+    let layer = findLayer(layerId);
 
     if (!layer) {
         throw new Error(
-            `selectSubject : Could not find layerName : ${layerName}`
+            `selectSubject : Could not find layerId : ${layerId}`
         );
     }
 
@@ -86,12 +86,12 @@ const selectSubject = async (command) => {
 const selectSky = async (command) => {
 
     let options = command.options;
-    let layerName = options.layerName;
+    let layerId = options.layerId;
 
-    let layer = findLayer(layerName);
+    let layer = findLayer(layerId);
 
     if (!layer) {
-        throw new Error(`selectSky : Could not find layerName : ${layerName}`);
+        throw new Error(`selectSky : Could not find layerId : ${layerId}`);
     }
 
     return await execute(async () => {
@@ -113,13 +113,13 @@ const selectSky = async (command) => {
 const cutSelectionToClipboard = async (command) => {
 
     let options = command.options;
-    let layerName = options.layerName;
+    let layerId = options.layerId;
 
-    let layer = findLayer(layerName);
+    let layer = findLayer(layerId);
 
     if (!layer) {
         throw new Error(
-            `cutSelectionToClipboard : Could not find layerName : ${layerName}`
+            `cutSelectionToClipboard : Could not find layerId : ${layerId}`
         );
     }
 
@@ -164,13 +164,13 @@ const copyMergedSelectionToClipboard = async (command) => {
 const copySelectionToClipboard = async (command) => {
 
     let options = command.options;
-    let layerName = options.layerName;
+    let layerId = options.layerId;
 
-    let layer = findLayer(layerName);
+    let layer = findLayer(layerId);
 
     if (!layer) {
         throw new Error(
-            `copySelectionToClipboard : Could not find layerName : ${layerName}`
+            `copySelectionToClipboard : Could not find layerId : ${layerId}`
         );
     }
 
@@ -195,13 +195,13 @@ const copySelectionToClipboard = async (command) => {
 const pasteFromClipboard = async (command) => {
 
     let options = command.options;
-    let layerName = options.layerName;
+    let layerId = options.layerId;
 
-    let layer = findLayer(layerName);
+    let layer = findLayer(layerId);
 
     if (!layer) {
         throw new Error(
-            `pasteFromClipboard : Could not find layerName : ${layerName}`
+            `pasteFromClipboard : Could not find layerId : ${layerId}`
         );
     }
 
@@ -231,12 +231,12 @@ const pasteFromClipboard = async (command) => {
 const deleteSelection = async (command) => {
 
     let options = command.options;
-    let layerName = options.layerName;
-    let layer = findLayer(layerName);
+    let layerId = options.layerId;
+    let layer = findLayer(layerId);
 
     if (!layer) {
         throw new Error(
-            `deleteSelection : Could not find layerName : ${layerName}`
+            `deleteSelection : Could not find layerId : ${layerId}`
         );
     }
 
@@ -258,12 +258,12 @@ const deleteSelection = async (command) => {
 const fillSelection = async (command) => {
 
     let options = command.options;
-    let layerName = options.layerName;
-    let layer = findLayer(layerName);
+    let layerId = options.layerId;
+    let layer = findLayer(layerId);
 
     if (!layer) {
         throw new Error(
-            `fillSelection : Could not find layerName : ${layerName}`
+            `fillSelection : Could not find layerId : ${layerId}`
         );
     }
 

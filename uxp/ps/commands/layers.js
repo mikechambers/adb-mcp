@@ -93,12 +93,12 @@ const exportLayersAsPng = async (command) => {
     for(const info of layersInfo) {
         let result = {};
  
-        let layer = findLayer(info.layerName);
+        let layer = findLayer(info.layerId);
 
         try {
             if (!layer) {
                 throw new Error(
-                    `exportLayersAsPng: Could not find layer named: [${info.layerName}]` // Fixed error message
+                    `exportLayersAsPng: Could not find layer with ID: [${info.layerId}]` // Fixed error message
                 );
             }
             await execute(async () => {
@@ -109,7 +109,7 @@ const exportLayersAsPng = async (command) => {
 
             result = {
                 ...tmp,
-                layerName: info.layerName,
+                layerId: info.layerId,
                 success: true
             };
 
@@ -140,12 +140,12 @@ const exportLayersAsPng = async (command) => {
 const scaleLayer = async (command) => {
     let options = command.options;
 
-    let layerName = options.layerName;
-    let layer = findLayer(layerName);
+    let layerId = options.layerId;
+    let layer = findLayer(layerId);
 
     if (!layer) {
         throw new Error(
-            `scaleLayer : Could not find layer named : [${layerName}]`
+            `scaleLayer : Could not find layer with ID : [${layerId}]`
         );
     }
 
@@ -162,12 +162,12 @@ const scaleLayer = async (command) => {
 const rotateLayer = async (command) => {
     let options = command.options;
 
-    let layerName = options.layerName;
-    let layer = findLayer(layerName);
+    let layerId = options.layerId;
+    let layer = findLayer(layerId);
 
     if (!layer) {
         throw new Error(
-            `rotateLayer : Could not find layer named : [${layerName}]`
+            `rotateLayer : Could not find layer with ID : [${layerId}]`
         );
     }
 
@@ -186,12 +186,12 @@ const rotateLayer = async (command) => {
 const flipLayer = async (command) => {
     let options = command.options;
 
-    let layerName = options.layerName;
-    let layer = findLayer(layerName);
+    let layerId = options.layerId;
+    let layer = findLayer(layerId);
 
     if (!layer) {
         throw new Error(
-            `flipLayer : Could not find layer named : [${layerName}]`
+            `flipLayer : Could not find layer with ID : [${layerId}]`
         );
     }
 
@@ -203,12 +203,12 @@ const flipLayer = async (command) => {
 const deleteLayer = async (command) => {
     let options = command.options;
 
-    let layerName = options.layerName;
-    let layer = findLayer(layerName);
+    let layerId = options.layerId;
+    let layer = findLayer(layerId);
 
     if (!layer) {
         throw new Error(
-            `setLayerVisibility : Could not find layer named : [${layerName}]`
+            `setLayerVisibility : Could not find layer with ID : [${layerId}]`
         );
     }
 
@@ -220,12 +220,12 @@ const deleteLayer = async (command) => {
 const renameLayer = async (command) => {
     let options = command.options;
 
-    let layerName = options.layerName;
-    let layer = findLayer(layerName);
+    let layerId = options.layerId;
+    let layer = findLayer(layerId);
 
     if (!layer) {
         throw new Error(
-            `renameLayer : Could not find layer named : [${layerName}]`
+            `renameLayer : Could not find layer with ID : [${layerId}]`
         );
     }
 
@@ -239,12 +239,12 @@ const groupLayers = async (command) => {
 
     let layers = [];
 
-    for (const layerName of options.layerNames) {
-        let layer = findLayer(layerName);
+    for (const layerId of options.layerIds) {
+        let layer = findLayer(layerId);
 
         if (!layer) {
             throw new Error(
-                `groupLayers : Could not find layerName : ${layerName}`
+                `groupLayers : Could not find layerId : ${layerId}`
             );
         }
 
@@ -262,12 +262,12 @@ const groupLayers = async (command) => {
 const setLayerVisibility = async (command) => {
     let options = command.options;
 
-    let layerName = options.layerName;
-    let layer = findLayer(layerName);
+    let layerId = options.layerId;
+    let layer = findLayer(layerId);
 
     if (!layer) {
         throw new Error(
-            `setLayerVisibility : Could not find layer named : [${layerName}]`
+            `setLayerVisibility : Could not find layer with ID : [${layerId}]`
         );
     }
 
@@ -279,12 +279,12 @@ const setLayerVisibility = async (command) => {
 const translateLayer = async (command) => {
     let options = command.options;
 
-    let layerName = options.layerName;
-    let layer = findLayer(layerName);
+    let layerId = options.layerId;
+    let layer = findLayer(layerId);
 
     if (!layer) {
         throw new Error(
-            `translateLayer : Could not find layer named : [${layerName}]`
+            `translateLayer : Could not find layer with ID : [${layerId}]`
         );
     }
 
@@ -296,12 +296,12 @@ const translateLayer = async (command) => {
 const setLayerProperties = async (command) => {
     let options = command.options;
 
-    let layerName = options.layerName;
-    let layer = findLayer(layerName);
+    let layerId = options.layerId;
+    let layer = findLayer(layerId);
 
     if (!layer) {
         throw new Error(
-            `setLayerProperties : Could not find layer named : [${layerName}]`
+            `setLayerProperties : Could not find layer with ID : [${layerId}]`
         );
     }
 
@@ -343,11 +343,11 @@ const duplicateLayer = async (command) => {
     let options = command.options;
 
     await execute(async () => {
-        let layer = findLayer(options.sourceLayerName);
+        let layer = findLayer(options.sourceLayerId);
 
         if (!layer) {
             throw new Error(
-                `duplicateLayer : Could not find sourceLayerName : ${options.sourceLayerName}`
+                `duplicateLayer : Could not find sourceLayerId : ${options.sourceLayerId}`
             );
         }
 
@@ -357,7 +357,8 @@ const duplicateLayer = async (command) => {
 };
 
 const flattenAllLayers = async (command) => {
-    let options = command.options;
+    const options = command.options;
+    const layerName = options.layerName
 
     await execute(async () => {
         await app.activeDocument.flatten();
@@ -370,19 +371,19 @@ const flattenAllLayers = async (command) => {
 
         let l = layers[0];
         l.allLocked = false;
-        l.name = options.layerName;
+        l.name = layerName;
     });
 };
 
 const getLayerBounds = async (command) => {
     let options = command.options;
-    let layerName = options.layerName;
+    let layerId = options.layerId;
 
-    let layer = findLayer(layerName);
+    let layer = findLayer(layerId);
 
     if (!layer) {
         throw new Error(
-            `getLayerBounds : Could not find layerName : ${layerName}`
+            `getLayerBounds : Could not find layerId : ${layerId}`
         );
     }
 
@@ -392,13 +393,13 @@ const getLayerBounds = async (command) => {
 
 const rasterizeLayer = async (command) => {
     let options = command.options;
-    let layerName = options.layerName;
+    let layerId = options.layerId;
 
-    let layer = findLayer(layerName);
+    let layer = findLayer(layerId);
 
     if (!layer) {
         throw new Error(
-            `rasterizeLayer : Could not find layerName : ${layerName}`
+            `rasterizeLayer : Could not find layerId : ${layerId}`
         );
     }
 
@@ -410,11 +411,11 @@ const rasterizeLayer = async (command) => {
 const editTextLayer = async (command) => {
     let options = command.options;
 
-    let layerName = options.layerName;
-    let layer = findLayer(layerName);
+    let layerId = options.layerId;
+    let layer = findLayer(layerId);
 
     if (!layer) {
-        throw new Error(`editTextLayer : Could not find layerName : ${layerName}`);
+        throw new Error(`editTextLayer : Could not find layerId : ${layerId}`);
     }
 
     if (layer.kind.toUpperCase() != constants.LayerKind.TEXT.toUpperCase()) {
@@ -444,21 +445,17 @@ const editTextLayer = async (command) => {
         if (fontName != undefined) {
             layer.textItem.characterStyle.font = fontName;
         }
-
-
-
-
     });
 }
 
 const moveLayer = async (command) => {
     let options = command.options;
 
-    let layerName = options.layerName;
-    let layer = findLayer(layerName);
+    let layerId = options.layerId;
+    let layer = findLayer(layerId);
 
     if (!layer) {
-        throw new Error(`moveLayer : Could not find layerName : ${layerName}`);
+        throw new Error(`moveLayer : Could not find layerId : ${layerId}`);
     }
 
     let position;
@@ -673,9 +670,11 @@ const getLayers = async (command) => {
                 let layer = layersList[i];
 
                 let kind = layer.kind.toUpperCase()
+
                 let layerInfo = {
                     name: layer.name,
                     type: kind,
+                    id:layer.id,
                     isClippingMask: layer.isClippingMask,
                     opacity: Math.round(layer.opacity),
                     blendMode: layer.blendMode.toUpperCase(),
@@ -723,11 +722,11 @@ const getLayers = async (command) => {
 const removeLayerMask = async (command) => {
     const options = command.options;
 
-    const layerName = options.layerName;
-    const layer = findLayer(layerName);
+    const layerId = options.layerId;
+    const layer = findLayer(layerId);
 
     if (!layer) {
-        throw new Error(`removeLayerMask : Could not find layerName : ${layerName}`);
+        throw new Error(`removeLayerMask : Could not find layerId : ${layerId}`);
     }
 
     await execute(async () => {
@@ -757,11 +756,11 @@ const addLayerMask = async (command) => {
 
     const options = command.options;
 
-    const layerName = options.layerName;
-    const layer = findLayer(layerName);
+    const layerId = options.layerId;
+    const layer = findLayer(layerId);
 
     if (!layer) {
-        throw new Error(`addLayerMask : Could not find layerName : ${layerName}`);
+        throw new Error(`addLayerMask : Could not find layerId : ${layerId}`);
     }
 
     await execute(async () => {

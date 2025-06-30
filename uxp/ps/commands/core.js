@@ -57,11 +57,11 @@ const openFile = async (command) => {
 
 const placeImage = async (command) => {
     let options = command.options;
-    let layerName = options.layerName;
-    let layer = findLayer(layerName);
+    let layerId = options.layerId;
+    let layer = findLayer(layerId);
 
     if (!layer) {
-        throw new Error(`placeImage : Could not find layerName : ${layerName}`);
+        throw new Error(`placeImage : Could not find layerId : ${layerId}`);
     }
 
     await execute(async () => {
@@ -113,7 +113,7 @@ const placeImage = async (command) => {
                 ],
                 to: {
                     _obj: "layer",
-                    name: layerName,
+                    name: layerId,
                 },
             },
         ];
@@ -200,13 +200,13 @@ const cropDocument = async (command) => {
 
 const removeBackground = async (command) => {
     let options = command.options;
-    let layerName = options.layerName;
+    let layerId = options.layerId;
 
-    let layer = findLayer(layerName);
+    let layer = findLayer(layerId);
 
     if (!layer) {
         throw new Error(
-            `removeBackground : Could not find layerName : ${layerName}`
+            `removeBackground : Could not find layerId : ${layerId}`
         );
     }
 
@@ -226,13 +226,13 @@ const removeBackground = async (command) => {
 
 const alignContent = async (command) => {
     let options = command.options;
-    let layerName = options.layerName;
+    let layerId = options.layerId;
 
-    let layer = findLayer(layerName);
+    let layer = findLayer(layerId);
 
     if (!layer) {
         throw new Error(
-            `alignContent : Could not find layerName : ${layerName}`
+            `alignContent : Could not find layerId : ${layerId}`
         );
     }
 
@@ -354,6 +354,16 @@ const saveDocumentAs = async (command) => {
     return await _saveDocumentAs(options.filePath, options.fileType);
 };
 
+const duplicateDocument = async (command) => {
+    let options = command.options;
+    let name = options.name
+
+    await execute(async () => {
+        const doc = app.activeDocument;
+        await doc.duplicate(name)
+    });
+};
+
 const createDocument = async (command) => {
     let options = command.options;
     let colorMode = getNewDocumentMode(command.options.colorMode);
@@ -378,6 +388,7 @@ const createDocument = async (command) => {
 };
 
 const commandHandlers = {
+    duplicateDocument,
     getDocumentImage,
     openFile,
     placeImage,

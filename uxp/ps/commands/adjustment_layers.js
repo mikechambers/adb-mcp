@@ -32,13 +32,13 @@ const {
 const addAdjustmentLayerBlackAndWhite = async (command) => {
 
     let options = command.options;
-    let layerName = options.layerName;
+    let layerId = options.layerId;
 
-    let layer = findLayer(layerName);
+    let layer = findLayer(layerId);
 
     if (!layer) {
         throw new Error(
-            `addAdjustmentLayerBlackAndWhite : Could not find layerName : ${layerName}`
+            `addAdjustmentLayerBlackAndWhite : Could not find layerId : ${layerId}`
         );
     }
 
@@ -90,13 +90,13 @@ const addAdjustmentLayerBlackAndWhite = async (command) => {
 const addBrightnessContrastAdjustmentLayer = async (command) => {
 
     let options = command.options;
-    let layerName = options.layerName;
+    let layerId = options.layerId;
 
-    let layer = findLayer(layerName);
+    let layer = findLayer(layerId);
 
     if (!layer) {
         throw new Error(
-            `addBrightnessContrastAdjustmentLayer : Could not find layerName : ${layerName}`
+            `addBrightnessContrastAdjustmentLayer : Could not find layerId : ${layerId}`
         );
     }
 
@@ -146,13 +146,13 @@ const addBrightnessContrastAdjustmentLayer = async (command) => {
 const addAdjustmentLayerVibrance = async (command) => {
 
     let options = command.options;
-    let layerName = options.layerName;
+    let layerId = options.layerId;
 
-    let layer = findLayer(layerName);
+    let layer = findLayer(layerId);
 
     if (!layer) {
         throw new Error(
-            `addAdjustmentLayerVibrance : Could not find layerName : ${layerName}`
+            `addAdjustmentLayerVibrance : Could not find layerId : ${layerId}`
         );
     }
 
@@ -203,12 +203,12 @@ const addColorBalanceAdjustmentLayer = async (command) => {
 
     let options = command.options;
 
-    let layerName = options.layerName;
-    let layer = findLayer(layerName);
+    let layerId = options.layerId;
+    let layer = findLayer(layerId);
 
     if (!layer) {
         throw new Error(
-            `addColorBalanceAdjustmentLayer : Could not find layer named : [${layerName}]`
+            `addColorBalanceAdjustmentLayer : Could not find layer named : [${layerId}]`
         );
     }
 
