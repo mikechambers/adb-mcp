@@ -31,6 +31,7 @@ const {
     getNewDocumentMode,
     selectLayer,
     findLayer,
+    findLayerByName,
     execute,
     tokenify,
     hasActiveSelection,
@@ -126,23 +127,17 @@ const placeImage = async (command) => {
 
 const getDocumentImage = async (command) => {
     let out = await execute(async () => {
-        console.log("Starting capture...");
 
-        // Try the applyAlpha approach that works in your example
         const pixelsOpt = {
-            applyAlpha: true, // This might flatten/apply alpha instead of preserving it
-            // Don't specify layerID to get the whole document
+            applyAlpha: true
         };
 
         const imgObj = await imaging.getPixels(pixelsOpt);
-        console.log("Got pixels successfully");
 
-        // Try JPEG encoding with the alpha applied
         const base64Data = await imaging.encodeImageData({
             imageData: imgObj.imageData,
             base64: true,
         });
-        console.log("JPEG encoding successful");
 
         const result = {
             base64Image: base64Data,
@@ -271,9 +266,15 @@ const generateImage = async (command) => {
     let options = command.options;
 
     await execute(async () => {
-        //layer.selected = true
         let doc = app.activeDocument;
         await doc.selection.selectAll();
+
+        let contentType = "none";
+        const c = options.contentType.toLowerCase()
+        if (c === "photo" || c === "art") {
+            contentType = c;
+        }
+
         let commands = [
             // Generate Image current document
             {
@@ -294,7 +295,7 @@ const generateImage = async (command) => {
                         _obj: "clio",
                         clio_advanced_options: {
                             text_to_image_styles_options: {
-                                text_to_image_content_type: "none",
+                                text_to_image_content_type: contentType,
                                 text_to_image_effects_count: 0,
                                 text_to_image_effects_list: [
                                     "none",
@@ -336,9 +337,11 @@ const generateImage = async (command) => {
                 ],
             },
         ];
-        await action.batchPlay(commands, {});
+        let o = await action.batchPlay(commands, {});
+        let layerId = o[0].layerID;
 
-        let l = findLayer(options.prompt);
+        //let l = findLayerByName(options.prompt);
+        let l = findLayer(layerId);
         l.name = options.layerName;
     });
 };

@@ -492,19 +492,21 @@ def set_layer_visibility(
 @mcp.tool()
 def generate_image(
     layer_name:str,
-    prompt:str
+    prompt:str,
+    content_type:str = "none"
 ):
     """Uses Adobe Firefly Generative AI to generate an image on a new layer with the specified layer name
 
     Args:
-        layer_name (str): Name for the layer that will contain the generated image
+        layer_name (str): Name for the layer that will be created and contain the generated image
         prompt (str): Prompt describing the image to be generated
-        opacity
+        content_type (str): The type of image to be generated. Options include "photo", "art" or "none" (default)
     """
     
     command = createCommand("generateImage", {
         "layerName":layer_name,
-        "prompt":prompt
+        "prompt":prompt,
+        "contentType":content_type
     })
 
     return sendCommand(command)

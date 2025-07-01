@@ -340,6 +340,7 @@ const listOpenDocuments = () => {
 }
 
 module.exports = {
+    findLayerByName,
     generateDocumentInfo,
     listOpenDocuments,
     convertFromPhotoshopFontSize,

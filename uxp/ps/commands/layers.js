@@ -428,13 +428,19 @@ const editTextLayer = async (command) => {
         const textColor = options.textColor;
         const fontName = options.fontName;
 
+
+        console.log("contents", options.contents)
+        console.log("fontSize", options.fontSize)
+        console.log("textColor", options.textColor)
+        console.log("fontName", options.fontName)
+
         if (contents != undefined) {
             layer.textItem.contents = contents;
         }
 
         if (fontSize != undefined) {
             let s = convertFontSize(fontSize);
-            layer.textItem.characterStyle.size =  s;
+            layer.textItem.characterStyle.size = s;
         }
 
         if (textColor != undefined) {
