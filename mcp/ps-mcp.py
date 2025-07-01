@@ -21,12 +21,12 @@
 # SOFTWARE.
 
 from mcp.server.fastmcp import FastMCP, Image
+import core
 from core import sendCommand, createCommand
 from fonts import list_all_fonts_postscript
 import numpy as np
 import base64
 import socket_client
-import logger
 import sys
 import os
 
@@ -45,6 +45,8 @@ print(f"{mcp_name} running on stdio", file=sys.stderr)
 APPLICATION = "photoshop"
 PROXY_URL = 'http://localhost:3001'
 PROXY_TIMEOUT = 20
+
+core.application = APPLICATION
 
 socket_client.configure(
     app=APPLICATION, 

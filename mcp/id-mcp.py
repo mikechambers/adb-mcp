@@ -21,14 +21,10 @@
 # SOFTWARE.
 
 from mcp.server.fastmcp import FastMCP
+import core
 from core import sendCommand, createCommand
-import requests
-import json
-import time
 import socket_client
-import logger
 import sys
-import os
 
 #logger.log(f"Python path: {sys.executable}")
 #logger.log(f"PYTHONPATH: {os.environ.get('PYTHONPATH')}")
@@ -44,6 +40,8 @@ print(f"{mcp_name} running on stdio", file=sys.stderr)
 APPLICATION = "indesign"
 PROXY_URL = 'http://localhost:3001'
 PROXY_TIMEOUT = 20
+
+core.application = APPLICATION
 
 socket_client.configure(
     app=APPLICATION, 

@@ -1,6 +1,11 @@
+import logger
+
+application = None
+
+
 def createCommand(action:str, options:dict) -> str:
     command = {
-        "application":APPLICATION,
+        "application":application,
         "action":action,
         "options":options
     }
