@@ -21,8 +21,7 @@
 # SOFTWARE.
 
 from mcp.server.fastmcp import FastMCP
-import core
-from core import sendCommand, createCommand
+from core import init, sendCommand, createCommand
 import socket_client
 import sys
 
@@ -41,13 +40,13 @@ APPLICATION = "indesign"
 PROXY_URL = 'http://localhost:3001'
 PROXY_TIMEOUT = 20
 
-core.application = APPLICATION
-
 socket_client.configure(
     app=APPLICATION, 
     url=PROXY_URL,
     timeout=PROXY_TIMEOUT
 )
+
+init(APPLICATION, socket_client)
 
 @mcp.tool()
 def create_document(

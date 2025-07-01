@@ -1,6 +1,12 @@
 import logger
 
 application = None
+socket_client = None
+
+def init(app, socket):
+    global application, socket_client
+    application = app
+    socket_client = socket
 
 
 def createCommand(action:str, options:dict) -> str:
