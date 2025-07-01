@@ -21,6 +21,8 @@
 # SOFTWARE.
 
 from mcp.server.fastmcp import FastMCP, Image
+from core import sendCommand, createCommand
+from fonts import list_all_fonts_postscript
 import numpy as np
 import base64
 import socket_client
@@ -1483,24 +1485,6 @@ def get_instructions() -> str:
     fonts: {", ".join(font_names[:FONT_LIMIT])}
     """
 
-
-
-def sendCommand(command:dict):
-    response = socket_client.send_message_blocking(command)
-    
-    logger.log(f"Final response: {response['status']}")
-    return response
-
-def createCommand(action:str, options:dict) -> str:
-    command = {
-        "application":APPLICATION,
-        "action":action,
-        "options":options
-    }
-
-    return command
-
-from fonts import list_all_fonts_postscript
 font_names = list_all_fonts_postscript()
 
 interpolation_methods = [
