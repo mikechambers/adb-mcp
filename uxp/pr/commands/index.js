@@ -239,11 +239,6 @@ const setParam = async(trackItem, componentName, paramName, value) => {
 
     let param = await getParam(trackItem, componentName, paramName)
 
-
-    let v = await param.getStartValue()
-    console.log(v)
-
-
     let keyframe = await param.createKeyframe(value)
 
     execute(() => {
@@ -272,7 +267,9 @@ const getParam = async (trackItem, componentName, paramName) => {
             for (let j = 0; j < pCount; j++) {
                 
                 const param = component.getParam(j);
-                console.log(param.displayName)
+
+                console.log(param.type)
+                console.log(param)
                 if(param.displayName == paramName) {
                     return param
                 }
@@ -333,9 +330,10 @@ const appendVideoFilter = async (command) => {
     let effectName = options.effectName
     let properties = options.properties
 
-    await addEffect(trackItem, effectName)
+    let d = await addEffect(trackItem, effectName)
 
     for(const p of properties) {
+        console.log(p.value)
         await setParam(trackItem, effectName, p.name, p.value)
     }
 }
@@ -673,6 +671,37 @@ const getProjectContentInfo = async () => {
     return out
 }
 
+const saveProject = async (command) => {
+    let project = await app.Project.getActiveProject()
+
+    project.save()
+}
+
+const saveProjectAs = async (command) => {
+    let project = await app.Project.getActiveProject()
+
+    const options = command.options;
+    const filePath = options.filePath;
+
+    project.saveAs(filePath)
+}
+
+const openProject = async (command) => {
+    
+
+    const options = command.options;
+    const filePath = options.filePath;
+
+    const openOptions = {
+        showConvertProjectDialog:false,
+        showLocateFileDialog:false,
+        showWarningDialog:false,
+        addToMRUList:false
+    }
+
+    await app.Project.open(filePath, options);
+}
+
 const parseAndRouteCommand = async (command) => {
     let action = command.action;
 
@@ -687,6 +716,9 @@ const parseAndRouteCommand = async (command) => {
 };
 
 const commandHandlers = {
+    openProject,
+    saveProjectAs,
+    saveProject,
     getProjectInfo,
     setActiveSequence,
     exportFrame,

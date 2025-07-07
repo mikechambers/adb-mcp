@@ -412,7 +412,23 @@ const createDocument = async (command) => {
     });
 };
 
+const executeBatchPlayCommand = async (commands) => {
+    let options = commands.options;
+    let c = options.commands;
+
+    
+
+    let out = await execute(async () => {
+        let o = await action.batchPlay(c, {});
+        return o[0]
+    });
+
+    console.log(out)
+    return out;
+}
+
 const commandHandlers = {
+    executeBatchPlayCommand,
     setActiveDocument,
     getDocuments,
     duplicateDocument,

@@ -60,6 +60,48 @@ def get_project_info():
 
     return sendCommand(command)
 
+@mcp.tool()
+def save_project():
+    """
+    Saves the active project in Premiere Pro.
+    """
+
+    command = createCommand("saveProject", {
+    })
+
+    return sendCommand(command)
+
+@mcp.tool()
+def save_project_as(file_path: str):
+    """Saves the current Premiere project to the specified location.
+    
+    Args:
+        file_path (str): The absolute path (including filename) where the file will be saved.
+            Example: "/Users/username/Documents/project.prproj"
+
+    """
+    
+    command = createCommand("saveProjectAs", {
+        "filePath":file_path
+    })
+
+    return sendCommand(command)
+
+def open_project(file_path: str):
+    """Opens the Premiere project at the specified path.
+    
+    Args:
+        file_path (str): The absolute path (including filename) of the Premiere Pro project to open.
+            Example: "/Users/username/Documents/project.prproj"
+
+    """
+    
+    command = createCommand("openProject", {
+        "filePath":file_path
+    })
+
+    return sendCommand(command)
+
 
 @mcp.tool()
 def create_project(directory_path: str, project_name: str):
@@ -81,6 +123,8 @@ def create_project(directory_path: str, project_name: str):
     })
 
     return sendCommand(command)
+
+
 
 @mcp.tool()
 def set_audio_track_mute(sequence_id:str, audio_track_index: int, mute: bool):
@@ -305,6 +349,78 @@ def add_gaussian_blur_effect(sequence_id: str, video_track_index: int, track_ite
     })
 
     return sendCommand(command)
+
+def rgb_to_premiere_color3(rgb_color, alpha=1.0):
+    """Converts RGB (0–255) dict to Premiere Pro color format [r, g, b, a] with floats (0.0–1.0)."""
+    return [
+        rgb_color["red"] / 255.0,
+        rgb_color["green"] / 255.0,
+        rgb_color["blue"] / 255.0,
+        alpha
+    ]
+
+def rgb_to_premiere_color(rgb_color, alpha=255):
+    """
+    Converts an RGB(A) dict (0–255) to a 64-bit Premiere Pro color parameter (as int).
+    Matches Adobe's internal ARGB 16-bit fixed-point format.
+    """
+    def to16bit(value):
+        return int(round(value * 256))
+
+    r16 = to16bit(rgb_color["red"] / 255.0)
+    g16 = to16bit(rgb_color["green"] / 255.0)
+    b16 = to16bit(rgb_color["blue"] / 255.0)
+    a16 = to16bit(alpha / 255.0)
+
+    high = (a16 << 16) | r16       # top 32 bits: A | R
+    low = (g16 << 16) | b16        # bottom 32 bits: G | B
+
+    packed_color = (high << 32) | low
+    return packed_color
+
+
+
+
+@mcp.tool()
+def add_tint_effect(sequence_id: str, video_track_index: int, track_item_index: int, black_map:dict = {"red":0, "green":0, "blue":0}, white_map:dict = {"red":255, "green":255, "blue":255}, amount:int = 100):
+    """
+    Adds the tint effect to a clip at the specified track and position.
+    
+    This function applies a tint effect that maps the dark and light areas of the clip to specified colors.
+    
+    Args:
+        sequence_id (str) : The id for the sequence to add the effect to
+        video_track_index (int): The index of the video track containing the target clip.
+            Track indices start at 0 for the first video track and increment upward.
+            
+        track_item_index (int): The index of the clip within the track to apply the effect to.
+            Clip indices start at 0 for the first clip in the track and increment from left to right.
+            
+        black_map (dict): The RGB color values to map black/dark areas to, with keys "red", "green", and "blue".
+            Default is {"red":0, "green":0, "blue":0} (pure black).
+            
+        white_map (dict): The RGB color values to map white/light areas to, with keys "red", "green", and "blue".
+            Default is {"red":255, "green":255, "blue":255} (pure white).
+            
+        amount (int): The intensity of the tint effect as a percentage, ranging from 0 to 100.
+            Default is 100 (full tint effect).
+    """
+
+    command = createCommand("appendVideoFilter", {
+        "sequenceId": sequence_id,
+        "videoTrackIndex":video_track_index,
+        "trackItemIndex":track_item_index,
+        "effectName":"AE.ADBE Tint",
+        "properties":[
+            #{"name":"Map White To", "value":rgb_to_premiere_color(white_map)},
+            #{"name":"Map Black To", "value":rgb_to_premiere_color(black_map)}
+            {"name":"Map Black To", "value":rgb_to_premiere_color(black_map)}
+            #{"name":"Amount to Tint", "value":amount / 100}
+        ]
+    })
+
+    return sendCommand(command)
+
 
 
 @mcp.tool()
