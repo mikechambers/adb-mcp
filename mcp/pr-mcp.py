@@ -87,6 +87,7 @@ def save_project_as(file_path: str):
 
     return sendCommand(command)
 
+@mcp.tool()
 def open_project(file_path: str):
     """Opens the Premiere project at the specified path.
     

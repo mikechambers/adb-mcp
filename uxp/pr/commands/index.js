@@ -687,19 +687,11 @@ const saveProjectAs = async (command) => {
 }
 
 const openProject = async (command) => {
-    
 
     const options = command.options;
     const filePath = options.filePath;
 
-    const openOptions = {
-        showConvertProjectDialog:false,
-        showLocateFileDialog:false,
-        showWarningDialog:false,
-        addToMRUList:false
-    }
-
-    await app.Project.open(filePath, options);
+    await app.Project.open(filePath);    
 }
 
 const parseAndRouteCommand = async (command) => {
@@ -748,7 +740,7 @@ const checkRequiresActiveProject = async (command) => {
 };
 
 const requiresActiveProject = (command) => {
-    return !["createProject"].includes(command.action);
+    return !["createProject", "openProject"].includes(command.action);
 };
 
 module.exports = {
