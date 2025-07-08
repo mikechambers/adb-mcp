@@ -21,15 +21,13 @@
  * SOFTWARE.
  */
 
-const { entrypoints, UI } = require("uxp");
+const { entrypoints } = require("uxp");
 const { io } = require("./socket.io.js");
-const app = require("premierepro");
+
+const { getSequences } = require("./commands/utils.js");
 
 const {
-    getSequences,
     getProjectContentInfo,
-    getAudioTracks,
-    getVideoTracks,
     parseAndRouteCommand,
     checkRequiresActiveProject,
 } = require("./commands/index.js");

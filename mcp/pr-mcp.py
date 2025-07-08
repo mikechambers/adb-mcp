@@ -20,11 +20,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from mcp.server.fastmcp import FastMCP
+from mcp.server.fastmcp import FastMCP, Image
+from PIL import Image as PILImage
+
 from core import init, sendCommand, createCommand
 import socket_client
 import sys
-
+import tempfile
+import os
+import io
 
 
 #logger.log(f"Python path: {sys.executable}")
@@ -285,20 +289,63 @@ def add_black_and_white_effect(sequence_id:str, video_track_index: int, track_it
     return sendCommand(command)
 
 @mcp.tool()
+def get_sequence_frame_image(sequence_id: str, seconds: int):
+    """Returns a jpeg of the specified timestamp in the specified sequence in Premiere pro as an MCP Image object that can be displayed."""
+    
+    temp_dir = tempfile.gettempdir()
+    file_path = os.path.join(temp_dir, f"frame_{sequence_id}_{seconds}.png")
+    
+    command = createCommand("exportFrame", {
+        "sequenceId": sequence_id,
+        "filePath": file_path,
+        "seconds": seconds
+    })
+    
+    result = sendCommand(command)
+    
+    if not result.get("status") == "SUCCESS":
+        return result
+    
+    file_path = result["response"]["filePath"]
+    
+    with open(file_path, 'rb') as f:
+        png_image = PILImage.open(f)
+        
+        # Convert to RGB if necessary (removes alpha channel)
+        if png_image.mode in ("RGBA", "LA", "P"):
+            rgb_image = PILImage.new("RGB", png_image.size, (255, 255, 255))
+            rgb_image.paste(png_image, mask=png_image.split()[-1] if png_image.mode == "RGBA" else None)
+            png_image = rgb_image
+        
+        # Save as JPEG to bytes buffer
+        jpeg_buffer = io.BytesIO()
+        png_image.save(jpeg_buffer, format="JPEG", quality=85, optimize=True)
+        jpeg_bytes = jpeg_buffer.getvalue()
+    
+    image = Image(data=jpeg_bytes, format="jpeg")
+    
+    del result["response"]
+    
+    try:
+        os.remove(file_path)
+    except FileNotFoundError:
+        pass
+    
+    return [result, image]
+
+@mcp.tool()
 def export_frame(sequence_id:str, file_path: str, seconds: int):
     """Captures a specific frame from the sequence at the given timestamp
-    and exports it as a PNG image file to the specified path.
+    and exports it as a PNG or JPG (depending on file extension) image file to the specified path.
     
     Args:
         sequence_id (str) : The id for the sequence to export the frame from
-        file_path (str): The destination path where the exported PNG image will be saved.
-            Must include the full directory path and filename with .png extension.
+        file_path (str): The destination path where the exported PNG / JPG image will be saved.
+            Must include the full directory path and filename with .png or .jpg extension.
         seconds (int): The timestamp in seconds from the beginning of the sequence
             where the frame should be captured. The frame closest to this time position
             will be extracted.
     """
-    if not file_path.lower().endswith(".png"):
-        file_path += ".png"
     
     command = createCommand("exportFrame", {
         "sequenceId": sequence_id,
