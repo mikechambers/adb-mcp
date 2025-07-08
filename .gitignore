@@ -1,4 +1,5 @@
-# General
+*.dxt
+
 .DS_Store
 .AppleDouble
 .LSOverride

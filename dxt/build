@@ -1,0 +1,88 @@
+#!/bin/bash
+
+# Build script for extensions
+# Copies Python files from mcp/ to dxt/ subdirectories and creates .dxt packages
+
+set -e
+
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+MCP_DIR="$SCRIPT_DIR/../mcp"
+
+# Function to build a DaVinci Resolve extension
+build_extension() {
+    local EXTENSION_NAME="$1"
+    local DXT_FILENAME="$2"
+    local PYTHON_FILES=("${@:3}")  # All arguments after the first two
+    
+    
+    echo "Building $EXTENSION_NAME MCP extension..."
+    
+    local TARGET_DIR="$SCRIPT_DIR/$EXTENSION_NAME"
+    
+    # Check if target directory exists
+    if [ ! -d "$TARGET_DIR" ]; then
+        echo "Error: $EXTENSION_NAME directory not found at '$TARGET_DIR'"
+        echo "Script dir: '$SCRIPT_DIR'"
+        echo "Looking for: '$TARGET_DIR'"
+        return 1
+    fi
+    
+    echo "Copying Python files from mcp/ to dxt/$EXTENSION_NAME/..."
+    
+    # Copy the specified Python files
+    for file in "${PYTHON_FILES[@]}"; do
+        if [ -f "$MCP_DIR/$file" ]; then
+            cp "$MCP_DIR/$file" "$TARGET_DIR/"
+            echo "  ✓ Copied $file"
+        else
+            echo "  ⚠ Warning: $file not found in mcp directory"
+        fi
+    done
+    
+    echo "Creating $DXT_FILENAME archive..."
+    
+    # Change to the target directory to zip its contents
+    cd "$TARGET_DIR"
+    
+    # Remove existing .dxt file if it exists
+    if [ -f "$DXT_FILENAME" ]; then
+        rm "$DXT_FILENAME"
+    fi
+    
+    # Create the .dxt file (which is just a zip file)
+    zip -r "$DXT_FILENAME" . -x "*.dxt"
+    
+    echo "  ✓ Created $DXT_FILENAME"
+    
+    # Clean up - remove the copied Python files
+    for file in "${PYTHON_FILES[@]}"; do
+        if [ -f "$(basename "$file")" ]; then
+            rm "$(basename "$file")"
+        fi
+    done
+    echo "  ✓ Cleaned up copied Python files"
+    
+    mv "$DXT_FILENAME" ../
+    
+    # Move back to script directory
+    cd "$SCRIPT_DIR"
+    
+    echo "  ✓ Extension file: $SCRIPT_DIR/$DXT_FILENAME"
+    echo ""
+}
+
+# Check if mcp directory exists
+if [ ! -d "$MCP_DIR" ]; then
+    echo "Error: mcp directory not found at $MCP_DIR"
+    exit 1
+fi
+
+echo "Building MCP extensions..."
+echo ""
+
+# Build Premiere Pro extension
+build_extension "pr" "premiere-pro-mcp.dxt" "core.py" "logger.py" "pr-mcp.py" "socket_client.py"
+build_extension "ps" "photoshop-mcp.dxt" "core.py" "logger.py" "ps-mcp.py" "socket_client.py" "fonts.py"
+
+echo "All builds complete! 🎉"

@@ -1,0 +1,55 @@
+{
+  "dxt_version": "0.1",
+  "name": "adb-mcp-photoshop",
+  "display_name": "Adobe Photoshop MCP",
+  "version": "0.85.2",
+  "description": "Proof of concept project to create AI Agent for Adobe Photshop by providing an interface to LLMs via the MCP protocol.",
+  "long_description": "Proof of concept project to create AI Agent for Adobe Photoshop by providing an interface to LLMs via the MCP protocol.",
+  "author": {
+    "name": "Mike Chambers",
+    "email": "mikechambers@gmail.com",
+    "url": "https://www.mikechambers.com"
+  },
+  "homepage": "https://github.com/mikechambers/adb-mcp",
+  "documentation": "https://github.com/mikechambers/adb-mcp",
+  "support": "https://github.com/mikechambers/adb-mcp/issues",
+  "server": {
+    "type": "python",
+    "entry_point": "main.py",
+    "mcp_config": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--with",
+        "fonttools",
+        "--with",
+        "mcp",
+        "--with",
+        "mcp[cli]",
+        "--with",
+        "python-socketio",
+        "--with",
+        "requests",
+        "--with",
+        "numpy",
+        "--with",
+        "websocket-client",
+        "mcp",
+        "run",
+        "${__dirname}/ps-mcp.py"
+      ]     
+    }
+  },
+
+
+  "keywords": [
+    "adobe",
+    "premierepro",
+    "video"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mikechambers/adb-mcp"
+  }
+}

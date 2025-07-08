@@ -1,0 +1,54 @@
+{
+  "dxt_version": "0.1",
+  "name": "adb-mcp-premiere",
+  "display_name": "Adobe Premiere Pro MCP",
+  "version": "0.85.2",
+  "description": "Proof of concept project to create AI Agent for Adobe Premiere Pro by providing an interface to LLMs via the MCP protocol.",
+  "long_description": "Proof of concept project to create AI Agent for Adobe Premiere Pro by providing an interface to LLMs via the MCP protocol.",
+  "author": {
+    "name": "Mike Chambers",
+    "email": "mikechambers@gmail.com",
+    "url": "https://www.mikechambers.com"
+  },
+  "homepage": "https://github.com/mikechambers/adb-mcp",
+  "documentation": "https://github.com/mikechambers/adb-mcp",
+  "support": "https://github.com/mikechambers/adb-mcp/issues",
+  "server": {
+    "type": "python",
+    "entry_point": "main.py",
+    "mcp_config": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--with",
+        "fonttools",
+        "--with",
+        "mcp",
+        "--with",
+        "mcp[cli]",
+        "--with",
+        "python-socketio",
+        "--with",
+        "requests",
+        "--with",
+        "websocket-client",
+        "--with",
+        "pillow",
+        "mcp",
+        "run",
+        "${__dirname}/pr-mcp.py"
+      ]      
+    }
+  },
+
+  "keywords": [
+    "adobe",
+    "photoshop",
+    "images"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mikechambers/adb-mcp"
+  }
+}
