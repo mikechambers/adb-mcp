@@ -263,6 +263,42 @@ def set_video_clip_disabled(sequence_id:str, video_track_index: int, track_item_
 
     return sendCommand(command)
 
+@mcp.tool()
+def set_video_clip_start_end_times(
+    sequence_id: str, video_track_index: int, track_item_index: int,
+    start_time_ticks: int, end_time_ticks: int):
+    """
+    Sets the start and end time boundaries for a specified video clip in the timeline.
+    
+    This function allows you to modify the duration and timing of video clips and images 
+    that are already placed in the timeline by adjusting their in and out points. The clip can be 
+    trimmed to a shorter duration or extended to a longer duration.
+    
+    Args:
+        sequence_id (str): The id for the sequence containing the clip to modify.
+        video_track_index (int): The index of the video track containing the target clip.
+            Track indices start at 0 for the first video track and increment upward.
+        track_item_index (int): The index of the clip within the track to modify.
+            Clip indices start at 0 for the first clip in the track and increment from left to right.
+        start_time_ticks (int): The new start time for the clip in ticks.
+        end_time_ticks (int): The new end time for the clip in ticks.
+        
+    Note:
+        - To trim a clip: Set start/end times within the original clip's duration
+        - To extend a clip: Set end time beyond the original clip's duration  
+        - Works with video clips and image files (like PSD files) on video tracks
+        - Times are specified in ticks (Premiere Pro's internal time unit)
+    """
+
+    command = createCommand("setVideoClipStartEndTimes", {
+        "sequenceId": sequence_id,
+        "videoTrackIndex": video_track_index,
+        "trackItemIndex": track_item_index,
+        "startTimeTicks": start_time_ticks,
+        "endTimeTicks": end_time_ticks
+    })
+
+    return sendCommand(command)
 
 @mcp.tool()
 def add_black_and_white_effect(sequence_id:str, video_track_index: int, track_item_index: int):

@@ -56,6 +56,9 @@ const onCommandPacket = async (packet) => {
         out.projectItems = await getProjectContentInfo();
         
     } catch (e) {
+
+        console.log(e)
+
         out.status = "FAILURE";
         out.message = `Error calling ${command.action} : ${e}`;
     }

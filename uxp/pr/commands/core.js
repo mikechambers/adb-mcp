@@ -356,7 +356,35 @@ const createSequenceFromMedia = async (command) => {
     await _setActiveSequence(sequence)
 }
 
+
+const setVideoClipStartEndTimes = async (command) => {
+    const options = command.options;
+
+    const sequenceId = options.sequenceId;
+    const videoTrackIndex = options.videoTrackIndex;
+    const trackItemIndex = options.trackItemIndex;
+    const startTimeTicks = options.startTimeTicks;
+    const endTimeTicks = options.endTimeTicks;
+
+
+    const sequence = await _getSequenceFromId(sequenceId)
+  
+    const trackItem = await getVideoTrack(sequence, videoTrackIndex, trackItemIndex)
+
+    const startTick = await app.TickTime.createWithTicks(startTimeTicks.toString());
+    const endTick = await app.TickTime.createWithTicks(endTimeTicks.toString());;
+
+    let project = await app.Project.getActiveProject();
+
+    execute(() => {
+        const startAction = trackItem.createSetStartAction(startTick);
+        const endAction = trackItem.createSetEndAction(endTick);
+        return [startAction, endAction]
+    }, project)
+}
+
 const commandHandlers = {
+    setVideoClipStartEndTimes,
     openProject,
     saveProjectAs,
     saveProject,

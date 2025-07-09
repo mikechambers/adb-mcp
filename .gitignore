@@ -1,4 +1,5 @@
 *.dxt
+*.ccx
 
 .DS_Store
 .AppleDouble
