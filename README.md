@@ -43,106 +43,101 @@ In order to run this, the following is required:
 
 ## Installation
 
-This project has been developed and tested with Claude Desktop, and assumes that is what is being used. It should be possible to use other AI apps that support MCP.
+This guide assumes you're using Claude Desktop. Other MCP-compatible AI applications should work similarly.
 
-### Download adp-mcp
+Choose your installation method:
 
-Download the adp-mcp project, and unzip into the location you want to save it.
+### Quick Start (Recommended for Testing)
 
-### Claude Desktop
+Use this method if you want to try the system without modifying code.
 
-Download and install [Claude Desktop](https://claude.ai/download). Once you have done this, launch to make sure everything works.
+#### 1. Download Release Files
+Download the latest release from the [releases page](https://github.com/mikechambers/adb-mcp/releases), including:
+- Source code
+- Claude MCP installers (.dxt files)
+- Adobe plugins (.ccx files)
 
-#### Photoshop
+#### 2. Install Claude Desktop
+1. Download and install [Claude Desktop](https://claude.ai/download)
+2. Launch Claude Desktop to verify it works
 
-```
+#### 3. Install MCP in Claude Desktop
+1. Launch Claude Desktop
+2. Double-click the appropriate .dxt file:
+   - `photoshop-mcp.dxt` for Photoshop
+   - `premiere-mcp.dxt` for Premiere Pro
+3. Restart Claude Desktop
+
+#### 4. Set Up Proxy Server
+1. Extract the source code to a directory
+2. Open terminal/command prompt and navigate to the `adb-proxy-socket` directory:
+   ```bash
+   cd adb-proxy-socket
+   npm install
+   node proxy.js
+   ```
+3. You should see: "Photoshop MCP Command proxy server running on ws://localhost:3001"
+4. **Keep this running** - it must stay active for Claude to communicate with Adobe
+
+#### 5. Install Adobe Plugins
+1. Open the Adobe application you want to use (Photoshop or Premiere Pro)
+2. Download and launch **Adobe UXP Developer Tools** from Creative Cloud
+3. In UXP Developer Tools: **File > Add Plugin**
+4. Select the appropriate .ccx file from your downloads
+5. Click **Load** to install the plugin
+6. In your Adobe application, find the plugin panel:
+   - **Photoshop**: Plugins menu
+   - **Premiere Pro**: Window > UXP Plugins menu
+7. Click **Connect** in the plugin panel
+
+### Development Setup
+
+Use this method if you want to modify the code or access the latest features.
+
+#### 1. Download Source Code
+Clone or download the source code from the [main project page](https://github.com/mikechambers/adb-mcp).
+
+#### 2. Install Claude Desktop
+Same as Quick Start step 2.
+
+#### 3. Install MCP for Development
+Navigate to the project directory and run:
+
+**For Photoshop:**
+```bash
 uv run mcp install --with fonttools --with python-socketio --with mcp --with requests --with websocket-client --with numpy ps-mcp.py
 ```
 
-#### Premiere
-```
-uv run mcp install --with fonttools --with python-socketio --with mcp --with requests --with websocket-client pr-mcp.py
-```
-
-If you have Claude desktop running, close it (make sure its not running in the background) and restart it. If it starts without any errors, you are good to go.
-
-At this point, you still need to install a few more things.
-
-### Development
-
-This is only required if you want test the MCP servers directly.
-
-Make sure you have Python3 installed and configured on your system (in your system PATH). This assumes you are using [uv](https://github.com/astral-sh/uv) for package management and have it setup and configured on your system.
-
-Change to the mcp directory and start the dev server:
-
-#### Photoshop
-
-```
-$cd mcp
-$uv run mcp dev ps-mcp.py
+**For Premiere Pro:**
+```bash
+uv run mcp install --with fonttools --with python-socketio --with mcp --with requests --with websocket-client --with pillow pr-mcp.py
 ```
 
-#### Premiere
+Restart Claude Desktop after installation.
 
-```
-$cd mcp
-$uv run mcp dev pr-mcp.py
-```
+#### 4. Set Up Proxy Server
+Same as Quick Start step 4.
 
-You can now load the dev interface at http://localhost:5173, click _"connect"_, and then under _"Resources"_ click _"config://get_instructions"_. This should list out a bunch of JSON info. If it does, everything is working and configured.
+#### 5. Enable Developer Mode in Adobe Applications
 
-Now we can install into Claude Desktop.
-
-
-### Command Proxy Node Sever
-
-Make sure you have [NodeJS](https://nodejs.org/en) installed and configured in your system PATH.
-
-Switch to _adb-proxy-socket directory_. Install the requirements, and then start the server:
-
-```
-$cd adb-proxy-socket
-$npm install
-$node proxy.js
-```
-
-You should see a message similar to _Photoshop MCP Command proxy server running on ws://localhost:3001_.
-
-This proxy must be running in order for Claude to communicate with the plugin.
-
-### Adobe App Plugins
-
-#### Photoshop
-Enable developer mode in Photoshop
-
-1. Launch Photoshop (26.0 or greater)
-2. _Settings > Plugins_ and check _"Enable Developer Mode"_
+**For Photoshop:**
+1. Launch Photoshop (2025/26.0 or greater)
+2. Go to **Settings > Plugins** and check **"Enable Developer Mode"**
 3. Restart Photoshop
 
-From Creative Cloud Desktop, install and launch "UXP Developer Tools". When prompted, enable developer mode.
+**For Premiere Pro:**
+1. Launch Premiere Pro Beta (25.3 or greater)
+2. Developer mode should be available by default in the beta
 
-Install the plugin:
-
-1. Select File > Add Plugin
-2. Navigate to the _uxp/ps_ directory, and select the _manifest.json file_.
-3. Once the plugin is listed, then click the "Load" button.
-
-This should load the plugin in Photoshop. If you dont see it, you can open it via the plugins menu in Photoshop.
-
-#### Premiere
-
-1. Launch Premiere Pro Beta (25.3)
-
-From Creative Cloud Desktop, install and launch "UXP Developer Tools". When prompted, enable developer mode.
-
-Install the plugin:
-
-1. Select File > Add Plugin
-2. Navigate to the _uxp/pr_ directory, and select the _manifest.json file_.
-3. Once the plugin is listed, then click the "Load" button.
-
-This should load the plugin in Premiere. If you dont see it, you can open it via the plugins menu in Premiere.
+#### 6. Install Plugins for Development
+1. Launch **UXP Developer Tools** from Creative Cloud
+2. Enable developer mode when prompted
+3. Select **File > Add Plugin**
+4. Navigate to the appropriate directory and select **manifest.json**:
+   - **Photoshop**: `uxp/ps/manifest.json`
+   - **Premiere Pro**: `uxp/pr/manifest.json`
+5. Click **Load**
+6. In your Adobe application, open the plugin panel and click **Connect**
 
 ## Using Claude with Adobe Apps
 
@@ -152,12 +147,16 @@ Launch the following:
 2. adb-proxy-socket node server
 3. Launch Photoshop and / or Premiere
 
+_TIP: Create a project for Photoshop / Premiere Pro in Claude and pre-load any app specific instructions in its Project knowledge._
+
 ### Photoshop
-4. Launch UXP Developer Tool and click the Load button for _Photoshop MCP Agent_
-5. In Photoshop, if the MCP Agent panel is not open, open _Plugins > Photoshop MCP Agent > Photoshop MCP Agent_
-6. Click connect in the agent panel in Photoshop
+1. Launch UXP Developer Tool and click the Load button for _Photoshop MCP Agent_
+2. In Photoshop, if the MCP Agent panel is not open, open _Plugins > Photoshop MCP Agent > Photoshop MCP Agent_
+3. Click connect in the agent panel in Photoshop
 
 Now you can switch over the Claude desktop. Before you start a session, you should load the instructions resource which will provide guidance and info the Claude by clicking the socket icon (Attach from MCP) and then _Choose an Integration_ > _Adobe Photoshop_ > _config://get_instructions_.
+
+
 
 ### Premiere
 4. Launch UXP Developer Tool and click the Load button for _Premiere MCP Agent_
@@ -218,8 +217,8 @@ Add cross fade transitions between all of the clips on the timeline in Premiere
 
 ### Tips
 
-
 #### General
+* When asking AI to view the content in Photoshop / Premiere Pro, you can see the image returned in the Tool Call item in the chat. It will appear once the entire response has been added to the chat.
 * When prompting, ask the AI to think about and check its work.
 * The more you guide it (i.e. "consider using clipping masks") the better the results
 * The more advanced the model, or the more resources given to the model the better and more creative the AI is.
@@ -242,14 +241,14 @@ By default, the AI cannot access files directly, although if you install the [Cl
 #### Premiere
 
 * Currently the plugin assumes you are just working with a single sequence.
-
+* Pair the Premiere Pro MCP with the [media-utils-mcp](https://github.com/mikechambers/media-utils-mcp) to expand functionality.
 
 
 ### Troubleshooting
 
 #### MCP won't run in Claude
 
-If you get an error when running Claude that the MCP is not working, you may need to edit your Claud config file and put an abslute path for the UV command. More info [here](https://github.com/mikechambers/adb-mcp/issues/5#issuecomment-2829817624).
+If you get an error when running Claude that the MCP is not working, you may need to edit your Claude config file and put an absolute path for the UV command. More info [here](https://github.com/mikechambers/adb-mcp/issues/5#issuecomment-2829817624).
 
 #### All fonts not available
 
@@ -269,7 +268,7 @@ User connected: Ud6L4CjMWGAeofYAAAAB
 Client Ud6L4CjMWGAeofYAAAAB registered for application: photoshop
 ```
 
-*   When you press the connect button, if it still say connect it means there was either an error, or it can't connect to the proxy server.
+*   When you press the connect button, if it still says "Connect" it means there was either an error, or it can't connect to the proxy server. You can view the error in the UXP Developer App, by opening the Developer Workspace and click "Debug".
 
 #### Errors within AI client
 
@@ -277,7 +276,7 @@ Client Ud6L4CjMWGAeofYAAAAB registered for application: photoshop
 * The first thing to check if there is an issue is to make sure the plugin in Photoshop / Premiere is connected, and that the node proxy server is running.
 * If response times get really slow, check if the AI servers are under load, and that you do not have too much text in the current conversation (restarting a new chat can sometimes help speed up, but you will lose the context).
 
-If you continue to have issues post an [Issue]() on on [Discord](https://discord.gg/fgxw9t37D7). Include as much information as you can (OS, App, App version, and debug info or errors).
+If you continue to have issues post an [issue](https://github.com/mikechambers/adb-mcp/issuesrd.gg/fgxw9t37D7). Include as much information as you can (OS, App, App version, and debug info or errors).
 
 ## Development
 
