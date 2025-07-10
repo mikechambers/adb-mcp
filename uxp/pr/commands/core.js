@@ -3,7 +3,7 @@ const fs = require("uxp").storage.localFileSystem;
 const app = require("premierepro");
 const constants = require("premierepro").Constants;
 
-const {BLEND_MODES} = require("./consts.js")
+const {BLEND_MODES, TRACK_TYPE } = require("./consts.js")
 
 const {
     _getSequenceFromId,
@@ -13,10 +13,8 @@ const {
     addEffect,
     findProjectItem,
     execute,
-    getAudioTrack,
-    getVideoTrack,
-    getAudioTrackItems,
-    getVideoTrackItems
+    getTrack,
+    getTrackItems
 } = require("./utils.js")
 
 const saveProject = async (command) => {
@@ -113,7 +111,7 @@ const setAudioTrackMute = async (command) => {
 
     let sequence = await _getSequenceFromId(id)
 
-    let track = await sequence.getAudioTrack(options.audioTrackIndex)
+    let track = await sequence.getTrack(options.audioTrackIndex, TRACK_TYPE.AUDIO)
     track.setMute(options.mute)
 }
 
@@ -131,7 +129,7 @@ const setVideoClipProperties = async (command) => {
         throw new Error(`setVideoClipProperties : Requires an active sequence.`)
     }
 
-    let trackItem = await getVideoTrack(sequence, options.videoTrackIndex, options.trackItemIndex)
+    let trackItem = await getTrack(sequence, options.videoTrackIndex, options.trackItemIndex, TRACK_TYPE.VIDEO)
 
     let opacityParam = await getParam(trackItem, "AE.ADBE Opacity", "Opacity")
     let opacityKeyframe = await opacityParam.createKeyframe(options.opacity)
@@ -164,7 +162,7 @@ const appendVideoFilter = async (command) => {
         throw new Error(`appendVideoFilter : Requires an active sequence.`)
     }
 
-    let trackItem = await getVideoTrack(sequence, options.videoTrackIndex, options.trackItemIndex)
+    let trackItem = await getTrackTrack(sequence, options.videoTrackIndex, options.trackItemIndex, TRACK_TYPE.VIDEO)
 
     let effectName = options.effectName
     let properties = options.properties
@@ -257,7 +255,7 @@ const setAudioClipDisabled = async (command) => {
         throw new Error(`setAudioClipDisabled : Requires an active sequence.`)
     }
 
-    let trackItem = await getAudioTrack(sequence, options.audioTrackIndex, options.trackItemIndex)
+    let trackItem = await getTrack(sequence, options.audioTrackIndex, options.trackItemIndex, TRACK_TYPE.AUDIO)
 
     execute(() => {
         let action = trackItem.createSetDisabledAction(options.disabled)
@@ -278,7 +276,7 @@ const setVideoClipDisabled = async (command) => {
         throw new Error(`setVideoClipDisabled : Requires an active sequence.`)
     }
 
-    let trackItem = await getVideoTrack(sequence, options.videoTrackIndex, options.trackItemIndex)
+    let trackItem = await getTrack(sequence, options.videoTrackIndex, options.trackItemIndex,TRACK_TYPE.VIDEO)
 
     execute(() => {
         let action = trackItem.createSetDisabledAction(options.disabled)
@@ -298,7 +296,7 @@ const appendVideoTransition = async (command) => {
         throw new Error(`appendVideoTransition : Requires an active sequence.`)
     }
 
-    let trackItem = await getVideoTrack(sequence, options.videoTrackIndex, options.trackItemIndex)
+    let trackItem = await getTrack(sequence, options.videoTrackIndex, options.trackItemIndex,TRACK_TYPE.VIDEO)
 
     let transition = await app.TransitionFactory.createVideoTransition(options.transitionName);
 
@@ -359,20 +357,18 @@ const createSequenceFromMedia = async (command) => {
     await _setActiveSequence(sequence)
 }
 
-
-const setVideoClipStartEndTimes = async (command) => {
+const setClipStartEndTimes = async (command) => {
     const options = command.options;
 
     const sequenceId = options.sequenceId;
-    const videoTrackIndex = options.videoTrackIndex;
+    const trackIndex = options.trackIndex;
     const trackItemIndex = options.trackItemIndex;
     const startTimeTicks = options.startTimeTicks;
     const endTimeTicks = options.endTimeTicks;
-
+    const trackType = options.trackType
 
     const sequence = await _getSequenceFromId(sequenceId)
-  
-    const trackItem = await getVideoTrack(sequence, videoTrackIndex, trackItemIndex)
+    let trackItem = await getTrack(sequence, trackIndex, trackItemIndex, trackType)
 
     const startTick = await app.TickTime.createWithTicks(startTimeTicks.toString());
     const endTick = await app.TickTime.createWithTicks(endTimeTicks.toString());;
@@ -380,9 +376,13 @@ const setVideoClipStartEndTimes = async (command) => {
     let project = await app.Project.getActiveProject();
 
     execute(() => {
-        const startAction = trackItem.createSetStartAction(startTick);
-        const endAction = trackItem.createSetEndAction(endTick);
-        return [startAction, endAction]
+
+        let out = []
+
+        out.push(trackItem.createSetStartAction(startTick));
+        out.push(trackItem.createSetEndAction(endTick))
+
+        return out
     }, project)
 }
 
@@ -390,36 +390,23 @@ const closeGapsOnSequence = async(command) => {
     const options = command.options
     const sequenceId = options.sequenceId;
     const trackIndex = options.trackIndex;
-    const scope = options.scope;
+    const trackType = options.trackType;
 
     let sequence = await _getSequenceFromId(sequenceId)
 
-    let out = await _closeGapsOnSequence(sequence, trackIndex, scope)
+    let out = await _closeGapsOnSequence(sequence, trackIndex, trackType)
     
     return out
 }
 
-const _closeGapsOnSequence = async (sequence, trackIndex, scope) => {
+const _closeGapsOnSequence = async (sequence, trackIndex, trackType) => {
   
     let project = await app.Project.getActiveProject()
 
-    let videoItems;
-    let audioItems
+    let items = await getTrackItems(sequence, trackIndex, trackType)
 
-    if (scope === "VIDEO" || scope === "AUDIO_VIDEO") {
-        videoItems = await getVideoTrackItems(sequence, trackIndex)
-    }
-    
-    if (scope === "AUDIO" || scope === "AUDIO_VIDEO") {
-        audioItems = await getAudioTrackItems(sequence, trackIndex)
-    }
-
-    if((!audioItems || audioItems.length === 0) && (!videoItems || videoItems.length === 0)) {
+    if(!items || items.length === 0) {
         return;
-    }
-
-    if(scope === "AUDIO_VIDEO" && audioItems.length !== videoItems.length ) {
-        throw new Error("_closeGapsOnSequence : audio and video track lengths must be equal when scope = AUDIO_VIDEO")
     }
     
     const f = async (item, targetPosition) => {
@@ -436,74 +423,41 @@ const _closeGapsOnSequence = async (sequence, trackIndex, scope) => {
         return shiftTick
     }
 
-    let videoTargetPosition = app.TickTime.createWithTicks("0")
-    let audioTargetPosition = app.TickTime.createWithTicks("0") 
+    let targetPosition = app.TickTime.createWithTicks("0")
 
 
-    let counterItems = (scope === "VIDEO" || scope === "AUDIO_VIDEO")?videoItems:audioItems;
-
-    for(let i = 0; i < counterItems.length; i++) {
-        let videoShiftTick;
-        let videoItem;
-
-        let audioShiftTick;
-        let audioItem;
-
-        if (scope === "VIDEO" || scope === "AUDIO_VIDEO") {
-            videoItem = videoItems[i]
-            videoShiftTick = await f(videoItem, videoTargetPosition)
-        }
-
-        if (scope === "AUDIO" || scope === "AUDIO_VIDEO") {
-            audioItem = audioItems[i]
-            audioShiftTick = await f(audioItem, audioTargetPosition)
-        }
-
+    for(let i = 0; i < items.length; i++) {
+        let item = items[i];
+        let shiftTick = await f(item, targetPosition)
+        
         execute(() => {
             let out = []
 
-            if(videoShiftTick) {
-                out.push(videoItem.createMoveAction(videoShiftTick))
-            }
-
-            if(audioShiftTick) {
-                out.push(audioItem.createMoveAction(audioShiftTick))
-            }
+                out.push(item.createMoveAction(shiftTick))
 
             return out
         }, project)
         
-        if(videoShiftTick) {
-            videoTargetPosition = await videoItem.getEndTime()
-        }
-        
-        if(audioShiftTick) {
-            audioTargetPosition = await audioItem.getEndTime()
-        }
+        targetPosition = await item.getEndTime()
     }
 }
 
-//TODO: change API to take scope?
+//TODO: change API to take trackType?
+
+//TODO: pass in scope here
 const removeItemFromSequence = async (command) => {
     const options = command.options;
 
     const sequenceId = options.sequenceId;
-    const videoTrackIndex = options.videoTrackIndex;
-    const audioTrackIndex = options.audioTrackIndex;
+    const trackIndex = options.trackIndex;
     const trackItemIndex = options.trackItemIndex;
     const rippleDelete = options.rippleDelete;
+    const trackType = options.trackType
 
     let project = await app.Project.getActiveProject()
     let sequence = await _getSequenceFromId(sequenceId)
 
-    let item;
-    if (videoTrackIndex != undefined) {
-        item = await getVideoTrack(sequence, videoTrackIndex, trackItemIndex)
-    } else if (audioTrackIndex != undefined) {
-        item = await getAudioTrack(sequence, audioTrackIndex, trackItemIndex)
-    } else {
-        throw new Error(`removeItemFromSequence : audioTrackIndex or videoTrackIndex must be specified.`)
-    }
+    let item = await getTrack(sequence, trackIndex, trackItemIndex, trackType);
 
     let editor = await app.SequenceEditor.getEditor(sequence)
 
@@ -517,7 +471,6 @@ const removeItemFromSequence = async (command) => {
     trackItemSelection.addItem(item, true)
 
     execute(() => {
-
         const shiftOverlapping = false
         let action = editor.createRemoveItemsAction(trackItemSelection, rippleDelete, constants.MediaType.ANY, shiftOverlapping )
         return [action]
@@ -528,7 +481,7 @@ const removeItemFromSequence = async (command) => {
 const commandHandlers = {
     closeGapsOnSequence,
     removeItemFromSequence,
-    setVideoClipStartEndTimes,
+    setClipStartEndTimes,
     openProject,
     saveProjectAs,
     saveProject,

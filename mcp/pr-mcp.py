@@ -191,7 +191,7 @@ def create_sequence_from_media(item_names: list[str], sequence_name: str = "defa
     return sendCommand(command)
 
 @mcp.tool()
-def close_gaps_on_sequence(sequence_id: str, track_index: int, scope: str = "AUDIO_VIDEO"):
+def close_gaps_on_sequence(sequence_id: str, track_index: int, track_type: str):
     """
     Closes gaps on the specified track(s) in a sequence's timeline.
 
@@ -205,37 +205,24 @@ def close_gaps_on_sequence(sequence_id: str, track_index: int, scope: str = "AUD
             Track indices start at 0 for the first track and increment upward.
             For video tracks, this refers to video track indices.
             For audio tracks, this refers to audio track indices.
-        scope (str, optional): Specifies which type of tracks to close gaps on.
+        track_type (str, optional): Specifies which type of tracks to close gaps on.
             Valid values:
             - "VIDEO": Close gaps only on the specified video track
             - "AUDIO": Close gaps only on the specified audio track  
-            - "AUDIO_VIDEO": Close gaps on both video and audio tracks at the specified index
-            Defaults to "AUDIO_VIDEO".
-            
-    Note:
-        When using "AUDIO_VIDEO" scope, the function will close gaps on both the video
-        track at the specified index AND the audio track at the same index. This is
-        typically used when video and audio tracks are linked and you want to maintain
-        synchronization.
-        
-        IMPORTANT: Only use "AUDIO_VIDEO" scope when the video and audio tracks are 
-        actually synchronized (have the same start times). If tracks have different 
-        timing or positioning, use "VIDEO" or "AUDIO" scope to target only the 
-        specific track type needed, as closing gaps on both could break the intended
-        timing relationship between separate video and audio elements.
+
     """
     
     command = createCommand("closeGapsOnSequence", {
         "sequenceId": sequence_id,
         "trackIndex": track_index,
-        "scope": scope,
+        "trackType": track_type,
     })
 
     return sendCommand(command)
 
 
 @mcp.tool()
-def remove_item_from_sequence(sequence_id: str, track_item_index: int, video_track_index: int = None, audio_track_index: int = None, ripple_delete:bool=True):
+def remove_item_from_sequence(sequence_id: str, track_item_index: int, track_index:int, track_type:str, ripple_delete:bool=True):
     """
     Removes a specified media item from the sequence's timeline.
 
@@ -243,22 +230,22 @@ def remove_item_from_sequence(sequence_id: str, track_item_index: int, video_tra
         sequence_id (str): The id for the sequence to remove the media from
         track_item_index (int): The index of the clip within the track to remove.
             Clip indices start at 0 for the first clip in the track and increment from left to right.
-        video_track_index (int, optional): The index of the video track containing the target clip.
-            Track indices start at 0 for the first video track and increment upward.
-            Either video_track_index or audio_track_index must be specified, but not both.
-        audio_track_index (int, optional): The index of the audio track containing the target clip.
-            Track indices start at 0 for the first audio track and increment upward.
-            Either video_track_index or audio_track_index must be specified, but not both.
+        track_index (int, optional): The index of the track containing the target clip.
+            Track indices start at 0 for the first track and increment upward.
         ripple_delete (bool, optional): Whether to perform a ripple delete operation. Defaults to True.
             - True: Removes the clip and shifts all subsequent clips leftward to close the gap
             - False: Removes the clip but leaves a gap in the timeline where the clip was located
+        track_type (str, optional): Specifies which type of tracks being removed.
+            Valid values:
+            - "VIDEO": Close gaps only on the specified video track
+            - "AUDIO": Close gaps only on the specified audio track 
     """
     
     command = createCommand("removeItemFromSequence", {
         "sequenceId": sequence_id,
         "trackItemIndex":track_item_index,
-        "videoTrackIndex":video_track_index,
-        "audioTrackIndex":audio_track_index,
+        "trackIndex":track_index,
+        "trackType":track_type,
         "rippleDelete":ripple_delete
     })
 
@@ -337,40 +324,46 @@ def set_video_clip_disabled(sequence_id:str, video_track_index: int, track_item_
     })
 
     return sendCommand(command)
-
 @mcp.tool()
-def set_video_clip_start_end_times(
-    sequence_id: str, video_track_index: int, track_item_index: int,
-    start_time_ticks: int, end_time_ticks: int):
+def set_clip_start_end_times(
+    sequence_id: str, track_index: int, track_item_index: int,
+    start_time_ticks: int, end_time_ticks: int, track_type: str):
     """
-    Sets the start and end time boundaries for a specified video clip in the timeline.
+    Sets the start and end time boundaries for a specified clip in the timeline.
     
-    This function allows you to modify the duration and timing of video clips and images 
-    that are already placed in the timeline by adjusting their in and out points. The clip can be 
-    trimmed to a shorter duration or extended to a longer duration.
+    This function allows you to modify the duration and timing of video clips, audio clips, 
+    and images that are already placed in the timeline by adjusting their in and out points. 
+    The clip can be trimmed to a shorter duration or extended to a longer duration.
     
     Args:
         sequence_id (str): The id for the sequence containing the clip to modify.
-        video_track_index (int): The index of the video track containing the target clip.
-            Track indices start at 0 for the first video track and increment upward.
+        track_index (int): The index of the track containing the target clip.
+            Track indices start at 0 for the first track and increment upward.
+            For video tracks, this refers to video track indices.
+            For audio tracks, this refers to audio track indices.
         track_item_index (int): The index of the clip within the track to modify.
             Clip indices start at 0 for the first clip in the track and increment from left to right.
         start_time_ticks (int): The new start time for the clip in ticks.
         end_time_ticks (int): The new end time for the clip in ticks.
+        track_type (str, optional): Specifies which type of tracks to modify clips on.
+            Valid values:
+            - "VIDEO": Modify clips only on the specified video track
+            - "AUDIO": Modify clips only on the specified audio track  
         
     Note:
         - To trim a clip: Set start/end times within the original clip's duration
         - To extend a clip: Set end time beyond the original clip's duration  
-        - Works with video clips and image files (like PSD files) on video tracks
+        - Works with video clips, audio clips, and image files (like PSD files)
         - Times are specified in ticks (Premiere Pro's internal time unit)
     """
 
-    command = createCommand("setVideoClipStartEndTimes", {
+    command = createCommand("setClipStartEndTimes", {
         "sequenceId": sequence_id,
-        "videoTrackIndex": video_track_index,
+        "trackIndex": track_index,
         "trackItemIndex": track_item_index,
         "startTimeTicks": start_time_ticks,
-        "endTimeTicks": end_time_ticks
+        "endTimeTicks": end_time_ticks,
+        "trackType": track_type
     })
 
     return sendCommand(command)

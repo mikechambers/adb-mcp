@@ -1,3 +1,8 @@
+const TRACK_TYPE = {
+  "VIDEO":"VIDEO",
+  "AUDIO":"AUDIO"
+}
+
 
 const BLEND_MODES = {
     COLOR: 0,
@@ -30,5 +35,6 @@ const BLEND_MODES = {
   };
 
   module.exports = {
-    BLEND_MODES
+    BLEND_MODES,
+    TRACK_TYPE
 };
