@@ -23,21 +23,6 @@
 
 const app = require("premierepro");
 
-/*
-const findSequenceByName = async (sequenceName) => {
-    let project = await app.Project.getActiveProject()
-    let sequences = await project.getSequences()
-
-    for(const s of sequences) {
-        if(s.name == sequenceName) {
-            return s
-        }
-    }
-
-    return
-}
-    */
-
 
 const _getSequenceFromId = async (id) => {
     let project = await app.Project.getActiveProject()
@@ -121,8 +106,6 @@ const addEffect = async (trackItem, effectName) => {
     }, project)
 }
 
-
-
 const findProjectItem = async (itemName, project) => {
     let root = await project.getRootItem()
     let rootItems = await root.getItems()
@@ -159,21 +142,6 @@ const execute = (getActions, project) => {
         throw new Error(`Error executing locked transaction : ${e}`);
     }
 }
-
-/*
-const executeAction = (project, action) => {
-    try {
-        project.lockedAccess( () => {
-            project.executeTransaction((compoundAction) => {
-                compoundAction.addAction(action);
-            });
-          });
-    } catch (e) {
-        throw new Error(`Error executing locked transaction : ${e}`);
-    }
-};
-*/
-
 
 const getAudioTracks = async (sequence) => {
     let audioCount = await sequence.getAudioTrackCount()
@@ -302,15 +270,7 @@ const getVideoTracks = async (sequence) => {
 
 const getAudioTrack = async (sequence, trackIndex, clipIndex) => {
 
-    //todo: pass this in
-    let audioTrack = await sequence.getAudioTrack(trackIndex)
- 
-    if(!audioTrack) {
-        throw new Error(`getAudioTrack : audioTrackIndex [${trackIndex}] does not exist`)
-    }
-
-
-    let trackItems = await audioTrack.getTrackItems(1, false)
+    let trackItems = await getAudioTrackItems(sequence, trackIndex)
 
     let trackItem;
     let i = 0
@@ -328,10 +288,19 @@ const getAudioTrack = async (sequence, trackIndex, clipIndex) => {
     return trackItem
 }
 
+const getAudioTrackItems = async (sequence, trackIndex) => {
+    let audioTrack = await sequence.getAudioTrack(trackIndex)
+ 
+    if(!audioTrack) {
+        throw new Error(`getVideoTrack : videoTrackIndex [${trackIndex}] does not exist`)
+    }
 
-const getVideoTrack = async (sequence, trackIndex, clipIndex) => {
+    let trackItems = await audioTrack.getTrackItems(1, false)
 
-    //todo: pass this in
+    return trackItems
+}
+
+const getVideoTrackItems = async (sequence, trackIndex) => {
     let videoTrack = await sequence.getVideoTrack(trackIndex)
  
     if(!videoTrack) {
@@ -339,6 +308,13 @@ const getVideoTrack = async (sequence, trackIndex, clipIndex) => {
     }
 
     let trackItems = await videoTrack.getTrackItems(1, false)
+
+    return trackItems
+}
+
+const getVideoTrack = async (sequence, trackIndex, clipIndex) => {
+
+    let trackItems = await getVideoTrackItems(sequence, trackIndex)
 
     let trackItem;
     let i = 0
@@ -357,6 +333,8 @@ const getVideoTrack = async (sequence, trackIndex, clipIndex) => {
 }
 
 module.exports = {
+    getAudioTrackItems,
+    getVideoTrackItems,
     _getSequenceFromId,
     _setActiveSequence,
     setParam,

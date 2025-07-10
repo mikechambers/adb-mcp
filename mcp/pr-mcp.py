@@ -191,6 +191,81 @@ def create_sequence_from_media(item_names: list[str], sequence_name: str = "defa
     return sendCommand(command)
 
 @mcp.tool()
+def close_gaps_on_sequence(sequence_id: str, track_index: int, scope: str = "AUDIO_VIDEO"):
+    """
+    Closes gaps on the specified track(s) in a sequence's timeline.
+
+    This function removes empty spaces (gaps) between clips on the timeline by moving
+    clips leftward to fill any empty areas. This is useful for cleaning up the timeline
+    after removing clips or when clips have been moved leaving gaps.
+
+    Args:
+        sequence_id (str): The ID of the sequence to close gaps on.
+        track_index (int): The index of the track to close gaps on.
+            Track indices start at 0 for the first track and increment upward.
+            For video tracks, this refers to video track indices.
+            For audio tracks, this refers to audio track indices.
+        scope (str, optional): Specifies which type of tracks to close gaps on.
+            Valid values:
+            - "VIDEO": Close gaps only on the specified video track
+            - "AUDIO": Close gaps only on the specified audio track  
+            - "AUDIO_VIDEO": Close gaps on both video and audio tracks at the specified index
+            Defaults to "AUDIO_VIDEO".
+            
+    Note:
+        When using "AUDIO_VIDEO" scope, the function will close gaps on both the video
+        track at the specified index AND the audio track at the same index. This is
+        typically used when video and audio tracks are linked and you want to maintain
+        synchronization.
+        
+        IMPORTANT: Only use "AUDIO_VIDEO" scope when the video and audio tracks are 
+        actually synchronized (have the same start times). If tracks have different 
+        timing or positioning, use "VIDEO" or "AUDIO" scope to target only the 
+        specific track type needed, as closing gaps on both could break the intended
+        timing relationship between separate video and audio elements.
+    """
+    
+    command = createCommand("closeGapsOnSequence", {
+        "sequenceId": sequence_id,
+        "trackIndex": track_index,
+        "scope": scope,
+    })
+
+    return sendCommand(command)
+
+
+@mcp.tool()
+def remove_item_from_sequence(sequence_id: str, track_item_index: int, video_track_index: int = None, audio_track_index: int = None, ripple_delete:bool=True):
+    """
+    Removes a specified media item from the sequence's timeline.
+
+    Args:
+        sequence_id (str): The id for the sequence to remove the media from
+        track_item_index (int): The index of the clip within the track to remove.
+            Clip indices start at 0 for the first clip in the track and increment from left to right.
+        video_track_index (int, optional): The index of the video track containing the target clip.
+            Track indices start at 0 for the first video track and increment upward.
+            Either video_track_index or audio_track_index must be specified, but not both.
+        audio_track_index (int, optional): The index of the audio track containing the target clip.
+            Track indices start at 0 for the first audio track and increment upward.
+            Either video_track_index or audio_track_index must be specified, but not both.
+        ripple_delete (bool, optional): Whether to perform a ripple delete operation. Defaults to True.
+            - True: Removes the clip and shifts all subsequent clips leftward to close the gap
+            - False: Removes the clip but leaves a gap in the timeline where the clip was located
+    """
+    
+    command = createCommand("removeItemFromSequence", {
+        "sequenceId": sequence_id,
+        "trackItemIndex":track_item_index,
+        "videoTrackIndex":video_track_index,
+        "audioTrackIndex":audio_track_index,
+        "rippleDelete":ripple_delete
+    })
+
+    return sendCommand(command)
+
+
+@mcp.tool()
 def add_media_to_sequence(sequence_id:str, item_name: str, video_track_index: int, audio_track_index: int, insertion_time_ticks: int = 0, overwrite: bool = True):
     """
     Adds a specified media item to the active sequence's timeline.

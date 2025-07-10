@@ -1,7 +1,8 @@
 
 const fs = require("uxp").storage.localFileSystem;
-
 const app = require("premierepro");
+const constants = require("premierepro").Constants;
+
 const {BLEND_MODES} = require("./consts.js")
 
 const {
@@ -13,7 +14,9 @@ const {
     findProjectItem,
     execute,
     getAudioTrack,
-    getVideoTrack
+    getVideoTrack,
+    getAudioTrackItems,
+    getVideoTrackItems
 } = require("./utils.js")
 
 const saveProject = async (command) => {
@@ -383,7 +386,148 @@ const setVideoClipStartEndTimes = async (command) => {
     }, project)
 }
 
+const closeGapsOnSequence = async(command) => {
+    const options = command.options
+    const sequenceId = options.sequenceId;
+    const trackIndex = options.trackIndex;
+    const scope = options.scope;
+
+    let sequence = await _getSequenceFromId(sequenceId)
+
+    let out = await _closeGapsOnSequence(sequence, trackIndex, scope)
+    
+    return out
+}
+
+const _closeGapsOnSequence = async (sequence, trackIndex, scope) => {
+  
+    let project = await app.Project.getActiveProject()
+
+    let videoItems;
+    let audioItems
+
+    if (scope === "VIDEO" || scope === "AUDIO_VIDEO") {
+        videoItems = await getVideoTrackItems(sequence, trackIndex)
+    }
+    
+    if (scope === "AUDIO" || scope === "AUDIO_VIDEO") {
+        audioItems = await getAudioTrackItems(sequence, trackIndex)
+    }
+
+    if((!audioItems || audioItems.length === 0) && (!videoItems || videoItems.length === 0)) {
+        return;
+    }
+
+    if(scope === "AUDIO_VIDEO" && audioItems.length !== videoItems.length ) {
+        throw new Error("_closeGapsOnSequence : audio and video track lengths must be equal when scope = AUDIO_VIDEO")
+    }
+    
+    const f = async (item, targetPosition) => {
+        let currentStart = await item.getStartTime()
+
+        let a = await currentStart.ticksNumber
+        let b = await targetPosition.ticksNumber
+        let shiftAmount = (a - b)// How much to shift 
+        
+        shiftAmount *= -1;
+
+        let shiftTick = app.TickTime.createWithTicks(shiftAmount.toString())
+
+        return shiftTick
+    }
+
+    let videoTargetPosition = app.TickTime.createWithTicks("0")
+    let audioTargetPosition = app.TickTime.createWithTicks("0") 
+
+
+    let counterItems = (scope === "VIDEO" || scope === "AUDIO_VIDEO")?videoItems:audioItems;
+
+    for(let i = 0; i < counterItems.length; i++) {
+        let videoShiftTick;
+        let videoItem;
+
+        let audioShiftTick;
+        let audioItem;
+
+        if (scope === "VIDEO" || scope === "AUDIO_VIDEO") {
+            videoItem = videoItems[i]
+            videoShiftTick = await f(videoItem, videoTargetPosition)
+        }
+
+        if (scope === "AUDIO" || scope === "AUDIO_VIDEO") {
+            audioItem = audioItems[i]
+            audioShiftTick = await f(audioItem, audioTargetPosition)
+        }
+
+        execute(() => {
+            let out = []
+
+            if(videoShiftTick) {
+                out.push(videoItem.createMoveAction(videoShiftTick))
+            }
+
+            if(audioShiftTick) {
+                out.push(audioItem.createMoveAction(audioShiftTick))
+            }
+
+            return out
+        }, project)
+        
+        if(videoShiftTick) {
+            videoTargetPosition = await videoItem.getEndTime()
+        }
+        
+        if(audioShiftTick) {
+            audioTargetPosition = await audioItem.getEndTime()
+        }
+    }
+}
+
+//TODO: change API to take scope?
+const removeItemFromSequence = async (command) => {
+    const options = command.options;
+
+    const sequenceId = options.sequenceId;
+    const videoTrackIndex = options.videoTrackIndex;
+    const audioTrackIndex = options.audioTrackIndex;
+    const trackItemIndex = options.trackItemIndex;
+    const rippleDelete = options.rippleDelete;
+
+    let project = await app.Project.getActiveProject()
+    let sequence = await _getSequenceFromId(sequenceId)
+
+    let item;
+    if (videoTrackIndex != undefined) {
+        item = await getVideoTrack(sequence, videoTrackIndex, trackItemIndex)
+    } else if (audioTrackIndex != undefined) {
+        item = await getAudioTrack(sequence, audioTrackIndex, trackItemIndex)
+    } else {
+        throw new Error(`removeItemFromSequence : audioTrackIndex or videoTrackIndex must be specified.`)
+    }
+
+    let editor = await app.SequenceEditor.getEditor(sequence)
+
+    let trackItemSelection = await sequence.getSelection();
+    let items = await trackItemSelection.getTrackItems()
+
+    for (let t of items) {
+        await trackItemSelection.removeItem(t)
+    }
+
+    trackItemSelection.addItem(item, true)
+
+    execute(() => {
+
+        const shiftOverlapping = false
+        let action = editor.createRemoveItemsAction(trackItemSelection, rippleDelete, constants.MediaType.ANY, shiftOverlapping )
+        return [action]
+    }, project)
+}
+
+
 const commandHandlers = {
+    closeGapsOnSequence,
+    removeItemFromSequence,
     setVideoClipStartEndTimes,
     openProject,
     saveProjectAs,
