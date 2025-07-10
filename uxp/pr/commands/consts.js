@@ -3,6 +3,7 @@ const TRACK_TYPE = {
   "AUDIO":"AUDIO"
 }
 
+TICKS_PER_SECOND = 254016000000;
 
 const BLEND_MODES = {
     COLOR: 0,
@@ -36,5 +37,6 @@ const BLEND_MODES = {
 
   module.exports = {
     BLEND_MODES,
-    TRACK_TYPE
+    TRACK_TYPE,
+    TICKS_PER_SECOND
 };

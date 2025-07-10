@@ -22,7 +22,7 @@
  */
 
 const app = require("premierepro");
-const { TRACK_TYPE } = require("./consts.js");
+const { TRACK_TYPE, TICKS_PER_SECOND } = require("./consts.js");
 
 const _getSequenceFromId = async (id) => {
     let project = await app.Project.getActiveProject();
@@ -214,6 +214,14 @@ const getSequences = async () => {
 
         let isActive = active == sequence;
 
+        console.log("a")
+        let timebase = await sequence.getTimebase()
+        let fps = TICKS_PER_SECOND / timebase
+console.log("b")
+        //#let settings = await sequence.getSettings()
+console.log("c")
+        //#console.log(settings)
+
         out.push({
             isActive,
             name,
@@ -221,6 +229,8 @@ const getSequences = async () => {
             frameSize: { width: size.width, height: size.height },
             videoTracks,
             audioTracks,
+            timebase,
+            fps
         });
     }
 

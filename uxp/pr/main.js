@@ -27,7 +27,7 @@ const { io } = require("./socket.io.js");
 const { getSequences } = require("./commands/utils.js");
 
 const {
-    getProjectContentInfo,
+    getProjectInfo,
     parseAndRouteCommand,
     checkRequiresActiveProject,
 } = require("./commands/index.js");
@@ -53,7 +53,7 @@ const onCommandPacket = async (packet) => {
         out.response = response;
         out.status = "SUCCESS";
         out.sequences = await getSequences();
-        out.projectItems = await getProjectContentInfo();
+        out.project = await getProjectInfo();
         
     } catch (e) {
 
