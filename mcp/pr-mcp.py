@@ -205,7 +205,7 @@ def close_gaps_on_sequence(sequence_id: str, track_index: int, track_type: str):
             Track indices start at 0 for the first track and increment upward.
             For video tracks, this refers to video track indices.
             For audio tracks, this refers to audio track indices.
-        track_type (str, optional): Specifies which type of tracks to close gaps on.
+        track_type (str): Specifies which type of tracks to close gaps on.
             Valid values:
             - "VIDEO": Close gaps only on the specified video track
             - "AUDIO": Close gaps only on the specified audio track  
@@ -222,23 +222,23 @@ def close_gaps_on_sequence(sequence_id: str, track_index: int, track_type: str):
 
 
 @mcp.tool()
-def remove_item_from_sequence(sequence_id: str, track_item_index: int, track_index:int, track_type:str, ripple_delete:bool=True):
+def remove_item_from_sequence(sequence_id: str, track_index:int, track_item_index: int, track_type:str, ripple_delete:bool=True):
     """
     Removes a specified media item from the sequence's timeline.
 
     Args:
         sequence_id (str): The id for the sequence to remove the media from
+        track_index (int): The index of the track containing the target clip.
+            Track indices start at 0 for the first track and increment upward.
         track_item_index (int): The index of the clip within the track to remove.
             Clip indices start at 0 for the first clip in the track and increment from left to right.
-        track_index (int, optional): The index of the track containing the target clip.
-            Track indices start at 0 for the first track and increment upward.
+        track_type (str): Specifies which type of tracks being removed.
+            Valid values:
+            - "VIDEO": Close gaps only on the specified video track
+            - "AUDIO": Close gaps only on the specified audio track
         ripple_delete (bool, optional): Whether to perform a ripple delete operation. Defaults to True.
             - True: Removes the clip and shifts all subsequent clips leftward to close the gap
             - False: Removes the clip but leaves a gap in the timeline where the clip was located
-        track_type (str, optional): Specifies which type of tracks being removed.
-            Valid values:
-            - "VIDEO": Close gaps only on the specified video track
-            - "AUDIO": Close gaps only on the specified audio track 
     """
     
     command = createCommand("removeItemFromSequence", {
@@ -260,9 +260,9 @@ def add_media_to_sequence(sequence_id:str, item_name: str, video_track_index: in
     Args:
         sequence_id (str) : The id for the sequence to add the media to
         item_name (str): The name or identifier of the media item to add.
-        video_track_index (int, optional): The index of the video track where the item should be inserted. Defaults to 0.0.
-        audio_track_index (int, optional): The index of the audio track where the item should be inserted. Defaults to 0.0.
-        insertion_time_ticks (int, optional): The position on the timeline in ticks, with 0 being the beginning. The API will return positions of existing clips in ticks
+        video_track_index (int): The index of the video track where the item should be inserted.
+        audio_track_index (int): The index of the audio track where the item should be inserted.
+        insertion_time_ticks (int): The position on the timeline in ticks, with 0 being the beginning. The API will return positions of existing clips in ticks
         overwrite (bool, optional): Whether to overwrite existing content at the insertion point. Defaults to True. If False, any existing clips that overlap will be split and item inserted.
     """
 
@@ -282,19 +282,23 @@ def add_media_to_sequence(sequence_id:str, item_name: str, video_track_index: in
 @mcp.tool()
 def set_clip_disabled(sequence_id:str, track_index: int, track_item_index: int, track_type:str, disabled: bool):
     """
-    Enables or disables a audio clip in the timeline.
+    Enables or disables a clip in the timeline.
     
     Args:
-        sequence_id (str) : The id for the sequence to set the audio clip disabled property.
-        audio_track_index (int): The index of the audio track containing the target clip.
+        sequence_id (str): The id for the sequence to set the clip disabled property.
+        track_index (int): The index of the track containing the target clip.
+            Track indices start at 0 for the first track and increment upward.
+            For video tracks, this refers to video track indices.
+            For audio tracks, this refers to audio track indices.
         track_item_index (int): The index of the clip within the track to enable/disable.
+            Clip indices start at 0 for the first clip in the track and increment from left to right.
+        track_type (str): Specifies which type of track to modify.
+            Valid values:
+            - "VIDEO": Modify clips on the specified video track
+            - "AUDIO": Modify clips on the specified audio track
         disabled (bool): Whether to disable the clip.
             - True: Disables the clip (clip will not be visible during playback or export)
             - False: Enables the clip (normal visibility)
-        track_type (str, optional): Specifies which type of track is being removed.
-            Valid values:
-            - "VIDEO": Close gaps only on the specified video track
-            - "AUDIO": Close gaps only on the specified audio track 
     """
 
     command = createCommand("setClipDisabled", {
@@ -310,8 +314,8 @@ def set_clip_disabled(sequence_id:str, track_index: int, track_item_index: int, 
 
 @mcp.tool()
 def set_clip_start_end_times(
-    sequence_id: str, track_index: int, track_item_index: int,
-    start_time_ticks: int, end_time_ticks: int, track_type: str):
+    sequence_id: str, track_index: int, track_item_index: int, start_time_ticks: int, 
+        end_time_ticks: int, track_type: str):
     """
     Sets the start and end time boundaries for a specified clip in the timeline.
     
@@ -329,7 +333,7 @@ def set_clip_start_end_times(
             Clip indices start at 0 for the first clip in the track and increment from left to right.
         start_time_ticks (int): The new start time for the clip in ticks.
         end_time_ticks (int): The new end time for the clip in ticks.
-        track_type (str, optional): Specifies which type of tracks to modify clips on.
+        track_type (str): Specifies which type of tracks to modify clips on.
             Valid values:
             - "VIDEO": Modify clips only on the specified video track
             - "AUDIO": Modify clips only on the specified audio track  
@@ -516,7 +520,6 @@ def rgb_to_premiere_color(rgb_color, alpha=255):
 
 
 
-
 @mcp.tool()
 def add_tint_effect(sequence_id: str, video_track_index: int, track_item_index: int, black_map:dict = {"red":0, "green":0, "blue":0}, white_map:dict = {"red":255, "green":255, "blue":255}, amount:int = 100):
     """
@@ -597,7 +600,7 @@ def add_motion_blur_effect(sequence_id: str, video_track_index: int, track_item_
     return sendCommand(command)
 
 @mcp.tool()
-def append_video_transition(sequence_id: str, video_track_index: int, track_item_index: int, transition_name: str, duration: int = 1.0, clip_alignment: float = 0.5):
+def append_video_transition(sequence_id: str, video_track_index: int, track_item_index: int, transition_name: str, duration: float = 1.0, clip_alignment: float = 0.5):
     """
     Creates a transition between the specified clip and the adjacent clip on the timeline.
     
@@ -608,7 +611,7 @@ def append_video_transition(sequence_id: str, video_track_index: int, track_item
         video_track_index (int): The index of the video track containing the target clips.
         track_item_index (int): The index of the clip within the track to apply the transition to.
         transition_name (str): The name of the transition to apply. Must be a valid transition name (see below).
-        duration (int): The duration of the transition in seconds.
+        duration (float): The duration of the transition in seconds.
         clip_alignment (float): Controls how the transition is distributed between the two clips.
                                 Range: 0.0 to 1.0, where:
                                 - 0.0 places transition entirely on the right (later) clip
