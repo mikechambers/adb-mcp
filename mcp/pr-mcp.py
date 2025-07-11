@@ -280,7 +280,7 @@ def add_media_to_sequence(sequence_id:str, item_name: str, video_track_index: in
 
 
 @mcp.tool()
-def set_audio_clip_disabled(sequence_id:str, audio_track_index: int, track_item_index: int, disabled: bool):
+def set_clip_disabled(sequence_id:str, track_index: int, track_item_index: int, track_type:str, disabled: bool):
     """
     Enables or disables a audio clip in the timeline.
     
@@ -291,39 +291,23 @@ def set_audio_clip_disabled(sequence_id:str, audio_track_index: int, track_item_
         disabled (bool): Whether to disable the clip.
             - True: Disables the clip (clip will not be visible during playback or export)
             - False: Enables the clip (normal visibility)
+        track_type (str, optional): Specifies which type of track is being removed.
+            Valid values:
+            - "VIDEO": Close gaps only on the specified video track
+            - "AUDIO": Close gaps only on the specified audio track 
     """
 
-    command = createCommand("setAudioClipDisabled", {
+    command = createCommand("setClipDisabled", {
         "sequenceId": sequence_id,
-        "audioTrackIndex":audio_track_index,
+        "trackIndex":track_index,
         "trackItemIndex":track_item_index,
+        "trackType":track_type,
         "disabled":disabled
     })
 
     return sendCommand(command)
 
-@mcp.tool()
-def set_video_clip_disabled(sequence_id:str, video_track_index: int, track_item_index: int, disabled: bool):
-    """
-    Enables or disables a video clip in the timeline.
-    
-    Args:
-        sequence_id (str) : The id for the sequence to set the video clip disabled property.
-        video_track_index (int): The index of the video track containing the target clip.
-        track_item_index (int): The index of the clip within the track to enable/disable.
-        disabled (bool): Whether to disable the clip.
-            - True: Disables the clip (clip will not be visible during playback or export)
-            - False: Enables the clip (normal visibility)
-    """
 
-    command = createCommand("setVideoClipDisabled", {
-        "sequenceId": sequence_id,
-        "videoTrackIndex":video_track_index,
-        "trackItemIndex":track_item_index,
-        "disabled":disabled
-    })
-
-    return sendCommand(command)
 @mcp.tool()
 def set_clip_start_end_times(
     sequence_id: str, track_index: int, track_item_index: int,

@@ -243,19 +243,22 @@ const exportFrame = async (command) => {
     return {"filePath": outPath}
 }
 
-const setAudioClipDisabled = async (command) => {
+const setClipDisabled = async (command) => {
 
-    let options = command.options
-    let id = options.sequenceId
+    const options = command.options;
+    const id = options.sequenceId;
+    const trackIndex = options.trackIndex;
+    const trackItemIndex = options.trackItemIndex;
+    const trackType = options.trackType;
 
     let project = await app.Project.getActiveProject()
     let sequence = await _getSequenceFromId(id)
 
     if(!sequence) {
-        throw new Error(`setAudioClipDisabled : Requires an active sequence.`)
+        throw new Error(`setClipDisabled : Requires an active sequence.`)
     }
 
-    let trackItem = await getTrack(sequence, options.audioTrackIndex, options.trackItemIndex, TRACK_TYPE.AUDIO)
+    let trackItem = await getTrack(sequence, trackIndex, trackItemIndex, trackType)
 
     execute(() => {
         let action = trackItem.createSetDisabledAction(options.disabled)
@@ -264,25 +267,6 @@ const setAudioClipDisabled = async (command) => {
 
 }
 
-const setVideoClipDisabled = async (command) => {
-
-    let options = command.options
-    let id = options.sequenceId
-
-    let project = await app.Project.getActiveProject()
-    let sequence = await _getSequenceFromId(id)
-
-    if(!sequence) {
-        throw new Error(`setVideoClipDisabled : Requires an active sequence.`)
-    }
-
-    let trackItem = await getTrack(sequence, options.videoTrackIndex, options.trackItemIndex,TRACK_TYPE.VIDEO)
-
-    execute(() => {
-        let action = trackItem.createSetDisabledAction(options.disabled)
-        return [action]
-    }, project)
-}
 
 const appendVideoTransition = async (command) => {
 
@@ -491,8 +475,7 @@ const commandHandlers = {
     setVideoClipProperties,
     createSequenceFromMedia,
     setAudioTrackMute,
-    setAudioClipDisabled,
-    setVideoClipDisabled,
+    setClipDisabled,
     appendVideoTransition,
     appendVideoFilter,
     addMediaToSequence,
