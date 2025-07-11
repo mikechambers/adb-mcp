@@ -217,10 +217,11 @@ const getSequences = async () => {
         console.log("a")
         let timebase = await sequence.getTimebase()
         let fps = TICKS_PER_SECOND / timebase
-console.log("b")
-        //#let settings = await sequence.getSettings()
-console.log("c")
-        //#console.log(settings)
+
+        let endTime = await sequence.getEndTime()
+        let durationSeconds = await endTime.seconds
+        let durationTicks = await endTime.ticksNumber
+        let ticksPerSecond = TICKS_PER_SECOND
 
         out.push({
             isActive,
@@ -230,7 +231,10 @@ console.log("c")
             videoTracks,
             audioTracks,
             timebase,
-            fps
+            fps,
+            durationSeconds,
+            durationTicks,
+            ticksPerSecond
         });
     }
 
