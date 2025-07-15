@@ -214,7 +214,7 @@ const getSequences = async () => {
 
         let isActive = active == sequence;
 
-        console.log("a")
+
         let timebase = await sequence.getTimebase()
         let fps = TICKS_PER_SECOND / timebase
 

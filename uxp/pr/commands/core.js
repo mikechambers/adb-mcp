@@ -441,6 +441,10 @@ const removeItemFromSequence = async (command) => {
     let project = await app.Project.getActiveProject()
     let sequence = await _getSequenceFromId(sequenceId)
 
+    if(!sequence) {
+        throw Error(`addMarkerToSequence : sequence with id [${sequenceId}] not found.`)
+    }
+
     let item = await getTrack(sequence, trackIndex, trackItemIndex, trackType);
 
     let editor = await app.SequenceEditor.getEditor(sequence)
@@ -461,8 +465,37 @@ const removeItemFromSequence = async (command) => {
     }, project)
 }
 
+const addMarkerToSequence = async (command) => {
+    const options = command.options;
+    const sequenceId = options.sequenceId;
+    const markerName = options.markerName;
+    const startTimeTicks = options.startTimeTicks;
+    const durationTicks = options.durationTicks;
+    const comments = options.comments;
+
+    const sequence = await _getSequenceFromId(sequenceId)
+
+    if(!sequence) {
+        throw Error(`addMarkerToSequence : sequence with id [${sequenceId}] not found.`)
+    }
+
+    let markers = await app.Markers.getMarkers(sequence);
+
+    let project = await app.Project.getActiveProject()
+
+    execute(() => {
+
+        let start = app.TickTime.createWithTicks(startTimeTicks.toString())
+        let duration = app.TickTime.createWithTicks(durationTicks.toString())
+
+        let action = markers.createAddMarkerAction(markerName, "WebLink",  start, duration, comments)
+        return [action]
+    }, project)
+
+}
 
 const commandHandlers = {
+    addMarkerToSequence,
     closeGapsOnSequence,
     removeItemFromSequence,
     setClipStartEndTimes,

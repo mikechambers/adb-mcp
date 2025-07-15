@@ -27,13 +27,9 @@ const core = require("./core");
 const getProjectInfo = async () => {
     let project = await app.Project.getActiveProject()
 
-    console.log("getProjectInfo")
     const name = project.name;
     const path = project.path;
     const id = project.guid.toString();
-
-
-    console.log(name, path, id)
 
     const projectContent = await getProjectContentInfo()
 

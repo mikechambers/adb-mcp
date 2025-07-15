@@ -251,6 +251,53 @@ def remove_item_from_sequence(sequence_id: str, track_index:int, track_item_inde
 
     return sendCommand(command)
 
+@mcp.tool()
+def add_marker_to_sequence(sequence_id: str, 
+                           marker_name: str, 
+                           start_time_ticks: int, 
+                           duration_ticks: int, 
+                           comments: str,
+                           marker_type: str = "Comment"):
+    """
+    Adds a marker to the specified sequence.
+
+    Args:
+        sequence_id (str): 
+            The ID of the sequence to which the marker will be added.
+
+        marker_name (str): 
+            The name/title of the marker.
+
+        start_time_ticks (int): 
+            The timeline position where the marker starts, in ticks.
+            (1 tick = 1/254016000000 of a day)
+
+        duration_ticks (int): 
+            The length of the marker in ticks.
+
+        comments (str): 
+            Optional text comment to store in the marker.
+
+        marker_type (str, optional): 
+            The type of marker to add. Defaults to "Comment".
+            
+            Supported marker types include:
+                - "Comment"      → General-purpose note marker.
+
+    """
+
+    command = createCommand("addMarkerToSequence", {
+        "sequenceId": sequence_id,
+        "markerName": marker_name,
+        "startTimeTicks": start_time_ticks,
+        "durationTicks": duration_ticks,
+        "comments": comments,
+        "markerType": marker_type
+    })
+
+    return sendCommand(command)
+
+
 
 @mcp.tool()
 def add_media_to_sequence(sequence_id:str, item_name: str, video_track_index: int, audio_track_index: int, insertion_time_ticks: int = 0, overwrite: bool = True):
