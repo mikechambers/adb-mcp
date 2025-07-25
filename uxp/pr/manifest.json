@@ -1,7 +1,7 @@
 {
   "id": "Premiere MCP Agent",
   "name": "Premiere MCP Agent",
-  "version": "0.85.2",
+  "version": "0.85.3",
   "main": "index.html",
   "host": [
     {
