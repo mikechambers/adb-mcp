@@ -3,8 +3,9 @@
   "version": "0.85.1",
   "description": "Proxy socket.io node server for Adobe MCP plugins",
   "main": "proxy.js",
+  "bin": "proxy.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "pkg ."
   },
   "author": "Mike Chambers",
   "license": "ISC",
@@ -12,5 +13,13 @@
     "express": "^4.21.2",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1"
+  },
+  "pkg": {
+    "targets": [
+      "node18-macos-x64",
+      "node18-macos-arm64",
+      "node18-win-x64"
+    ],
+    "outputPath": "dist"
   }
 }

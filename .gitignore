@@ -1,6 +1,8 @@
 *.dxt
 *.ccx
 
+dist/
+
 .DS_Store
 .AppleDouble
 .LSOverride

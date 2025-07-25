@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 /* MIT License
  *
  * Copyright (c) 2025 Mike Chambers
