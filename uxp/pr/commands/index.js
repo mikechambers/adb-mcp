@@ -47,9 +47,10 @@ const getProjectContentInfo = async () => {
 
     let root = await project.getRootItem()
     let items = await root.getItems()
-
+    
     let out = []
     for(const item of items) {
+        console.log(item)
         //todo: it would be good to get more data / info here
         out.push({name:item.name})
     }

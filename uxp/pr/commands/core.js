@@ -494,7 +494,66 @@ const addMarkerToSequence = async (command) => {
 
 }
 
+const moveProjectItemsToBin = async (command) => {
+    const options = command.options;
+    const binName = options.binName;
+    const projectItemNames = options.itemNames;
+
+    const project = await app.Project.getActiveProject()
+    
+    const binFolderItem = await findProjectItem(binName, project)
+
+    if(!binFolderItem) {
+        throw Error(`moveProjectItemsToBin : Bin with name [${binName}] not found.`)
+    }
+
+    let folderItems = [];
+
+    for(let name of projectItemNames) {
+        let item = await findProjectItem(name, project)
+
+        if(!item) {
+            throw Error(`moveProjectItemsToBin : FolderItem with name [${name}] not found.`)
+        }
+
+        folderItems.push(item)
+    }
+
+    const rootFolderItem = await project.getRootItem()
+
+    execute(() => {
+
+        let actions = []
+
+        for(let folderItem of folderItems) {
+            let b = app.FolderItem.cast(binFolderItem)
+            let action = rootFolderItem.createMoveItemAction(folderItem, b)
+            actions.push(action)
+        }
+
+        return actions
+    }, project)
+
+}
+
+const createBinInActiveProject = async (command) => {
+
+    const options = command.options;
+    const binName = options.binName;
+
+    const project = await app.Project.getActiveProject()
+    const folderItem = await project.getRootItem()
+
+    execute(() => {
+        let action = folderItem.createBinAction(binName, true)
+        return [action]
+    }, project)
+
+}
+
 const commandHandlers = {
+    moveProjectItemsToBin,
+    createBinInActiveProject,
     addMarkerToSequence,
     closeGapsOnSequence,
     removeItemFromSequence,

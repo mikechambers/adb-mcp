@@ -130,6 +130,52 @@ def create_project(directory_path: str, project_name: str):
     return sendCommand(command)
 
 
+@mcp.tool()
+def create_bin_in_active_project(bin_name:str):
+    """
+    Creates a new bin / folder in the root project.
+
+    Args:
+        name (str) : The name of the bin to be created
+ 
+
+    """
+
+    command = createCommand("createBinInActiveProject", {
+        "binName": bin_name
+    })
+
+    return sendCommand(command)
+
+@mcp.tool()
+def move_project_items_to_bin(item_names: list[str], bin_name: str):
+    """
+    Moves specified project items to an existing bin/folder in the project.
+
+    Args:
+        item_names (list[str]): A list of names of project items to move to the specified bin.
+            These should be the exact names of items as they appear in the project.
+        bin_name (str): The name of the existing bin to move the project items to.
+            The bin must already exist in the project.
+            
+    Returns:
+        dict: Response from the Premiere Pro operation indicating success status.
+        
+    Raises:
+        RuntimeError: If the bin doesn't exist, items don't exist, or the operation fails.
+        
+    Example:
+        move_project_items_to_bin(
+            item_names=["video1.mp4", "audio1.wav", "image1.png"], 
+            bin_name="Media Assets"
+        )
+    """
+    command = createCommand("moveProjectItemsToBin", {
+        "itemNames": item_names,
+        "binName": bin_name
+    })
+
+    return sendCommand(command)
 
 @mcp.tool()
 def set_audio_track_mute(sequence_id:str, audio_track_index: int, mute: bool):
