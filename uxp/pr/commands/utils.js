@@ -100,7 +100,8 @@ const addEffect = async (trackItem, effectName) => {
     }, project);
 };
 
-const findProjectItem = async (itemName, project) => {
+/*
+const findProjectItem2 = async (itemName, project) => {
     let root = await project.getRootItem();
     let rootItems = await root.getItems();
 
@@ -120,6 +121,47 @@ const findProjectItem = async (itemName, project) => {
 
     return insertItem;
 };
+*/
+
+const findProjectItem = async (itemName, project) => {
+    let root = await project.getRootItem();
+    
+    const searchItems = async (parentItem) => {
+        let items = await parentItem.getItems();
+        
+        // First, check items at this level
+        for (const item of items) {
+            if (item.name === itemName) {
+                return item;
+            }
+        }
+        
+        // If not found, search recursively in bins/folders
+        for (const item of items) {
+            const folderItem = app.FolderItem.cast(item);
+            if (folderItem) {
+                // This is a bin/folder, search inside it
+                const foundItem = await searchItems(folderItem);
+                if (foundItem) {
+                    return foundItem;
+                }
+            }
+        }
+        
+        return null; // Not found at this level or in any sub-folders
+    };
+    
+    const insertItem = await searchItems(root);
+    
+    if (!insertItem) {
+        throw new Error(
+            `addItemToSequence : Could not find item named ${itemName}`
+        );
+    }
+
+    return insertItem;
+};
+
 
 const execute = (getActions, project) => {
     try {
