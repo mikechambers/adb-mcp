@@ -537,7 +537,6 @@ const moveProjectItemsToBin = async (command) => {
 }
 
 const createBinInActiveProject = async (command) => {
-
     const options = command.options;
     const binName = options.binName;
 
@@ -548,10 +547,23 @@ const createBinInActiveProject = async (command) => {
         let action = folderItem.createBinAction(binName, true)
         return [action]
     }, project)
+}
 
+const exportSequence = async (command) => {
+    const options = command.options;
+    const sequenceId = options.sequenceId;
+    const outputPath = options.outputPath;
+    const presetPath = options.presetPath;
+
+    const manager = await app.EncoderManager.getManager();
+
+    const sequence = await _getSequenceFromId(sequenceId);
+
+    await manager.exportSequence(sequence, constants.ExportType.IMMEDIATELY, outputPath, presetPath);
 }
 
 const commandHandlers = {
+    exportSequence,
     moveProjectItemsToBin,
     createBinInActiveProject,
     addMarkerToSequence,

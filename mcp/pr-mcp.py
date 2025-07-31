@@ -148,6 +148,34 @@ def create_bin_in_active_project(bin_name:str):
     return sendCommand(command)
 
 @mcp.tool()
+def export_sequence(sequence_id: str, output_path: str, preset_path: str):
+    """
+    Exports a Premiere Pro sequence to a video file using specified export settings.
+
+    This function renders and exports the specified sequence from the active Premiere Pro project
+    to a video file on the file system. The export process uses a preset file to determine
+    encoding settings, resolution, format, and other export parameters.
+
+    Args:
+        sequence_id (str): The unique identifier of the sequence to export.
+            This should be the ID of an existing sequence in the current Premiere Pro project.
+            
+        output_path (str): The complete file system path where the exported video will be saved.
+            Must include the full directory path, filename, and appropriate file extension.
+            
+        preset_path (str): The file system path to the export preset file (.epr) that defines the export settings including codec, resolution, bitrate, and format.
+        
+        IMPORTANT: The export may take an extended period of time, so if the call times out, it most likely means the export is still in progress.
+    """
+    command = createCommand("exportSequence", {
+        "sequenceId": sequence_id,
+        "outputPath": output_path,
+        "presetPath": preset_path
+    })
+    
+    return sendCommand(command)
+
+@mcp.tool()
 def move_project_items_to_bin(item_names: list[str], bin_name: str):
     """
     Moves specified project items to an existing bin/folder in the project.
