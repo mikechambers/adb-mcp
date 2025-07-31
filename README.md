@@ -1,6 +1,6 @@
 # adb-mcp
 
-adb-mcp is a proof of concept project to create AI Agent for Adobe tools (Adobe Photoshop and Adobe Premiere) by providing an interface to LLMs via the MCP protocol.
+adb-mcp is a proof of concept project to enabled AI control of Adobe tools (Adobe Photoshop and Adobe Premiere) by providing an interface to LLMs via the MCP protocol.
 
 The project is not endorsed by nor supported by Adobe.
 
