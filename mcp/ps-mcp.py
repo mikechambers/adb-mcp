@@ -222,7 +222,7 @@ def save_document():
     return sendCommand(command)
 
 @mcp.tool()
-def group_layers(group_name: str, layer_ids: list[str]) -> list:
+def group_layers(group_name: str, layer_ids: list[int]) -> list:
     """
     Creates a new layer group from the specified layers in Photoshop.
 

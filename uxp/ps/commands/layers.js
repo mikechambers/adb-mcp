@@ -253,10 +253,12 @@ const renameLayers = async (command) => {
 
 const groupLayers = async (command) => {
     let options = command.options;
+    const layerIds = options.layerIds;
 
     let layers = [];
 
-    for (const layerId of options.layerIds) {
+    for (const layerId of layerIds) {
+
         let layer = findLayer(layerId);
 
         if (!layer) {

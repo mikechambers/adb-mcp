@@ -156,7 +156,6 @@ const findLayer = (id, layers) => {
         layers = app.activeDocument.layers;
     }
 
-    //todo there is a later.getByName we can use
     for (const layer of layers) {
         if (layer.id === id) {
             return layer;
