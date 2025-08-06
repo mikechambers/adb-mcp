@@ -179,23 +179,6 @@ const findLayerByName = (name, layers) => {
     }
 
     return app.activeDocument.layers.getByName(name);
-/*
-    //todo there is a later.getByName we can use
-    for (const layer of layers) {
-        if (layer.name == name) {
-            return layer;
-        }
-
-        if (layer.layers && layer.layers.length > 0) {
-            const found = findLayer(name, layer.layers);
-            if (found) {
-                return found; // Stop as soon as we’ve found the target layer
-            }
-        }
-    }
-
-    return null;
-    */
 };
 
 const _saveDocumentAs = async (filePath, fileType) => {
