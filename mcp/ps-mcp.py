@@ -545,7 +545,10 @@ def generate_image(
     prompt:str,
     content_type:str = "none"
 ):
-    """Uses Adobe Firefly Generative AI to generate an image on a new layer with the specified layer name
+    """Uses Adobe Firefly Generative AI to generate an image on a new layer with the specified layer name.
+
+    If there is an active selection, it will use that region for the generation. Otherwise it will generate
+    on the entire layer.
 
     Args:
         layer_name (str): Name for the layer that will be created and contain the generated image
@@ -557,6 +560,39 @@ def generate_image(
         "layerName":layer_name,
         "prompt":prompt,
         "contentType":content_type
+    })
+
+    return sendCommand(command)
+
+@mcp.tool()
+def generative_fill(
+    layer_name: str,
+    prompt: str,
+    layer_id: int,
+    content_type: str = "none"
+):
+    """Uses Adobe Firefly Generative AI to perform generative fill within the current selection.
+
+    This function uses generative fill to seamlessly integrate new content into the existing image.
+    It requires an active selection, and will fill that region taking into account the surrounding 
+    context and layers below. The AI considers the existing content to create a natural, 
+    contextually-aware fill.
+
+    Args:
+        layer_name (str): Name for the layer that will be created and contain the generated fill
+        prompt (str): Prompt describing the content to be generated within the selection
+        layer_id (int): ID of the layer to work with (though a new layer is created for the result)
+        content_type (str): The type of image to be generated. Options include "photo", "art" or "none" (default)
+    
+    Returns:
+        dict: Response from Photoshop containing the operation status and layer information
+    """
+
+    command = createCommand("generativeFill", {
+        "layerName":layer_name,
+        "prompt":prompt,
+        "layerId":layer_id,
+        "contentType":content_type,
     })
 
     return sendCommand(command)
