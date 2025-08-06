@@ -21,7 +21,7 @@
  * SOFTWARE.
  */
 
-const { app, constants, action } = require("photoshop");
+const { app, constants, action, imaging } = require("photoshop");
 const fs = require("uxp").storage.localFileSystem;
 
 const {
@@ -221,17 +221,34 @@ const renameLayer = async (command) => {
     let options = command.options;
 
     let layerId = options.layerId;
+    let newLayerName = options.newLayerName;
+
+    await _renameLayer(layerId, newLayerName)
+};
+
+const _renameLayer = async (layerId, layerName) => {
+
     let layer = findLayer(layerId);
 
     if (!layer) {
         throw new Error(
-            `renameLayer : Could not find layer with ID : [${layerId}]`
+            `_renameLayer : Could not find layer with ID : [${layerId}]`
         );
     }
 
     await execute(async () => {
-        layer.name = options.newLayerName;
+        layer.name = layerName;
     });
+}
+
+const renameLayers = async (command) => {
+    let options = command.options;
+
+    let data = options.layerData;
+
+    for(const d of data) {
+        await _renameLayer(d.layer_id, d.new_layer_name)
+    }
 };
 
 const groupLayers = async (command) => {
@@ -889,7 +906,51 @@ const harmonizeLayer = async (command) => {
     });
 };
 
+const getLayerImage = async (command) => {
+
+    const options = command.options;
+    const layerId = options.layerId;
+
+    const layer = findLayer(layerId);
+
+    if (!layer) {
+        throw new Error(`harmonizeLayer : Could not find layerId : ${layerId}`);
+    }
+
+    let out = await execute(async () => {
+
+        const pixelsOpt = {
+            applyAlpha: true,
+            layerID:layerId
+        };
+        
+        const imgObj = await imaging.getPixels(pixelsOpt);
+
+        const base64Data = await imaging.encodeImageData({
+            imageData: imgObj.imageData,
+            base64: true,
+        });
+
+        const result = {
+            base64Image: base64Data,
+            dataUrl: `data:image/jpeg;base64,${base64Data}`,
+            width: imgObj.imageData.width,
+            height: imgObj.imageData.height,
+            colorSpace: imgObj.imageData.colorSpace,
+            components: imgObj.imageData.components,
+            format: "jpeg",
+        };
+
+        imgObj.imageData.dispose();
+        return result;
+    });
+
+    return out;
+};
+
 const commandHandlers = {
+    renameLayers,
+    getLayerImage,
     harmonizeLayer,
     editTextLayer,
     exportLayersAsPng,

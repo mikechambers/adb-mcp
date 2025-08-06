@@ -245,6 +245,33 @@ def group_layers(group_name: str, layer_ids: list[str]) -> list:
 
     return sendCommand(command)
 
+
+@mcp.tool()
+def get_layer_image(layer_id: int):
+    """Returns a jpeg of the specified layer's content as an MCP Image object that can be displayed."""
+
+    command = createCommand("getLayerImage",
+        {
+            "layerId":layer_id
+        }
+    )
+
+    response = sendCommand(command)
+
+    if response.get('status') == 'SUCCESS' and 'response' in response:
+        image_data = response['response']
+        data_url = image_data.get('dataUrl')
+
+        if data_url and data_url.startswith("data:image/jpeg;base64,"):
+            # Strip the data URL prefix and decode the base64 JPEG bytes
+            base64_data = data_url.split(",", 1)[1]
+            jpeg_bytes = base64.b64decode(base64_data)
+
+            return Image(data=jpeg_bytes, format="jpeg")
+
+    return response
+
+
 @mcp.tool()
 def get_document_image():
     """Returns a jpeg of the current visible Photoshop document as an MCP Image object that can be displayed."""
@@ -380,23 +407,22 @@ def harmonize_layer(layer_id:int,  new_layer_name:str, rasterize_layer:bool = Tr
 
 
 @mcp.tool()
-def rename_layer(
-    layer_id:int,
-    new_layer_name:str
-
+def rename_layers(
+    layer_data: list[dict]
 ):
-    """Renames the specified layer.
+    """Renames one or more layers
 
     Args:
-        layer_id (int): ID of the layer to be renamed.
-        new_layer_name (str): New name for the layer.
+        layer_data (list[dict]): A list of dictionaries containing layer rename information.
+            Each dictionary must have the following keys:
+                - "layer_id" (int): ID of the layer to be renamed.
+                - "new_layer_name" (str): New name for the layer.
     """
     
-    command = createCommand("renameLayer", {
-        "layerId":layer_id,
-        "newLayerName":new_layer_name
+    command = createCommand("renameLayers", {
+        "layerData":layer_data
     })
-
+    
     return sendCommand(command)
 
 
