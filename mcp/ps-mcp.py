@@ -357,6 +357,29 @@ def place_image(
     return sendCommand(command)
 
 @mcp.tool()
+def harmonize_layer(layer_id:int,  new_layer_name:str, rasterize_layer:bool = True):
+    """Harmonizes (matches lighting and other settings) the selected layer with the background layers.
+
+    The layer being harmonized should be rasterized and have some transparency.
+
+    Args:
+        layer_id (int): ID of the layer to be harmonizes.
+        new_layer_name (str): Name for the new layer that will be created with the harmonized content
+        rasterize_layer (bool): Whether the new layer should be rasterized.
+            If not rasterized, the layer will remain a generative layer which
+            allows the user to interact with it. True by default.
+    """
+
+    command = createCommand("harmonizeLayer", {
+        "layerId":layer_id,
+         "newLayerName":new_layer_name,
+        "rasterizeLayer":rasterize_layer
+    })
+
+    return sendCommand(command)
+
+
+@mcp.tool()
 def rename_layer(
     layer_id:int,
     new_layer_name:str
@@ -367,13 +390,11 @@ def rename_layer(
     Args:
         layer_id (int): ID of the layer to be renamed.
         new_layer_name (str): New name for the layer.
-
     """
     
     command = createCommand("renameLayer", {
         "layerId":layer_id,
         "newLayerName":new_layer_name
-
     })
 
     return sendCommand(command)
