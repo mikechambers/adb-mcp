@@ -509,7 +509,7 @@ const createDocument = async (command) => {
             profile: "sRGB IEC61966-2.1",
         });
 
-        let background = findLayer("Background");
+        let background = findLayerByName("Background");
         background.allLocked = false;
         background.name = "Background";
     });
