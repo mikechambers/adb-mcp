@@ -21,7 +21,7 @@
  * SOFTWARE.
  */
 
-const { app, constants, action } = require("photoshop");
+const { app, constants, action, imaging } = require("photoshop");
 const fs = require("uxp").storage.localFileSystem;
 
 const {
@@ -44,7 +44,7 @@ const {
 // Function to capture visibility state
 const _captureVisibilityState = (layers) => {
     const state = new Map();
-    
+
     const capture = (layerSet) => {
         for (const layer of layerSet) {
             state.set(layer.id, layer.visible);
@@ -53,7 +53,7 @@ const _captureVisibilityState = (layers) => {
             }
         }
     };
-    
+
     capture(layers);
     return state;
 };
@@ -65,13 +65,13 @@ const _restoreVisibilityState = async (state) => {
             if (state.has(layer.id)) {
                 layer.visible = state.get(layer.id);
             }
-            
+
             if (layer.layers && layer.layers.length > 0) {
                 restore(layer.layers);
             }
         }
     };
-    
+
     await execute(async () => {
         restore(app.activeDocument.layers);
     });
@@ -83,16 +83,16 @@ const exportLayersAsPng = async (command) => {
 
     const results = [];
 
-    
+
     let originalState;
     await execute(async () => {
         originalState = _captureVisibilityState(app.activeDocument.layers);
         setVisibleAllLayers(false);
     });
-    
-    for(const info of layersInfo) {
+
+    for (const info of layersInfo) {
         let result = {};
- 
+
         let layer = findLayer(info.layerId);
 
         try {
@@ -221,25 +221,44 @@ const renameLayer = async (command) => {
     let options = command.options;
 
     let layerId = options.layerId;
+    let newLayerName = options.newLayerName;
+
+    await _renameLayer(layerId, newLayerName)
+};
+
+const _renameLayer = async (layerId, layerName) => {
+
     let layer = findLayer(layerId);
 
     if (!layer) {
         throw new Error(
-            `renameLayer : Could not find layer with ID : [${layerId}]`
+            `_renameLayer : Could not find layer with ID : [${layerId}]`
         );
     }
 
     await execute(async () => {
-        layer.name = options.newLayerName;
+        layer.name = layerName;
     });
+}
+
+const renameLayers = async (command) => {
+    let options = command.options;
+
+    let data = options.layerData;
+
+    for(const d of data) {
+        await _renameLayer(d.layer_id, d.new_layer_name)
+    }
 };
 
 const groupLayers = async (command) => {
     let options = command.options;
+    const layerIds = options.layerIds;
 
     let layers = [];
 
-    for (const layerId of options.layerIds) {
+    for (const layerId of layerIds) {
+
         let layer = findLayer(layerId);
 
         if (!layer) {
@@ -314,25 +333,25 @@ const setLayerProperties = async (command) => {
             selectLayer(layer, true);
             let command = options.isClippingMask
                 ? {
-                      _obj: "groupEvent",
-                      _target: [
-                          {
-                              _enum: "ordinal",
-                              _ref: "layer",
-                              _value: "targetEnum",
-                          },
-                      ],
-                  }
+                    _obj: "groupEvent",
+                    _target: [
+                        {
+                            _enum: "ordinal",
+                            _ref: "layer",
+                            _value: "targetEnum",
+                        },
+                    ],
+                }
                 : {
-                      _obj: "ungroup",
-                      _target: [
-                          {
-                              _enum: "ordinal",
-                              _ref: "layer",
-                              _value: "targetEnum",
-                          },
-                      ],
-                  };
+                    _obj: "ungroup",
+                    _target: [
+                        {
+                            _enum: "ordinal",
+                            _ref: "layer",
+                            _value: "targetEnum",
+                        },
+                    ],
+                };
 
             await action.batchPlay([command], {});
         }
@@ -680,13 +699,13 @@ const getLayers = async (command) => {
                 let layerInfo = {
                     name: layer.name,
                     type: kind,
-                    id:layer.id,
+                    id: layer.id,
                     isClippingMask: layer.isClippingMask,
                     opacity: Math.round(layer.opacity),
                     blendMode: layer.blendMode.toUpperCase(),
                 };
 
-                if(kind == constants.LayerKind.TEXT.toUpperCase()) {
+                if (kind == constants.LayerKind.TEXT.toUpperCase()) {
 
                     let _c = layer.textItem.characterStyle.color;
                     let color = {
@@ -795,7 +814,146 @@ const addLayerMask = async (command) => {
     });
 };
 
+const harmonizeLayer = async (command) => {
+    const options = command.options;
+
+    const layerId = options.layerId;
+    const newLayerName = options.newLayerName;
+    const rasterizeLayer = options.rasterizeLayer;
+
+    const layer = findLayer(layerId);
+
+    if (!layer) {
+        throw new Error(`harmonizeLayer : Could not find layerId : ${layerId}`);
+    }
+
+    await execute(async () => {
+        selectLayer(layer, true);
+
+        let commands = [
+            {
+                "_obj": "syntheticGenHarmonize",
+                "_target": [
+                    {
+                        "_enum": "ordinal",
+                        "_ref": "document",
+                        "_value": "targetEnum"
+                    }
+                ],
+                "documentID": 60,
+                "layerID": 7,
+                "prompt": "",
+                "serviceID": "gen_harmonize",
+                "serviceOptionsList": {
+                    "clio": {
+                        "_obj": "clio",
+                        "dualCrop": true,
+                        "gi_ADVANCED": "{\"enable_mts\":true}",
+                        "gi_CONTENT_PRESERVE": 0,
+                        "gi_CROP": false,
+                        "gi_DILATE": false,
+                        "gi_ENABLE_PROMPT_FILTER": true,
+                        "gi_GUIDANCE": 6,
+                        "gi_MODE": "ginp",
+                        "gi_NUM_STEPS": -1,
+                        "gi_PROMPT": "",
+                        "gi_SEED": -1,
+                        "gi_SIMILARITY": 0
+                    },
+                    "gen_harmonize": {
+                        "_obj": "gen_harmonize",
+                        "dualCrop": true,
+                        "gi_SEED": -1
+                    }
+                },
+                "workflow": "gen_harmonize",
+                "workflowType": {
+                    "_enum": "genWorkflow",
+                    "_value": "gen_harmonize"
+                },
+                "workflow_to_active_service_identifier_map": {
+                    "gen_harmonize": "gen_harmonize",
+                    "generate_background": "clio3",
+                    "generate_similar": "clio3",
+                    "generativeUpscale": "fal_aura_sr",
+                    "in_painting": "gen_harmonize",
+                    "instruct_edit": "clio3",
+                    "out_painting": "clio3",
+                    "text_to_image": "clio3"
+                }
+            },
+
+        ];
+
+
+        console.log(rasterizeLayer)
+        if(rasterizeLayer) {
+            commands.push({
+                _obj: "rasterizeLayer",
+                _target: [
+                    {
+                        _enum: "ordinal",
+                        _ref: "layer",
+                        _value: "targetEnum",
+                    },
+                ],
+            })
+        }
+
+        let o = await action.batchPlay(commands, {});
+        let layerId = o[0].layerID;
+
+        let l = findLayer(layerId);
+        l.name = newLayerName;
+    });
+};
+
+const getLayerImage = async (command) => {
+
+    const options = command.options;
+    const layerId = options.layerId;
+
+    const layer = findLayer(layerId);
+
+    if (!layer) {
+        throw new Error(`harmonizeLayer : Could not find layerId : ${layerId}`);
+    }
+
+    let out = await execute(async () => {
+
+        const pixelsOpt = {
+            applyAlpha: true,
+            layerID:layerId
+        };
+        
+        const imgObj = await imaging.getPixels(pixelsOpt);
+
+        const base64Data = await imaging.encodeImageData({
+            imageData: imgObj.imageData,
+            base64: true,
+        });
+
+        const result = {
+            base64Image: base64Data,
+            dataUrl: `data:image/jpeg;base64,${base64Data}`,
+            width: imgObj.imageData.width,
+            height: imgObj.imageData.height,
+            colorSpace: imgObj.imageData.colorSpace,
+            components: imgObj.imageData.components,
+            format: "jpeg",
+        };
+
+        imgObj.imageData.dispose();
+        return result;
+    });
+
+    return out;
+};
+
 const commandHandlers = {
+    renameLayers,
+    getLayerImage,
+    harmonizeLayer,
     editTextLayer,
     exportLayersAsPng,
     removeLayerMask,

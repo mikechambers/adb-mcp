@@ -267,6 +267,7 @@ const generateImage = async (command) => {
 
     await execute(async () => {
         let doc = app.activeDocument;
+
         await doc.selection.selectAll();
 
         let contentType = "none";
@@ -346,6 +347,108 @@ const generateImage = async (command) => {
     });
 };
 
+const generativeFill = async (command) => {
+    const options = command.options;
+    const layerId = options.layerId;
+    const prompt = options.prompt;
+
+    const layer = findLayer(layerId);
+
+    if (!layer) {
+        throw new Error(
+            `generativeFill : Could not find layerId : ${layerId}`
+        );
+    }
+
+    if(!hasActiveSelection()) {
+        throw new Error(
+            `generativeFill : Requires an active selection.`
+        ); 
+    }
+
+    await execute(async () => {
+        let doc = app.activeDocument;
+
+        let contentType = "none";
+        const c = options.contentType.toLowerCase()
+        if (c === "photo" || c === "art") {
+            contentType = c;
+        }
+
+        let commands = [
+            // Generative Fill current document
+            {
+                "_obj": "syntheticFill",
+                "_target": [
+                    {
+                        "_enum": "ordinal",
+                        "_ref": "document",
+                        "_value": "targetEnum"
+                    }
+                ],
+                "documentID": doc.id,
+                "layerID": layerId,
+                "prompt": prompt,
+                "serviceID": "clio",
+                "serviceOptionsList": {
+                    "clio": {
+                        "_obj": "clio",
+                        "dualCrop": true,
+                        "gi_ADVANCED": "{\"enable_mts\":true}",
+                        "gi_CONTENT_PRESERVE": 0,
+                        "gi_CROP": false,
+                        "gi_DILATE": false,
+                        "gi_ENABLE_PROMPT_FILTER": true,
+                        "gi_GUIDANCE": 6,
+                        "gi_MODE": "tinp",
+                        "gi_NUM_STEPS": -1,
+                        "gi_PROMPT": prompt,
+                        "gi_SEED": -1,
+                        "gi_SIMILARITY": 0,
+
+
+                        clio_advanced_options: {
+                            text_to_image_styles_options: {
+                                text_to_image_content_type: contentType,
+                                text_to_image_effects_count: 0,
+                                text_to_image_effects_list: [
+                                    "none",
+                                    "none",
+                                    "none",
+                                ],
+                            },
+                        },
+
+                    }
+                },
+                "serviceVersion": "clio3",
+                "workflowType": {
+                    "_enum": "genWorkflow",
+                    "_value": "in_painting"
+                },
+                "workflow_to_active_service_identifier_map": {
+                    "gen_harmonize": "clio3",
+                    "generate_background": "clio3",
+                    "generate_similar": "clio3",
+                    "generativeUpscale": "fal_aura_sr",
+                    "in_painting": "clio3",
+                    "instruct_edit": "clio3",
+                    "out_painting": "clio3",
+                    "text_to_image": "clio3"
+                }
+            }
+        ];
+
+
+        let o = await action.batchPlay(commands, {});
+        let id = o[0].layerID;
+
+        //let l = findLayerByName(options.prompt);
+        let l = findLayer(id);
+        l.name = options.layerName;
+    });
+};
+
 const saveDocument = async (command) => {
     await execute(async () => {
         await app.activeDocument.save();
@@ -359,17 +462,17 @@ const saveDocumentAs = async (command) => {
 };
 
 const setActiveDocument = async (command) => {
-    
+
     let options = command.options;
     let documentId = options.documentId;
     let docs = listOpenDocuments();
 
-    for(let doc of docs) {
-        if(doc.id === documentId) {
+    for (let doc of docs) {
+        if (doc.id === documentId) {
             await execute(async () => {
                 app.activeDocument = doc;
             });
-            
+
             return
         }
     }
@@ -406,7 +509,7 @@ const createDocument = async (command) => {
             profile: "sRGB IEC61966-2.1",
         });
 
-        let background = findLayer("Background");
+        let background = findLayerByName("Background");
         background.allLocked = false;
         background.name = "Background";
     });
@@ -416,7 +519,7 @@ const executeBatchPlayCommand = async (commands) => {
     let options = commands.options;
     let c = options.commands;
 
-    
+
 
     let out = await execute(async () => {
         let o = await action.batchPlay(c, {});
@@ -428,6 +531,7 @@ const executeBatchPlayCommand = async (commands) => {
 }
 
 const commandHandlers = {
+    generativeFill,
     executeBatchPlayCommand,
     setActiveDocument,
     getDocuments,

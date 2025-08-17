@@ -222,7 +222,7 @@ def save_document():
     return sendCommand(command)
 
 @mcp.tool()
-def group_layers(group_name: str, layer_ids: list[str]) -> list:
+def group_layers(group_name: str, layer_ids: list[int]) -> list:
     """
     Creates a new layer group from the specified layers in Photoshop.
 
@@ -244,6 +244,33 @@ def group_layers(group_name: str, layer_ids: list[str]) -> list:
     })
 
     return sendCommand(command)
+
+
+@mcp.tool()
+def get_layer_image(layer_id: int):
+    """Returns a jpeg of the specified layer's content as an MCP Image object that can be displayed."""
+
+    command = createCommand("getLayerImage",
+        {
+            "layerId":layer_id
+        }
+    )
+
+    response = sendCommand(command)
+
+    if response.get('status') == 'SUCCESS' and 'response' in response:
+        image_data = response['response']
+        data_url = image_data.get('dataUrl')
+
+        if data_url and data_url.startswith("data:image/jpeg;base64,"):
+            # Strip the data URL prefix and decode the base64 JPEG bytes
+            base64_data = data_url.split(",", 1)[1]
+            jpeg_bytes = base64.b64decode(base64_data)
+
+            return Image(data=jpeg_bytes, format="jpeg")
+
+    return response
+
 
 @mcp.tool()
 def get_document_image():
@@ -357,25 +384,45 @@ def place_image(
     return sendCommand(command)
 
 @mcp.tool()
-def rename_layer(
-    layer_id:int,
-    new_layer_name:str
+def harmonize_layer(layer_id:int,  new_layer_name:str, rasterize_layer:bool = True):
+    """Harmonizes (matches lighting and other settings) the selected layer with the background layers.
 
-):
-    """Renames the specified layer.
+    The layer being harmonized should be rasterized and have some transparency.
 
     Args:
-        layer_id (int): ID of the layer to be renamed.
-        new_layer_name (str): New name for the layer.
-
+        layer_id (int): ID of the layer to be harmonizes.
+        new_layer_name (str): Name for the new layer that will be created with the harmonized content
+        rasterize_layer (bool): Whether the new layer should be rasterized.
+            If not rasterized, the layer will remain a generative layer which
+            allows the user to interact with it. True by default.
     """
-    
-    command = createCommand("renameLayer", {
-        "layerId":layer_id,
-        "newLayerName":new_layer_name
 
+    command = createCommand("harmonizeLayer", {
+        "layerId":layer_id,
+         "newLayerName":new_layer_name,
+        "rasterizeLayer":rasterize_layer
     })
 
+    return sendCommand(command)
+
+
+@mcp.tool()
+def rename_layers(
+    layer_data: list[dict]
+):
+    """Renames one or more layers
+
+    Args:
+        layer_data (list[dict]): A list of dictionaries containing layer rename information.
+            Each dictionary must have the following keys:
+                - "layer_id" (int): ID of the layer to be renamed.
+                - "new_layer_name" (str): New name for the layer.
+    """
+    
+    command = createCommand("renameLayers", {
+        "layerData":layer_data
+    })
+    
     return sendCommand(command)
 
 
@@ -498,7 +545,10 @@ def generate_image(
     prompt:str,
     content_type:str = "none"
 ):
-    """Uses Adobe Firefly Generative AI to generate an image on a new layer with the specified layer name
+    """Uses Adobe Firefly Generative AI to generate an image on a new layer with the specified layer name.
+
+    If there is an active selection, it will use that region for the generation. Otherwise it will generate
+    on the entire layer.
 
     Args:
         layer_name (str): Name for the layer that will be created and contain the generated image
@@ -510,6 +560,39 @@ def generate_image(
         "layerName":layer_name,
         "prompt":prompt,
         "contentType":content_type
+    })
+
+    return sendCommand(command)
+
+@mcp.tool()
+def generative_fill(
+    layer_name: str,
+    prompt: str,
+    layer_id: int,
+    content_type: str = "none"
+):
+    """Uses Adobe Firefly Generative AI to perform generative fill within the current selection.
+
+    This function uses generative fill to seamlessly integrate new content into the existing image.
+    It requires an active selection, and will fill that region taking into account the surrounding 
+    context and layers below. The AI considers the existing content to create a natural, 
+    contextually-aware fill.
+
+    Args:
+        layer_name (str): Name for the layer that will be created and contain the generated fill
+        prompt (str): Prompt describing the content to be generated within the selection
+        layer_id (int): ID of the layer to work with (though a new layer is created for the result)
+        content_type (str): The type of image to be generated. Options include "photo", "art" or "none" (default)
+    
+    Returns:
+        dict: Response from Photoshop containing the operation status and layer information
+    """
+
+    command = createCommand("generativeFill", {
+        "layerName":layer_name,
+        "prompt":prompt,
+        "layerId":layer_id,
+        "contentType":content_type,
     })
 
     return sendCommand(command)
