@@ -50,22 +50,47 @@ init(APPLICATION, socket_client)
 
 @mcp.tool()
 def create_document(
-    width:int, height:int, pages:int = 0,
-    pages_facing:bool = False,
-    columns:dict = {"count":1, "gutter":12},
-    margins:dict = {"top":36, "bottom":36, "left":36, "right":36}):
-
-    command = createCommand("createDocument", {
-        "intent":"WEB_INTENT",
-        "pageWidth":width,
-        "pageHeight":height,
-        "margins":margins,
-        "columns":columns,
-        "pagesPerDocument":pages,
-        "pagesFacing":pages_facing
-    })
-
-    return sendCommand(command)
+   width: int, 
+   height: int, 
+   pages: int = 0,
+   pages_facing: bool = False,
+   columns: dict = {"count": 1, "gutter": 12},
+   margins: dict = {"top": 36, "bottom": 36, "left": 36, "right": 36}
+):
+   """
+   Creates a new InDesign document with specified dimensions and layout settings.
+   
+   Args:
+       width (int): Document width in points (1 point = 1/72 inch)
+       height (int): Document height in points
+       pages (int, optional): Number of pages in the document. Defaults to 0.
+       pages_facing (bool, optional): Whether to create facing pages (spread layout). 
+           Defaults to False.
+       columns (dict, optional): Column layout configuration with keys:
+           - count (int): Number of columns per page
+           - gutter (int): Space between columns in points
+           Defaults to {"count": 1, "gutter": 12}.
+       margins (dict, optional): Page margin settings in points with keys:
+           - top (int): Top margin
+           - bottom (int): Bottom margin  
+           - left (int): Left margin
+           - right (int): Right margin
+           Defaults to {"top": 36, "bottom": 36, "left": 36, "right": 36}.
+   
+   Returns:
+       dict: Result of the command execution from the InDesign UXP plugin
+   """
+   command = createCommand("createDocument", {
+       "intent": "WEB_INTENT",
+       "pageWidth": width,
+       "pageHeight": height,
+       "margins": margins,
+       "columns": columns,
+       "pagesPerDocument": pages,
+       "pagesFacing": pages_facing
+   })
+   
+   return sendCommand(command)
 
 @mcp.resource("config://get_instructions")
 def get_instructions() -> str:
