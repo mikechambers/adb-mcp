@@ -300,7 +300,7 @@ Adding new functionality is relatively easy, and requires:
 1. Adding the API and parameters in the *mcp/ps-mcp.py* / *mcp/pr-mcp.py* file (which is used by the AI)
 2. Implementing the API in the *uxp/ps/commands/index.js* / *uxp/pr/commands/index.js* file.
 
-TO BE COMPLETED
+This [thread](https://github.com/mikechambers/adb-mcp/issues/10#issuecomment-3191698528) has some info on how to add functionality.
 
 ## Questions, Feature Requests, Feedback
 
