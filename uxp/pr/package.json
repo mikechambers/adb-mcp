@@ -1,7 +1,7 @@
 {
-  "name": "uxp-template-ps-starter",
+  "name": "uxp-template-pr-starter",
   "version": "1.0.0",
-  "description": "Adobe Photoshop MCP Agent Plugin.",
+  "description": "Adobe Premiere MCP Agent Plugin.",
   "author": "Mike Chambers (mikechambers@gmail.com)",
   "license": "MIT"
 }
