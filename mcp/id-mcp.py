@@ -20,10 +20,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from mcp.server.fastmcp import FastMCP
-from core import init, sendCommand, createCommand
-import socket_client
+# Standard library imports
 import sys
+
+# Third-party imports
+from mcp.server.fastmcp import FastMCP
+
+# Local imports
+import socket_client
+from core import init, sendCommand, createCommand
+
 
 #logger.log(f"Python path: {sys.executable}")
 #logger.log(f"PYTHONPATH: {os.environ.get('PYTHONPATH')}")

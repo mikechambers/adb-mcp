@@ -20,14 +20,20 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+# Standard library imports
+import base64
+import os
+import sys
+
+# Third-party imports
+import numpy as np
 from mcp.server.fastmcp import FastMCP, Image
+
+# Local imports
+import socket_client
 from core import init, sendCommand, createCommand
 from fonts import list_all_fonts_postscript
-import numpy as np
-import base64
-import socket_client
-import sys
-import os
+
 
 FONT_LIMIT = 1000 #max number of font names to return to AI
 
