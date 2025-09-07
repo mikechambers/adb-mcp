@@ -68,7 +68,7 @@ Download the latest release from the [releases page](https://github.com/mikecham
    - `premiere-mcp.dxt` for Premiere Pro
 3. Restart Claude Desktop
 
-#### Using Prebuilt Executables (Recommended)
+#### 4. Using Prebuilt Executables (Recommended)
 
 1. Download the appropriate executable for your platform from the latest release (files named like `adb-proxy-socket-macos-x64.zip` (Intel), `adb-proxy-socket-macos-arm64.zip` (Silicon), or `adb-proxy-socket-win-x64.exe.zip`).
 2. Unzip the executable.
