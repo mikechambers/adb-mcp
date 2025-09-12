@@ -30,7 +30,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, 
   {
-    transports: ["websocket"],
+    transports: ["websocket", "polling"],
     maxHttpBufferSize: 50 * 1024 * 1024
   }
 );
