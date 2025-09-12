@@ -16,6 +16,16 @@
   <p>&nbsp;</p>
   <div>
     <sp-checkbox id="chkConnectOnLaunch">Connect on Launch</sp-checkbox>
+    <div>
+        <sp-field-label for="transport">
+            <h4>Transport</h4>
+        </sp-field-label>
+        <sp-radio-group id="transport" vertical>
+            <sp-radio value="websocket" checked>WebSocket</sp-radio>
+            <sp-radio value="polling">Polling</sp-radio>
+            <sp-help-text>WebSocket is more performant, but Polling is more reliable.</sp-help-text>
+        </sp-radio-group>
+    </div>
   </div>
   <footer>
     <div>

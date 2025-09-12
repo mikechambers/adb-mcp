@@ -65,7 +65,7 @@ const onCommandPacket = async (packet) => {
 function connectToServer() {
     // Create new Socket.IO connection
     socket = io(PROXY_URL, {
-        transports: ["websocket"],
+        transports: [getTransport()],
     });
 
     socket.on("connect", () => {
@@ -106,6 +106,11 @@ function disconnectFromServer() {
         socket.disconnect();
         console.log("Disconnected from server");
     }
+}
+
+function resetConnection() {
+    disconnectFromServer();
+    connectToServer();
 }
 
 function sendResponsePacket(packet) {
@@ -168,10 +173,32 @@ const getConnectOnLaunch = () => {
     return JSON.parse(window.localStorage.getItem(CONNECT_ON_LAUNCH)) || false;
 };
 
-// Set checkbox state on page load
+const TRANSPORT = "transport";
+
+document
+    .getElementById("transport")
+    .addEventListener("change", function (event) {
+        window.localStorage.setItem(TRANSPORT, event.target.value);
+        resetConnection();
+    });
+
+const getTransport = () => {
+    return window.localStorage.getItem(TRANSPORT) || "websocket";
+};
+
+// Set states on page load
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("chkConnectOnLaunch").checked =
         getConnectOnLaunch();
+
+    const transportValue = getTransport();
+    
+    document
+        .getElementById(TRANSPORT)
+        .querySelectorAll("sp-radio")
+        .forEach(radio => {
+            radio.checked = radio.value === transportValue;
+        });
 });
 
 window.addEventListener("load", (event) => {
