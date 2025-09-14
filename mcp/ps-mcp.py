@@ -875,6 +875,28 @@ def create_pixel_layer(
     return sendCommand(command)
 
 @mcp.tool()
+def create_fill_layer(
+    layer_name: str,
+    color: dict = {"red": 255, "green": 255, "blue": 255},
+    opacity: int = 100
+):
+    """Creates a new solid color fill layer with the specified name, color, and opacity.
+    
+    Args:
+        layer_name (str): Name of the new fill layer being created
+        color (dict): RGB color values for the fill layer. Format: {"red": 0-255, "green": 0-255, "blue": 0-255}
+        opacity (int): Opacity of the fill layer (0-100)
+    """
+
+    command = createCommand("createFillLayer", {
+        "layerName": layer_name,
+        "color": color,
+        "opacity": opacity
+    })
+
+    return sendCommand(command)
+
+@mcp.tool()
 def create_multi_line_text_layer(
     layer_name:str, 
     text:str, 
