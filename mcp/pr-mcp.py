@@ -20,15 +20,19 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+# Standard library imports
+import io
+import os
+import sys
+import tempfile
+
+# Third-party imports
 from mcp.server.fastmcp import FastMCP, Image
 from PIL import Image as PILImage
 
-from core import init, sendCommand, createCommand
+# Local imports
 import socket_client
-import sys
-import tempfile
-import os
-import io
+from core import init, sendCommand, createCommand
 
 
 #logger.log(f"Python path: {sys.executable}")
