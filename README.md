@@ -45,65 +45,6 @@ In order to run this, the following is required:
 
 This guide assumes you're using Claude Desktop. Other MCP-compatible AI applications should work similarly.
 
-Choose your installation method:
-
-### Quick Start (Recommended for Testing)
-
-Use this method if you want to try the system without modifying code.
-
-#### 1. Download Release Files
-Download the latest release from the [releases page](https://github.com/mikechambers/adb-mcp/releases), including:
-- Source code
-- Claude MCP installers (.dxt files)
-- Adobe plugins (.ccx files)
-
-#### 2. Install Claude Desktop
-1. Download and install [Claude Desktop](https://claude.ai/download)
-2. Launch Claude Desktop to verify it works
-
-#### 3. Install MCP in Claude Desktop
-1. Launch Claude Desktop
-2. Double-click the appropriate .dxt file:
-   - `photoshop-mcp.dxt` for Photoshop
-   - `premiere-mcp.dxt` for Premiere Pro
-3. Restart Claude Desktop
-
-#### Using Prebuilt Executables (Recommended)
-
-1. Download the appropriate executable for your platform from the latest release (files named like `adb-proxy-socket-macos-x64.zip` (Intel), `adb-proxy-socket-macos-arm64.zip` (Silicon), or `adb-proxy-socket-win-x64.exe.zip`).
-2. Unzip the executable.
-3. From the terminal or console run the executable:
-
-   - **macOS** (Intel or Apple Silicon):
-     ```bash
-     ./adb-proxy-socket-macos-x64
-     ```
-     or
-     ```bash
-     ./adb-proxy-socket-macos-arm64
-     ```
-   - **Windows**:  
-     Double-click `adb-proxy-socket-win.exe` or run in Command Prompt:
-     ```cmd
-     adb-proxy-socket-win.exe
-     ```
-
-4. You should see a message like:  
-   `Photoshop MCP Command proxy server running on ws://localhost:3001`
-
-5. **Keep this running** — the proxy server must stay active for Claude to communicate with Adobe plugins.
-
-
-#### 5. Install Adobe Plugins
-1. Open the Adobe application you want to use (Photoshop or Premiere Pro)
-2. Download and launch **Adobe UXP Developer Tools** from Creative Cloud
-3. In UXP Developer Tools: **File > Add Plugin**
-4. Select the appropriate .ccx file from your downloads
-5. Click **Load** to install the plugin
-6. In your Adobe application, find the plugin panel:
-   - **Photoshop**: Plugins menu
-   - **Premiere Pro**: Window > UXP Plugins menu
-7. Click **Connect** in the plugin panel
 
 ### Development Setup
 
