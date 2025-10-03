@@ -52,12 +52,12 @@ def get_documents():
     return sendCommand(command)
 
 @mcp.tool()
-def get_document_info():
+def get_active_document_info():
     """
     Returns information about the current active document.
 
     """
-    command = createCommand("getDocumentInfo", {})
+    command = createCommand("getActiveDocumentInfo", {})
     return sendCommand(command)
 
 @mcp.tool()

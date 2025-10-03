@@ -14,16 +14,7 @@ const getDocuments = async (command) => {
                         
                         for (var i = 0; i < app.documents.length; i++) {
                             var doc = app.documents[i];
-                            docs.push({
-                                name: doc.name,
-                                width: doc.width,
-                                height: doc.height,
-                                colorSpace: doc.documentColorSpace.toString(),
-                                numLayers: doc.layers.length,
-                                numArtboards: doc.artboards.length,
-                                saved: doc.saved,
-                                isActive: doc === activeDoc
-                            });
+                            docs.push($.global.createDocumentInfo(doc, activeDoc));
                         }
                         
                         return docs;
@@ -50,23 +41,14 @@ const getDocuments = async (command) => {
     return createPacket(result);
 }
 
-const getDocumentInfo = async (command) => {
+const getActiveDocumentInfo = async (command) => {
     const script = `
         (function() {
             try {
                 var result = (function() {
                     if (app.documents.length > 0) {
                         var doc = app.activeDocument;
-                        var info = {
-                            name: doc.name,
-                            width: doc.width,
-                            height: doc.height,
-                            colorSpace: doc.documentColorSpace.toString(),
-                            numLayers: doc.layers.length,
-                            numArtboards: doc.artboards.length,
-                            saved: doc.saved
-                        };
-                        return info;
+                        return $.global.createDocumentInfo(doc, doc);
                     } else {
                         return { error: "No document is currently open" };
                     }
@@ -183,6 +165,6 @@ async function executeCommand(command) {
 
 const commandHandlers = {
     executeExtendScript,
-    getDocumentInfo,
-    getDocuments
+    getDocuments,
+    getActiveDocumentInfo
 };

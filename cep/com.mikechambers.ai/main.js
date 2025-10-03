@@ -52,7 +52,7 @@ async function onCommandPacket(packet) {
         
         // Get project info
         //out.projectInfo = await getProjectInfo();
-        out.documentInfo = await getDocumentInfo();
+        out.document = await getActiveDocumentInfo();
         
     } catch (e) {
         out.status = "FAILURE";
@@ -151,9 +151,14 @@ function initializeExtension() {
     const csInterface = new CSInterface();
     const extensionPath = csInterface.getSystemPath(SystemPath.EXTENSION);
     const polyfillPath = extensionPath + '/jsx/json-polyfill.jsx';
+    const utilsPath = extensionPath + '/jsx/utils.jsx';
     
     csInterface.evalScript(`$.evalFile("${polyfillPath}")`, function(result) {
         console.log('JSON polyfill loaded');
+    });
+
+    csInterface.evalScript(`$.evalFile("${utilsPath}")`, function(result) {
+        console.log('utilsPath loaded');
     });
 }
 
