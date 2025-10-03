@@ -51,7 +51,8 @@ async function onCommandPacket(packet) {
         out.status = "SUCCESS";
         
         // Get project info
-        out.projectInfo = await getProjectInfo();
+        //out.projectInfo = await getProjectInfo();
+        out.documentInfo = await getDocumentInfo();
         
     } catch (e) {
         out.status = "FAILURE";

@@ -26,11 +26,11 @@ import socket_client
 import sys
 
 # Create an MCP server
-mcp_name = "Adobe After Effects MCP Server"
+mcp_name = "Adobe Illustrator MCP Server"
 mcp = FastMCP(mcp_name, log_level="ERROR")
 print(f"{mcp_name} running on stdio", file=sys.stderr)
 
-APPLICATION = "aftereffects"
+APPLICATION = "illustrator"
 PROXY_URL = 'http://localhost:3001'
 PROXY_TIMEOUT = 20
 
@@ -43,29 +43,27 @@ socket_client.configure(
 init(APPLICATION, socket_client)
 
 @mcp.tool()
-def get_layers():
+def get_documents():
     """
-    Returns information about all layers in the active composition.
-    
-    Returns a list of layer objects containing properties like name, index, 
-    enabled state, and other layer information.
-    
-    Returns:
-        list: Array of layer objects from the active composition, or an error 
-              if no composition is active.
-    
-    Example:
-        layers = get_layers()
-        for layer in layers:
-            print(f"Layer {layer['index']}: {layer['name']}")
+    Returns information about all currently open documents in Illustrator.
+
     """
-    command = createCommand("getLayers", {})
+    command = createCommand("getDocuments", {})
+    return sendCommand(command)
+
+@mcp.tool()
+def get_document_info():
+    """
+    Returns information about the current active document.
+
+    """
+    command = createCommand("getDocumentInfo", {})
     return sendCommand(command)
 
 @mcp.tool()
 def execute_extend_script(script_string: str):
     """
-    Executes arbitrary ExtendScript code in After Effects and returns the result.
+    Executes arbitrary ExtendScript code in Illustrator and returns the result.
     
     The script should use 'return' to send data back. The result will be automatically
     JSON stringified. If the script throws an error, it will be caught and returned
@@ -97,30 +95,21 @@ def execute_extend_script(script_string: str):
 
 @mcp.resource("config://get_instructions")
 def get_instructions() -> str:
-    """Read this first! Returns information and instructions on how to use After Effects and this API"""
+    """Read this first! Returns information and instructions on how to use Illustrator and this API"""
 
     return f"""
-    You are an After Effects and motion graphics expert who is creative and loves to help other people learn to use After Effects and create animations.
+    You are an Illustrator export who is creative and loves to help other people learn to use Illustrator.
 
     Rules to follow:
 
     1. Think deeply about how to solve the task
     2. Always check your work before responding
     3. Read the info for the API calls to make sure you understand the requirements and arguments
-    4. When working with layers, always use get_layers() first to see what's available
-    5. Layer indices in After Effects are 1-based, not 0-based
-    6. Before manipulating layers, ensure a composition is active
-    7. Use exact layer names when selecting layers
-    
-    Common workflow:
-    1. Check project info to see if a project is open
-    2. Get compositions to see what's available
-    3. Get layers to see what layers exist in the active comp
-    4. Perform operations on specific layers
+
     """
 
 
-# After Effects Blend Modes (for future use)
+# Illustrator Blend Modes (for future use)
 BLEND_MODES = [
     "ADD",
     "ALPHA_ADD",

@@ -2,6 +2,94 @@
  * Illustrator command handlers
  */
 
+
+const getDocuments = async (command) => {
+    const script = `
+        (function() {
+            try {
+                var result = (function() {
+                    if (app.documents.length > 0) {
+                        var activeDoc = app.activeDocument;
+                        var docs = [];
+                        
+                        for (var i = 0; i < app.documents.length; i++) {
+                            var doc = app.documents[i];
+                            docs.push({
+                                name: doc.name,
+                                width: doc.width,
+                                height: doc.height,
+                                colorSpace: doc.documentColorSpace.toString(),
+                                numLayers: doc.layers.length,
+                                numArtboards: doc.artboards.length,
+                                saved: doc.saved,
+                                isActive: doc === activeDoc
+                            });
+                        }
+                        
+                        return docs;
+                    } else {
+                        return [];
+                    }
+                })();
+                
+                if (result === undefined) {
+                    return 'null';
+                }
+                
+                return JSON.stringify(result);
+            } catch(e) {
+                return JSON.stringify({
+                    error: e.toString(),
+                    line: e.line || 'unknown'
+                });
+            }
+        })();
+    `;
+    
+    let result = await executeCommand(script);
+    return createPacket(result);
+}
+
+const getDocumentInfo = async (command) => {
+    const script = `
+        (function() {
+            try {
+                var result = (function() {
+                    if (app.documents.length > 0) {
+                        var doc = app.activeDocument;
+                        var info = {
+                            name: doc.name,
+                            width: doc.width,
+                            height: doc.height,
+                            colorSpace: doc.documentColorSpace.toString(),
+                            numLayers: doc.layers.length,
+                            numArtboards: doc.artboards.length,
+                            saved: doc.saved
+                        };
+                        return info;
+                    } else {
+                        return { error: "No document is currently open" };
+                    }
+                })();
+                
+                if (result === undefined) {
+                    return 'null';
+                }
+                
+                return JSON.stringify(result);
+            } catch(e) {
+                return JSON.stringify({
+                    error: e.toString(),
+                    line: e.line || 'unknown'
+                });
+            }
+        })();
+    `;
+    
+    let result = await executeCommand(script);
+    return createPacket(result);
+}
+
 // Execute Illustrator command via ExtendScript
 function executeCommand(script) {
     return new Promise((resolve, reject) => {
@@ -94,5 +182,7 @@ async function executeCommand(command) {
 }*/
 
 const commandHandlers = {
-    executeExtendScript
+    executeExtendScript,
+    getDocumentInfo,
+    getDocuments
 };
