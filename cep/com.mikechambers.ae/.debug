@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ExtensionList>
+    <Extension Id="com.mikechambers.ae.mcp">
+        <HostList>
+            <Host Name="AEFT" Port="8088"/>
+        </Host>
+    </Extension>
+</ExtensionList>

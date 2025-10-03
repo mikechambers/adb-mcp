@@ -4,10 +4,10 @@
   "version": "0.85.0",
   "main": "index.html",
   "host": [
-      {
-        "app": "ID",
-        "minVersion": "20.2.0"
-      }
+    {
+      "app": "ID",
+      "minVersion": "20.2.0"
+    }
   ],
   "manifestVersion": 5,
   "entrypoints": [
@@ -71,7 +71,10 @@
   ],
   "requiredPermissions": {
     "network": {
-      "domains": "all"
+      "domains": [
+        "all",
+        "http://localhost:3001"
+      ]
     },
     "localFileSystem": "fullAccess"
   },

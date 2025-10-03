@@ -28,7 +28,7 @@ const app = require("indesign");
 const {
     parseAndRouteCommand,
     checkRequiresActiveDocument,
-    getActiveDocumentSettings
+    getActiveDocumentSettings,
 } = require("./commands/index.js");
 
 const APPLICATION = "indesign";
@@ -53,7 +53,6 @@ const onCommandPacket = async (packet) => {
         out.status = "SUCCESS";
         out.activeDocument = await getActiveDocumentSettings();
         //out.projectItems = await getProjectContentInfo();
-        
     } catch (e) {
         out.status = "FAILURE";
         out.message = `Error calling ${command.action} : ${e}`;
@@ -64,9 +63,20 @@ const onCommandPacket = async (packet) => {
 
 function connectToServer() {
     // Create new Socket.IO connection
-    socket = io(PROXY_URL, {
-        transports: ["websocket"],
-    });
+    const isWindows = require("os").platform() === "win32";
+
+    const socketOptions = isWindows
+        ? {
+              transports: ["polling"],
+              upgrade: false,
+              rememberUpgrade: false,
+          }
+        : {
+              transports: ["websocket"],
+          };
+    console.log(isWindows);
+    console.log(socketOptions);
+    socket = io(PROXY_URL, socketOptions);
 
     socket.on("connect", () => {
         updateButton();
