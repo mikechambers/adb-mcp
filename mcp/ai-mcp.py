@@ -61,6 +61,97 @@ def get_active_document_info():
     return sendCommand(command)
 
 @mcp.tool()
+def export_png(
+    path: str,
+    transparency: bool = True,
+    anti_aliasing: bool = True,
+    artboard_clipping: bool = True,
+    horizontal_scale: int = 100,
+    vertical_scale: int = 100,
+    export_type: str = "PNG24",
+    matte: bool = None,
+    matte_color: dict = {"red": 255, "green": 255, "blue": 255}
+):
+    """
+    Exports the active Illustrator document as a PNG file.
+    
+    Args:
+        path (str): The absolute file path where the PNG will be saved.
+            Example: "/Users/username/Documents/my_export.png"
+        transparency (bool, optional): Enable/disable transparency. Defaults to True.
+        anti_aliasing (bool, optional): Enable/disable anti-aliasing for smooth edges. Defaults to True.
+        artboard_clipping (bool, optional): Clip export to artboard bounds. Defaults to True.
+        horizontal_scale (int, optional): Horizontal scale percentage (1-1000). Defaults to 100.
+        vertical_scale (int, optional): Vertical scale percentage (1-1000). Defaults to 100.
+        export_type (str, optional): PNG format type. "PNG24" (24-bit) or "PNG8" (8-bit). Defaults to "PNG24".
+        matte (bool, optional): Enable matte background color for transparency preview. 
+            If None, uses Illustrator's default behavior.
+        matte_color (dict, optional): RGB color for matte background. Defaults to {"red": 255, "green": 255, "blue": 255}.
+            Dict with keys "red", "green", "blue" with values 0-255.
+    
+    Returns:
+        dict: Export result containing:
+            - success (bool): Whether the export succeeded
+            - filePath (str): The actual file path where the PNG was saved
+            - fileExists (bool): Whether the exported file exists
+            - options (dict): The export options that were used
+            - documentName (str): Name of the exported document
+            - error (str): Error message if export failed
+    
+    Example:
+        # Basic PNG export
+        result = export_png("/Users/username/Desktop/my_artwork.png")
+        
+        # High-resolution export with transparency
+        result = export_png(
+            path="/Users/username/Desktop/high_res.png",
+            horizontal_scale=300,
+            vertical_scale=300,
+            transparency=True
+        )
+        
+        # PNG8 export with red matte background
+        result = export_png(
+            path="/Users/username/Desktop/small_file.png",
+            export_type="PNG8",
+            matte=True,
+            matte_color={"red": 255, "green": 0, "blue": 0}
+        )
+        
+        # Blue matte background
+        result = export_png(
+            path="/Users/username/Desktop/blue_bg.png",
+            matte=True,
+            matte_color={"red": 0, "green": 100, "blue": 255}
+        )
+    """
+
+
+    # Only include matte and matteColor if needed
+    command_params = {
+        "path": path,
+        "transparency": transparency,
+        "antiAliasing": anti_aliasing,
+        "artBoardClipping": artboard_clipping,
+        "horizontalScale": horizontal_scale,
+        "verticalScale": vertical_scale,
+        "exportType": export_type
+    }
+
+    # Only include matte if explicitly set
+    if matte is not None:
+        command_params["matte"] = matte
+        
+    # Include matte color if matte is enabled or custom colors provided
+    if matte or matte_color != {"red": 255, "green": 255, "blue": 255}:
+        command_params["matteColor"] = matte_color
+
+    command = createCommand("exportPNG", command_params)
+    return sendCommand(command)
+
+
+
+@mcp.tool()
 def execute_extend_script(script_string: str):
     """
     Executes arbitrary ExtendScript code in Illustrator and returns the result.
