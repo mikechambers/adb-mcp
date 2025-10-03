@@ -113,7 +113,8 @@ Use this method if you want to modify the code or access the latest features.
 Clone or download the source code from the [main project page](https://github.com/mikechambers/adb-mcp).
 
 #### 2. Install Claude Desktop
-Same as Quick Start step 2.
+1. Download and install [Claude Desktop](https://claude.ai/download)
+2. Launch Claude Desktop to verify it works
 
 #### 3. Install MCP for Development
 Navigate to the project directory and run:
@@ -131,7 +132,40 @@ uv run mcp install --with fonttools --with python-socketio --with mcp --with req
 Restart Claude Desktop after installation.
 
 #### 4. Set Up Proxy Server
-Same as Quick Start step 4.
+
+##### Running from Source
+
+1. Navigate to the adb-proxy-socket directory
+2. Run `node proxy.js`
+
+##### Using Prebuilt Executables (Recommended)
+
+1. Download the appropriate executable for your platform from the latest [release](https://github.com/mikechambers/adb-mcp/releases) (files named like `adb-proxy-socket-macos-x64.zip` (Intel), `adb-proxy-socket-macos-arm64.zip` (Silicon), or `adb-proxy-socket-win-x64.exe.zip`).
+2. Unzip the executable.
+3. From the terminal or console run the executable:
+
+   - **macOS** (Intel or Apple Silicon):
+     ```bash
+     ./adb-proxy-socket-macos-x64
+     ```
+     or
+     ```bash
+     ./adb-proxy-socket-macos-arm64
+     ```
+
+   You can also double click the executable on Mac to launch.
+
+   - **Windows**:  
+     Double-click `adb-proxy-socket-win.exe` or run in Command Prompt:
+     ```cmd
+     adb-proxy-socket-win.exe
+     ```
+
+4. You should see a message like:  
+   `Photoshop MCP Command proxy server running on ws://localhost:3001`
+
+5. **Keep this running** — the proxy server must stay active for Claude to communicate with Adobe plugins.
+
 
 #### 5. Enable Developer Mode in Adobe Applications
 
@@ -145,6 +179,9 @@ Same as Quick Start step 4.
 2. Developer mode should be available by default in the beta
 
 #### 6. Install Plugins for Development
+
+##### UXP (Photoshop, Premiere Pro, InDesign)
+
 1. Launch **UXP Developer Tools** from Creative Cloud
 2. Enable developer mode when prompted
 3. Select **File > Add Plugin**
@@ -153,6 +190,30 @@ Same as Quick Start step 4.
    - **Premiere Pro**: `uxp/pr/manifest.json`
 5. Click **Load**
 6. In your Adobe application, open the plugin panel and click **Connect**
+
+##### CEP (AfterEffects)
+
+###### Mac
+1. Make sure the following directory exists (if it doesn't then create the directories)
+   `/Users/USERNAME/Library/Application Support/Adobe/CEP/extensions`
+
+2. Navigate to the extensions directory and create a symlink that points to the AfterEffect plugin in the CEP directory.
+```bash
+cd /Users/USERNAME/Library/Application Support/Adobe/CEP/extensions
+com.mikechambers.ae -> /Users/USERNAME/src/adb-mcp/cep/com.mikechambers.ae
+```
+###### Windows
+1. Make sure the following directory exists (if it doesn't then create the directories)
+   `C:\Users\USERNAME\AppData\Roaming\Adobe\CEP\extensions`
+
+2. Open Command Prompt as Administrator (or enable Developer Mode in Windows Settings)
+
+3. Create a junction or symbolic link that points to the AfterEffect plugin in the CEP directory:
+```cmd
+mklink /D "C:\Users\USERNAME\AppData\Roaming\Adobe\CEP\extensions\com.mikechambers.ae" "C:\Users\USERNAME\src\adb-mcp\cep\com.mikechambers.ae"
+```
+
+Note if you don't want to symlink, you can copy com.mikechambers.ae into the CEP directory.
 
 ## Using Claude with Adobe Apps
 
