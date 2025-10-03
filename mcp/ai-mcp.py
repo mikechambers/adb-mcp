@@ -61,6 +61,31 @@ def get_active_document_info():
     return sendCommand(command)
 
 @mcp.tool()
+def open_file(
+    path: str
+):
+    """
+    Opens an Illustrator (.ai) file in Adobe Illustrator.
+    
+    Args:
+        path (str): The absolute file path to the Illustrator file to open.
+            Example: "/Users/username/Documents/my_artwork.ai"
+    
+    Returns:
+        dict: Result containing:
+            - success (bool): Whether the file was opened successfully
+            - error (str): Error message if opening failed
+    
+    """
+    
+    command_params = {
+        "path": path
+    }
+    
+    command = createCommand("openFile", command_params)
+    return sendCommand(command)
+
+@mcp.tool()
 def export_png(
     path: str,
     transparency: bool = True,

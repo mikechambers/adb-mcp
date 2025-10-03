@@ -159,6 +159,72 @@ const exportPNG = async (command) => {
     return createPacket(result);
 }
 
+const openFile = async (command) => {
+    const options = command.options || {};
+    
+    // Extract path parameter
+    const path = options.path;
+    
+    // Validate required path parameter
+    if (!path) {
+        return createPacket(JSON.stringify({
+            error: "Path is required to open an Illustrator file"
+        }));
+    }
+    
+    const script = `
+        (function() {
+            try {
+                var result = (function() {
+                    var filePath = "${path}";
+                    
+                    try {
+                        // Create file object
+                        var fileToOpen = new File(filePath);
+                        
+                        // Check if file exists
+                        if (!fileToOpen.exists) {
+                            return {
+                                success: false,
+                                error: "File does not exist at the specified path",
+                                filePath: filePath
+                            };
+                        }
+                        
+                        // Open the document
+                        var doc = app.open(fileToOpen);
+                        
+                        return {
+                            success: true,
+                        };
+                        
+                    } catch(openError) {
+                        return {
+                            success: false,
+                            error: openError.toString(),
+                            filePath: filePath
+                        };
+                    }
+                })();
+                
+                if (result === undefined) {
+                    return 'null';
+                }
+                
+                return JSON.stringify(result);
+            } catch(e) {
+                return JSON.stringify({
+                    error: e.toString(),
+                    line: e.line || 'unknown'
+                });
+            }
+        })();
+    `;
+    
+    let result = await executeCommand(script);
+    return createPacket(result);
+};
+
 const getActiveDocumentInfo = async (command) => {
     const script = `
         (function() {
@@ -285,5 +351,6 @@ const commandHandlers = {
     executeExtendScript,
     getDocuments,
     getActiveDocumentInfo,
-    exportPNG
+    exportPNG,
+    openFile
 };
