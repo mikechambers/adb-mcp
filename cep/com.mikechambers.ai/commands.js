@@ -22,24 +22,13 @@ function executeCommand(script) {
 
 
 async function executeExtendScript(command) {
-    console.log(command)
     const options = command.options
     const scriptString = options.scriptString;
 
     const script = `
         (function() {
             try {
-                var result = (function() {
-                    ${scriptString}
-                })();
-                
-                // If result is undefined, return null
-                if (result === undefined) {
-                    return 'null';
-                }
-                
-                // Return stringified result
-                return JSON.stringify(result);
+                ${scriptString}
             } catch(e) {
                 return JSON.stringify({
                     error: e.toString(),

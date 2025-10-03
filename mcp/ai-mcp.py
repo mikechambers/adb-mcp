@@ -26,11 +26,11 @@ import socket_client
 import sys
 
 # Create an MCP server
-mcp_name = "Adobe After Effects MCP Server"
+mcp_name = "Illustrator MCP Server"
 mcp = FastMCP(mcp_name, log_level="ERROR")
 print(f"{mcp_name} running on stdio", file=sys.stderr)
 
-APPLICATION = "aftereffects"
+APPLICATION = "illustrator"
 PROXY_URL = 'http://localhost:3001'
 PROXY_TIMEOUT = 20
 
@@ -41,26 +41,6 @@ socket_client.configure(
 )
 
 init(APPLICATION, socket_client)
-
-@mcp.tool()
-def get_layers():
-    """
-    Returns information about all layers in the active composition.
-    
-    Returns a list of layer objects containing properties like name, index, 
-    enabled state, and other layer information.
-    
-    Returns:
-        list: Array of layer objects from the active composition, or an error 
-              if no composition is active.
-    
-    Example:
-        layers = get_layers()
-        for layer in layers:
-            print(f"Layer {layer['index']}: {layer['name']}")
-    """
-    command = createCommand("getLayers", {})
-    return sendCommand(command)
 
 @mcp.tool()
 def execute_extend_script(script_string: str):
