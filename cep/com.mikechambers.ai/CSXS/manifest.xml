@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ExtensionManifest Version="7.0" ExtensionBundleId="com.mikechambers.ai.mcp" ExtensionBundleVersion="1.0.0"
+  ExtensionBundleName="Illustrator MCP Agent" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  
+  <Author>Mike Chambers</Author>
+  <Contact>mikechambers@gmail.com</Contact>
+  <Legal>MIT License</Legal>
+  <Abstract>Illustrator MCP Agent</Abstract>
+  
+  <ExtensionList>
+    <Extension Id="com.mikechambers.ai.mcp" Version="1.0.0"/>
+  </ExtensionList>
+  
+  <ExecutionEnvironment>
+    <HostList>
+      <Host Name="ILST" Version="[28.0,99.9]"/>
+    </HostList>
+    <LocaleList>
+      <Locale Code="All"/>
+    </LocaleList>
+    <RequiredRuntimeList>
+      <RequiredRuntime Name="CSXS" Version="12.0"/>
+    </RequiredRuntimeList>
+  </ExecutionEnvironment>
+  
+  <DispatchInfoList>
+    <Extension Id="com.mikechambers.ai.mcp">
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./index.html</MainPath>
+          <CEFCommandLine>
+            <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--mixed-context</Parameter>
+            <Parameter>--remote-debugging-port=8088</Parameter>
+            <Parameter>--allow-file-access-from-files</Parameter>
+          </CEFCommandLine>
+        </Resources>
+        <Lifecycle>
+          <AutoVisible>true</AutoVisible>
+        </Lifecycle>
+        <UI>
+          <Type>Panel</Type>
+          <Menu>Illustrator MCP Agent</Menu>
+          <Geometry>
+            <Size>
+              <Height>400</Height>
+              <Width>350</Width>
+            </Size>
+            <MinSize>
+              <Height>300</Height>
+              <Width>300</Width>
+            </MinSize>
+            <MaxSize>
+              <Height>600</Height>
+              <Width>500</Width>
+            </MaxSize>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+  </DispatchInfoList>
+</ExtensionManifest>

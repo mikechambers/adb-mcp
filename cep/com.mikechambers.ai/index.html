@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Illustrator MCP Agent</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+
+        <div class="status-group">
+            <div class="status-dot" id="statusDot"></div>
+            <span id="statusText">Disconnected</span>
+        </div>
+
+        <button id="btnConnect">Connect</button>
+
+        <div class="divider"></div>
+
+        <div class="checkbox-group">
+            <input type="checkbox" id="chkConnectOnLaunch">
+            <label for="chkConnectOnLaunch">Connect automatically on launch</label>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="log-section">
+            <label>Message Log</label>
+            <textarea id="messageLog" readonly></textarea>
+        </div>
+    </div>
+
+    <!-- Load CEP's CSInterface library -->
+    <script type="text/javascript" src="./lib/CSInterface.js"></script>
+    
+    <!-- Load Socket.IO client from CDN -->
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    
+    <!-- Load commands -->
+    <script src="commands.js"></script>
+    
+    <!-- Main script -->
+    <script src="main.js"></script>
+</body>
+</html>

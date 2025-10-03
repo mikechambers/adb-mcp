@@ -141,7 +141,7 @@ Restart Claude Desktop after installation.
 2. Navigate to the extensions directory and create a symlink that points to the AfterEffect plugin in the CEP directory.
 ```bash
 cd /Users/USERNAME/Library/Application Support/Adobe/CEP/extensions
-com.mikechambers.ae -> /Users/USERNAME/src/adb-mcp/cep/com.mikechambers.ae
+ln -s /Users/USERNAME/src/adb-mcp/cep/com.mikechambers.ae com.mikechambers.ae
 ```
 ###### Windows
 1. Make sure the following directory exists (if it doesn't then create the directories)

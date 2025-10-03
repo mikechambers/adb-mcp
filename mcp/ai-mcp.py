@@ -30,7 +30,7 @@ mcp_name = "Adobe After Effects MCP Server"
 mcp = FastMCP(mcp_name, log_level="ERROR")
 print(f"{mcp_name} running on stdio", file=sys.stderr)
 
-APPLICATION = "illustrator"
+APPLICATION = "aftereffects"
 PROXY_URL = 'http://localhost:3001'
 PROXY_TIMEOUT = 20
 
@@ -43,30 +43,49 @@ socket_client.configure(
 init(APPLICATION, socket_client)
 
 @mcp.tool()
+def get_layers():
+    """
+    Returns information about all layers in the active composition.
+    
+    Returns a list of layer objects containing properties like name, index, 
+    enabled state, and other layer information.
+    
+    Returns:
+        list: Array of layer objects from the active composition, or an error 
+              if no composition is active.
+    
+    Example:
+        layers = get_layers()
+        for layer in layers:
+            print(f"Layer {layer['index']}: {layer['name']}")
+    """
+    command = createCommand("getLayers", {})
+    return sendCommand(command)
+
+@mcp.tool()
 def execute_extend_script(script_string: str):
     """
-    Executes arbitrary ExtendScript code in Illustrator and returns the result.
-
+    Executes arbitrary ExtendScript code in After Effects and returns the result.
+    
     The script should use 'return' to send data back. The result will be automatically
     JSON stringified. If the script throws an error, it will be caught and returned
     as an error object.
-
+    
     Args:
         script_string (str): The ExtendScript code to execute. Must use 'return' to 
                            send results back.
-
+    
     Returns:
         any: The result returned from the ExtendScript, or an error object containing:
             - error (str): Error message
             - line (str): Line number where error occurred
-
+    
     Example:
         script = '''
-            var doc = app.activeDocument;
+            var comp = app.project.activeItem;
             return {
-                name: doc.name,
-                path: doc.fullName.fsName,
-                layers: doc.layers.length
+                name: comp.name,
+                layers: comp.numLayers
             };
         '''
         result = execute_extend_script(script)
@@ -78,43 +97,30 @@ def execute_extend_script(script_string: str):
 
 @mcp.resource("config://get_instructions")
 def get_instructions() -> str:
-    """Read this first! Returns information and instructions on how to use Illustrator and this API"""
+    """Read this first! Returns information and instructions on how to use After Effects and this API"""
 
     return f"""
-    You are an Adobe Illustrator expert (vector graphics, artboards, layers) who is practical, clear, and great at teaching.
+    You are an After Effects and motion graphics expert who is creative and loves to help other people learn to use After Effects and create animations.
 
     Rules to follow:
 
-    1. Think deeply about how to solve the task.
-    2. Always check your work before responding.
-    3. Read the API call info to understand required arguments and return shapes.
-    4. Before manipulating anything, ensure a document is open and active.
-    5. Use get_layers() and get_artboards() first to see what's available.
-    6. Many Illustrator collections (layers, artboards, pageItems) are 0-based indexed.
-    7. Use exact names when selecting layers; unlock and make them visible before edits.
-    8. Match colors to the document color space (RGBColor vs CMYKColor).
-    9. Units are points by default (1 pt = 1/72 in). Coordinates depend on the document/ruler origin—verify with a small test shape.
-    10. Prefer safe queries: get_by_name() / get_* helpers instead of hard-coded indices when possible.
-
+    1. Think deeply about how to solve the task
+    2. Always check your work before responding
+    3. Read the info for the API calls to make sure you understand the requirements and arguments
+    4. When working with layers, always use get_layers() first to see what's available
+    5. Layer indices in After Effects are 1-based, not 0-based
+    6. Before manipulating layers, ensure a composition is active
+    7. Use exact layer names when selecting layers
+    
     Common workflow:
-    1. Check document info to confirm a document is open (activeDocument).
-    2. Inspect document state: color space, ruler units/origin, active artboard.
-    3. List artboards and set/select the target artboard; get its bounds if needed.
-    4. List layers (and sublayers); create/select a target layer; ensure it's unlocked and visible.
-    5. Check the current selection if the task depends on it (e.g., transform or export).
-    6. Perform operations: create/edit pathItems or textFrames, set fill/stroke, group, reorder (zOrder), transform.
-    7. Save or export as needed (e.g., SVG/PNG/PDF), confirming paths and options.
-
-    Tips:
-    - Use return values to report exactly what changed (names, counts, bounds).
-    - Catch and report errors with clear messages (e.g., 'No active document', 'Layer not found', 'Item is locked').
-    - When creating geometry, prefer the document layer you created/selected rather than the default active layer.
-    - Test coordinate assumptions by drawing a small rectangle via pathItems.rectangle(top, left, width, height) before complex layout.
+    1. Check project info to see if a project is open
+    2. Get compositions to see what's available
+    3. Get layers to see what layers exist in the active comp
+    4. Perform operations on specific layers
     """
 
 
-
-# Illustrator Blend Modes (for future use)
+# After Effects Blend Modes (for future use)
 BLEND_MODES = [
     "ADD",
     "ALPHA_ADD",
