@@ -46,82 +46,66 @@ In order to run this, the following is required:
 This guide assumes you're using Claude Desktop. Other MCP-compatible AI applications should work similarly.
 
 
-### Development Setup
-
-Use this method if you want to modify the code or access the latest features.
-
-#### 1. Download Source Code
+### Download Source Code
 Clone or download the source code from the [main project page](https://github.com/mikechambers/adb-mcp).
 
-#### 2. Install Claude Desktop
+### Install Claude Desktop
 1. Download and install [Claude Desktop](https://claude.ai/download)
 2. Launch Claude Desktop to verify it works
 
-#### 3. Install MCP for Development
+Note, you can use any client / code that supports MCP, just follow its instructions for how to configure.
+
+### Install MCP for Development
 Navigate to the project directory and run:
 
-**For Photoshop:**
+#### Photoshop
 ```bash
 uv run mcp install --with fonttools --with python-socketio --with mcp --with requests --with websocket-client --with numpy ps-mcp.py
 ```
 
-**For Premiere Pro:**
+#### Premiere Pro
 ```bash
 uv run mcp install --with fonttools --with python-socketio --with mcp --with requests --with websocket-client --with pillow pr-mcp.py
 ```
 
+#### InDesign
+```bash
+uv run mcp install --with fonttools --with python-socketio --with mcp --with requests --with websocket-client --with pillow id-mcp.py
+```
+
+#### AfterEffects
+```bash
+uv run mcp install --with fonttools --with python-socketio --with mcp --with requests --with websocket-client --with pillow ae-mcp.py
+```
+
+#### Illustrator
+```bash
+uv run mcp install --with fonttools --with python-socketio --with mcp --with requests --with websocket-client --with pillow ai-mcp.py
+```
+
 Restart Claude Desktop after installation.
 
-#### 4. Set Up Proxy Server
+### Set Up Proxy Server
 
-##### Running from Source
+#### Using Prebuilt Executables (Recommended)
+
+1. Download the appropriate executable for your platform from the latest [release](https://github.com/mikechambers/adb-mcp/releases) (files named like `adb-proxy-socket-macos-x64.zip` (Intel), `adb-proxy-socket-macos-arm64.zip` (Silicon), or `adb-proxy-socket-win-x64.exe.zip`).
+2. Unzip the executable.
+3. Double click or run from the console / terminal
+
+#### Running from Source
 
 1. Navigate to the adb-proxy-socket directory
 2. Run `node proxy.js`
 
-##### Using Prebuilt Executables (Recommended)
-
-1. Download the appropriate executable for your platform from the latest [release](https://github.com/mikechambers/adb-mcp/releases) (files named like `adb-proxy-socket-macos-x64.zip` (Intel), `adb-proxy-socket-macos-arm64.zip` (Silicon), or `adb-proxy-socket-win-x64.exe.zip`).
-2. Unzip the executable.
-3. From the terminal or console run the executable:
-
-   - **macOS** (Intel or Apple Silicon):
-     ```bash
-     ./adb-proxy-socket-macos-x64
-     ```
-     or
-     ```bash
-     ./adb-proxy-socket-macos-arm64
-     ```
-
-   You can also double click the executable on Mac to launch.
-
-   - **Windows**:  
-     Double-click `adb-proxy-socket-win.exe` or run in Command Prompt:
-     ```cmd
-     adb-proxy-socket-win.exe
-     ```
-
-4. You should see a message like:  
+You should see a message like:  
    `Photoshop MCP Command proxy server running on ws://localhost:3001`
 
-5. **Keep this running** — the proxy server must stay active for Claude to communicate with Adobe plugins.
+**Keep this running** — the proxy server must stay active for Claude to communicate with Adobe plugins.
 
+### Install Plugins
 
-#### 5. Enable Developer Mode in Adobe Applications
-
-**For Photoshop:**
-1. Launch Photoshop (2025/26.0 or greater)
-2. Go to **Settings > Plugins** and check **"Enable Developer Mode"**
-3. Restart Photoshop
-
-**For Premiere Pro:**
-1. Launch Premiere Pro Beta (25.3 or greater)
-2. Developer mode should be available by default in the beta
-
-#### 6. Install Plugins for Development
-
-##### UXP (Photoshop, Premiere Pro, InDesign)
+#### Photoshop, Premiere Pro, InDesign (UXP)
 
 1. Launch **UXP Developer Tools** from Creative Cloud
 2. Enable developer mode when prompted
@@ -129,44 +113,62 @@ Restart Claude Desktop after installation.
 4. Navigate to the appropriate directory and select **manifest.json**:
    - **Photoshop**: `uxp/ps/manifest.json`
    - **Premiere Pro**: `uxp/pr/manifest.json`
+   - **InDesign**: `uxp/id/manifest.json`
 5. Click **Load**
 6. In your Adobe application, open the plugin panel and click **Connect**
 
-##### CEP (AfterEffects)
+##### Enable Developer Mode in Photoshop
 
-###### Mac
+**For Photoshop:**
+1. Launch Photoshop (2025/26.0 or greater)
+2. Go to **Settings > Plugins** and check **"Enable Developer Mode"**
+3. Restart Photoshop
+
+#### AfterEffects, Illustrator (CEP)
+
+##### Mac
 1. Make sure the following directory exists (if it doesn't then create the directories)
    `/Users/USERNAME/Library/Application Support/Adobe/CEP/extensions`
 
-2. Navigate to the extensions directory and create a symlink that points to the AfterEffect plugin in the CEP directory.
+2. Navigate to the extensions directory and create a symlink that points to the AfterEffect / Illustrator plugin in the CEP directory.
 ```bash
 cd /Users/USERNAME/Library/Application Support/Adobe/CEP/extensions
 ln -s /Users/USERNAME/src/adb-mcp/cep/com.mikechambers.ae com.mikechambers.ae
 ```
-###### Windows
+or
+```bash
+cd /Users/USERNAME/Library/Application Support/Adobe/CEP/extensions
+ln -s /Users/USERNAME/src/adb-mcp/cep/com.mikechambers.ai com.mikechambers.ai
+```
+
+##### Windows
 1. Make sure the following directory exists (if it doesn't then create the directories)
    `C:\Users\USERNAME\AppData\Roaming\Adobe\CEP\extensions`
 
 2. Open Command Prompt as Administrator (or enable Developer Mode in Windows Settings)
 
-3. Create a junction or symbolic link that points to the AfterEffect plugin in the CEP directory:
+3. Create a junction or symbolic link that points to the AfterEffect / Illustrator plugin in the CEP directory:
 ```cmd
 mklink /D "C:\Users\USERNAME\AppData\Roaming\Adobe\CEP\extensions\com.mikechambers.ae" "C:\Users\USERNAME\src\adb-mcp\cep\com.mikechambers.ae"
 ```
+or
+```cmd
+mklink /D "C:\Users\USERNAME\AppData\Roaming\Adobe\CEP\extensions\com.mikechambers.ai" "C:\Users\USERNAME\src\adb-mcp\cep\com.mikechambers.ai"
+```
 
-Note if you don't want to symlink, you can copy com.mikechambers.ae into the CEP directory.
+Note if you don't want to symlink, you can copy com.mikechambers.ae / com.mikechambers.ao into the CEP directory.
 
-## Using Claude with Adobe Apps
+### Using Claude with Adobe Apps
 
 Launch the following:
 
 1. Claude Desktop
 2. adb-proxy-socket node server
-3. Launch Photoshop and / or Premiere
+3. Launch Photoshop, Premiere, InDesign, AfterEffects, Illustrator
 
 _TIP: Create a project for Photoshop / Premiere Pro in Claude and pre-load any app specific instructions in its Project knowledge._
 
-### Photoshop
+#### Photoshop
 1. Launch UXP Developer Tool and click the Load button for _Photoshop MCP Agent_
 2. In Photoshop, if the MCP Agent panel is not open, open _Plugins > Photoshop MCP Agent > Photoshop MCP Agent_
 3. Click connect in the agent panel in Photoshop
@@ -175,15 +177,26 @@ Now you can switch over the Claude desktop. Before you start a session, you shou
 
 
 
-### Premiere
-4. Launch UXP Developer Tool and click the Load button for _Premiere MCP Agent_
-5. In Premiere, if the MCP Agent panel is not open, open _Window > UXP Plugins > Premiere MCP Agent > Premiere MCP Agent_
-6. Click connect in the agent panel in Photoshop
+#### Premiere
+1. Launch UXP Developer Tool and click the Load button for _Premiere MCP Agent_
+2. In Premiere, if the MCP Agent panel is not open, open _Window > UXP Plugins > Premiere MCP Agent > Premiere MCP Agent_
+3. Click connect in the agent panel in Photoshop
 
-Now you can switch over the Claude desktop. Before you start a session, you should load the instructions resource which will provide guidance and info the Claude by clicking the socket icon (Attach from MCP) and then _Choose an Integration_ > _Adobe Premiere > _config://get_instructions_.
+#### InDesign
+1. Launch UXP Developer Tool and click the Load button for InDesitn MCP Agent_
+2. In InDesign, if the MCP Agent panel is not open, open _Plugins > InDesign MCP Agent > InDesign MCP Agent_
+3. Click connect in the agent panel in Photoshop
+
+#### AfterEffects
+1. _Window > Extensions > Illustrator MCP Agent_
+
+#### Illustrator
+
+1. Open a file (the plugin won't launch unless a file is open)
+2. _Window > Extensions > Illustrator MCP Agent_
 
 
-Note, you must reload the plugin via the UCP Developer app every time you restart Photoshop and Premiere.
+Note, you must reload the plugin via the UXP Developer app every time you restart Photoshop, Premiere and InDesign.
 
 ### Setting up session
 
@@ -242,7 +255,9 @@ Add cross fade transitions between all of the clips on the timeline in Premiere
 * As a general rule, don't make changes in the Adobe Apps while the AI is doing work. If you do make changes, make sure to tell the AI about it.
 * The AI will learn from its mistakes, but will lose its memory once you start a new chat. You can guide it to do things in a different way, and then ask it to start over and it should follow the new approach.
 
-The AI currently has access to a subset of Photoshop / Premiere functionality. In general, the approach has been to provide lower level tools to give the AI the basics to do more complex stuff.
+The AI currently has access to a subset of Photoshop / Premiere / InDesign / Illustrator / AfterEffects functionality. In general, the approach has been to provide lower level tools to give the AI the basics to do more complex stuff.
+
+Note, for AfterEffects and Illustrator, there is a low level Extend Script API that will let the LLM run any arbitrary extend script (which allows it to do just about anything).
 
 The Photoshop plugin has more functionality that Premiere.
 
