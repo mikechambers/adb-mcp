@@ -1229,6 +1229,29 @@ def select_ellipse(
     return sendCommand(command)
 
 @mcp.tool()
+def object_selection(
+    layer_id: int,
+    bounds: dict = {"top": 0, "left": 0, "bottom": 100, "right": 100}
+    ):
+
+    """Selects an object within the specified rectangular bounds using the Object Selection Tool.
+
+    This tool uses Photoshop's Object Selection Tool logic (Sensei AI) to refine the selection
+    within the provided rectangle.
+
+    Args:
+        layer_id (int): The layer to do the selection action on.
+        bounds (dict): The bounds for the initial rectangle selection
+    """
+
+    command = createCommand("objectSelection", {
+        "layerId":layer_id,
+        "bounds":bounds
+    })
+
+    return sendCommand(command)
+
+@mcp.tool()
 def align_content(
     layer_id: int,
     alignment_mode:str

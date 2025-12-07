@@ -376,6 +376,62 @@ const selectRectangle = async (command) => {
     });
 };
 
+const objectSelection = async (command) => {
+
+    let options = command.options;
+    let layerId = options.layerId;
+    let layer = findLayer(layerId);
+
+    if (layerId && !layer) {
+        throw new Error(
+            `objectSelection : Could not find layerId : ${layerId}`
+        );
+    }
+
+    await execute(async () => {
+        if (layer) {
+            selectLayer(layer, true);
+        }
+
+        let commands = [
+            {
+                _obj: "set",
+                _target: [
+                    {
+                        _ref: "channel",
+                        _property: "selection"
+                    }
+                ],
+                to: {
+                    _obj: "rectangle",
+                    top: {
+                        _unit: "pixelsUnit",
+                        _value: options.bounds.top
+                    },
+                    left: {
+                        _unit: "pixelsUnit",
+                        _value: options.bounds.left
+                    },
+                    bottom: {
+                        _unit: "pixelsUnit",
+                        _value: options.bounds.bottom
+                    },
+                    right: {
+                        _unit: "pixelsUnit",
+                        _value: options.bounds.right
+                    }
+                },
+                deepSelect: true,
+                objectSelectionMode: 0,
+                magicLassoAutoEnhance: true,
+                smartSubtract: true
+            }
+        ];
+
+        await action.batchPlay(commands, {});
+    });
+};
+
 const invertSelection = async (command) => {
 
     if (!app.activeDocument.selection.bounds) {
