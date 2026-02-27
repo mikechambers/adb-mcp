@@ -509,9 +509,11 @@ const createDocument = async (command) => {
             profile: "sRGB IEC61966-2.1",
         });
 
-        let background = findLayerByName("Background");
-        background.allLocked = false;
-        background.name = "Background";
+        let background = findLayerByName("Background") || app.activeDocument.layers[app.activeDocument.layers.length - 1];
+        if (background) {
+            background.allLocked = false;
+            background.name = "Background";
+        }
     });
 };
 
