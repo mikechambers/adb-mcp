@@ -32,14 +32,11 @@
 
     <!-- Load CEP's CSInterface library -->
     <script type="text/javascript" src="./lib/CSInterface.js"></script>
-    
-    <!-- Load Socket.IO client from CDN -->
-    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-    
-    <!-- Load commands -->
+
+    <!-- Load commands (uses CEP evalScript) -->
     <script src="commands.js"></script>
-    
-    <!-- Main script -->
+
+    <!-- Main script (Socket.IO loaded via Node.js require) -->
     <script src="main.js"></script>
 </body>
 </html>
