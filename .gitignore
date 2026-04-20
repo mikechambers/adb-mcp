@@ -29,3 +29,9 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# Rust build artifacts
+/target
+
+# Reference source drop
+/reference

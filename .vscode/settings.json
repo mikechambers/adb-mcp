@@ -1,0 +1,34 @@
+{
+  "files.exclude": {
+    "**/.DS_Store": true,
+    "**/.git": true,
+    "**/.idea": true,
+    "**/.vscode": false,
+    "**/node_modules": true,
+    "**/target": true,
+    "**/dist": true,
+    "**/build": true,
+    "**/*.dxt": true,
+    "**/*.ccx": true,
+    ".cursor/hooks/state/continual-learning.json": true,
+    ".gitattributes": true,
+    "Cargo.lock": true,
+    "package-lock.json": true,
+    "LICENSE.md": true
+  },
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/**": true,
+    "**/target/**": true,
+    "**/dist/**": true,
+    "**/build/**": true,
+    "**/*.dxt": true,
+    "**/*.ccx": true,
+    ".cursor/hooks/state/continual-learning.json": true,
+    ".gitattributes": true,
+    "Cargo.lock": true,
+    "package-lock.json": true,
+    "LICENSE.md": true
+  }
+}

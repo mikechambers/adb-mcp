@@ -1,0 +1,32 @@
+# Build and dependency artifacts
+target/
+dist/
+build/
+node_modules/
+reference/
+
+# Packaged extension outputs
+*.dxt
+*.ccx
+
+# OS and editor noise
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Volatile Cursor runtime state
+.cursor/hooks/state/continual-learning.json

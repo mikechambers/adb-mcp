@@ -1,0 +1,1303 @@
+{
+  "fixtures": [
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "set_active_document",
+      "action": "setActiveDocument",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "setActiveDocument",
+        "options": {
+          "document_id": 1
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "get_documents",
+      "action": "getDocuments",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "getDocuments",
+        "options": {}
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "create_gradient_layer_style",
+      "action": "createGradientLayerStyle",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "createGradientLayerStyle",
+        "options": {
+          "layer_id": 1,
+          "angle": 1,
+          "type": "example",
+          "color_stops": [],
+          "opacity_stops": []
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "duplicate_document",
+      "action": "duplicateDocument",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "duplicateDocument",
+        "options": {
+          "document_name": "example"
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "create_document",
+      "action": "createDocument",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "createDocument",
+        "options": {
+          "document_name": "example",
+          "width": 1,
+          "height": 1,
+          "resolution": 1
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "export_layers_as_png",
+      "action": "exportLayersAsPng",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "exportLayersAsPng",
+        "options": {
+          "layers_info": {}
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "save_document_as",
+      "action": "saveDocumentAs",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "saveDocumentAs",
+        "options": {
+          "file_path": "example"
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "save_document",
+      "action": "saveDocument",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "saveDocument",
+        "options": {}
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "group_layers",
+      "action": "groupLayers",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "groupLayers",
+        "options": {
+          "group_name": "example",
+          "layer_ids": {}
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "get_layer_image",
+      "action": "getLayerImage",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "getLayerImage",
+        "options": {
+          "layer_id": 1
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "get_document_image",
+      "action": "getDocumentImage",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "getDocumentImage",
+        "options": {}
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "save_document_image_as_png",
+      "action": "getDocumentImage",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "getDocumentImage",
+        "options": {
+          "file_path": "example"
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "get_layers",
+      "action": "getLayers",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "getLayers",
+        "options": {}
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "place_image",
+      "action": "placeImage",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "placeImage",
+        "options": {
+          "layer_id": 1,
+          "image_path": "example"
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "harmonize_layer",
+      "action": "harmonizeLayer",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "harmonizeLayer",
+        "options": {
+          "layer_id": 1,
+          "new_layer_name": "example"
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "rename_layers",
+      "action": "renameLayers",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "renameLayers",
+        "options": {
+          "layer_data": {}
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "scale_layer",
+      "action": "scaleLayer",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "scaleLayer",
+        "options": {
+          "layer_id": 1,
+          "width": 1,
+          "height": 1,
+          "anchor_position": "example"
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "rotate_layer",
+      "action": "rotateLayer",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "rotateLayer",
+        "options": {
+          "layer_id": 1,
+          "angle": 1,
+          "anchor_position": "example"
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "flip_layer",
+      "action": "flipLayer",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "flipLayer",
+        "options": {
+          "layer_id": 1,
+          "axis": "example"
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "delete_layer",
+      "action": "deleteLayer",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "deleteLayer",
+        "options": {
+          "layer_id": 1
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "set_layer_visibility",
+      "action": "setLayerVisibility",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "setLayerVisibility",
+        "options": {
+          "layer_id": 1,
+          "visible": true
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "generate_image",
+      "action": "generateImage",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "generateImage",
+        "options": {
+          "layer_name": "example",
+          "prompt": "example"
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "generative_fill",
+      "action": "generativeFill",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "generativeFill",
+        "options": {
+          "layer_name": "example",
+          "prompt": "example",
+          "layer_id": 1
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "move_layer",
+      "action": "moveLayer",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "moveLayer",
+        "options": {
+          "layer_id": 1,
+          "position": "example"
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "get_document_info",
+      "action": "getDocumentInfo",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "getDocumentInfo",
+        "options": {}
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "crop_document",
+      "action": "cropDocument",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "cropDocument",
+        "options": {}
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "paste_from_clipboard",
+      "action": "pasteFromClipboard",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "pasteFromClipboard",
+        "options": {
+          "layer_id": 1
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "rasterize_layer",
+      "action": "rasterizeLayer",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "rasterizeLayer",
+        "options": {
+          "layer_id": 1
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "open_photoshop_file",
+      "action": "openFile",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "openFile",
+        "options": {
+          "file_path": "example"
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "cut_selection_to_clipboard",
+      "action": "cutSelectionToClipboard",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "cutSelectionToClipboard",
+        "options": {
+          "layer_id": 1
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "copy_merged_selection_to_clipboard",
+      "action": "copyMergedSelectionToClipboard",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "copyMergedSelectionToClipboard",
+        "options": {}
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "copy_selection_to_clipboard",
+      "action": "copySelectionToClipboard",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "copySelectionToClipboard",
+        "options": {
+          "layer_id": 1
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "select_subject",
+      "action": "selectSubject",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "selectSubject",
+        "options": {
+          "layer_id": 1
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "select_sky",
+      "action": "selectSky",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "selectSky",
+        "options": {
+          "layer_id": 1
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "get_layer_bounds",
+      "action": "getLayerBounds",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "getLayerBounds",
+        "options": {
+          "layer_id": 1
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "remove_background",
+      "action": "removeBackground",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "removeBackground",
+        "options": {
+          "layer_id": 1
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "create_pixel_layer",
+      "action": "createPixelLayer",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "createPixelLayer",
+        "options": {
+          "layer_name": "example",
+          "fill_neutral": true
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "create_multi_line_text_layer",
+      "action": "createMultiLineTextLayer",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "createMultiLineTextLayer",
+        "options": {
+          "layer_name": "example",
+          "text": "example",
+          "font_size": 1,
+          "postscript_font_name": "example"
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "create_single_line_text_layer",
+      "action": "createSingleLineTextLayer",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "createSingleLineTextLayer",
+        "options": {
+          "layer_name": "example",
+          "text": "example",
+          "font_size": 1,
+          "postscript_font_name": "example"
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "edit_text_layer",
+      "action": "editTextLayer",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "editTextLayer",
+        "options": {
+          "layer_id": 1
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "translate_layer",
+      "action": "translateLayer",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "translateLayer",
+        "options": {
+          "layer_id": 1
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "remove_layer_mask",
+      "action": "removeLayerMask",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "removeLayerMask",
+        "options": {
+          "layer_id": 1
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "add_layer_mask_from_selection",
+      "action": "addLayerMask",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "addLayerMask",
+        "options": {
+          "layer_id": 1
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "set_layer_properties",
+      "action": "setLayerProperties",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "setLayerProperties",
+        "options": {
+          "layer_id": 1
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "fill_selection",
+      "action": "fillSelection",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "fillSelection",
+        "options": {
+          "layer_id": 1
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "delete_selection",
+      "action": "deleteSelection",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "deleteSelection",
+        "options": {
+          "layer_id": 1
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "invert_selection",
+      "action": "invertSelection",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "invertSelection",
+        "options": {}
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "clear_selection",
+      "action": "selectRectangle",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "selectRectangle",
+        "options": {}
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "select_rectangle",
+      "action": "selectRectangle",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "selectRectangle",
+        "options": {
+          "layer_id": 1
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "select_polygon",
+      "action": "selectPolygon",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "selectPolygon",
+        "options": {
+          "layer_id": 1
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "select_ellipse",
+      "action": "selectEllipse",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "selectEllipse",
+        "options": {
+          "layer_id": 1
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "align_content",
+      "action": "alignContent",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "alignContent",
+        "options": {
+          "layer_id": 1,
+          "alignment_mode": "example"
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "add_drop_shadow_layer_style",
+      "action": "addDropShadowLayerStyle",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "addDropShadowLayerStyle",
+        "options": {
+          "layer_id": 1
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "duplicate_layer",
+      "action": "duplicateLayer",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "duplicateLayer",
+        "options": {
+          "layer_to_duplicate_id": 1,
+          "duplicate_layer_name": "example"
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "flatten_all_layers",
+      "action": "flattenAllLayers",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "flattenAllLayers",
+        "options": {
+          "layer_name": "example"
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "add_color_balance_adjustment_layer",
+      "action": "addColorBalanceAdjustmentLayer",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "addColorBalanceAdjustmentLayer",
+        "options": {
+          "layer_id": 1
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "add_brightness_contrast_adjustment_layer",
+      "action": "addBrightnessContrastAdjustmentLayer",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "addBrightnessContrastAdjustmentLayer",
+        "options": {
+          "layer_id": 1
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "add_stroke_layer_style",
+      "action": "addStrokeLayerStyle",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "addStrokeLayerStyle",
+        "options": {
+          "layer_id": 1
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "add_vibrance_adjustment_layer",
+      "action": "addAdjustmentLayerVibrance",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "addAdjustmentLayerVibrance",
+        "options": {
+          "layer_id": 1
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "add_black_and_white_adjustment_layer",
+      "action": "addAdjustmentLayerBlackAndWhite",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "addAdjustmentLayerBlackAndWhite",
+        "options": {
+          "layer_id": 1
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "apply_gaussian_blur",
+      "action": "applyGaussianBlur",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "applyGaussianBlur",
+        "options": {
+          "layer_id": 1
+        }
+      }
+    },
+    {
+      "server_key": "ps",
+      "server": "Adobe Photoshop MCP Server",
+      "tool": "apply_motion_blur",
+      "action": "applyMotionBlur",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "applyMotionBlur",
+        "options": {
+          "layer_id": 1
+        }
+      }
+    },
+    {
+      "server_key": "ps-batch-play",
+      "server": "Adobe Photoshop Batch Play MCP Server",
+      "tool": "call_batch_play_command",
+      "action": "executeBatchPlayCommand",
+      "command_packet": {
+        "application": "photoshop",
+        "action": "executeBatchPlayCommand",
+        "options": {
+          "commands": []
+        }
+      }
+    },
+    {
+      "server_key": "pr",
+      "server": "Adobe Premiere MCP Server",
+      "tool": "get_project_info",
+      "action": "getProjectInfo",
+      "command_packet": {
+        "application": "premiere",
+        "action": "getProjectInfo",
+        "options": {}
+      }
+    },
+    {
+      "server_key": "pr",
+      "server": "Adobe Premiere MCP Server",
+      "tool": "save_project",
+      "action": "saveProject",
+      "command_packet": {
+        "application": "premiere",
+        "action": "saveProject",
+        "options": {}
+      }
+    },
+    {
+      "server_key": "pr",
+      "server": "Adobe Premiere MCP Server",
+      "tool": "save_project_as",
+      "action": "saveProjectAs",
+      "command_packet": {
+        "application": "premiere",
+        "action": "saveProjectAs",
+        "options": {
+          "file_path": "example"
+        }
+      }
+    },
+    {
+      "server_key": "pr",
+      "server": "Adobe Premiere MCP Server",
+      "tool": "open_project",
+      "action": "openProject",
+      "command_packet": {
+        "application": "premiere",
+        "action": "openProject",
+        "options": {
+          "file_path": "example"
+        }
+      }
+    },
+    {
+      "server_key": "pr",
+      "server": "Adobe Premiere MCP Server",
+      "tool": "create_project",
+      "action": "createProject",
+      "command_packet": {
+        "application": "premiere",
+        "action": "createProject",
+        "options": {
+          "directory_path": "example",
+          "project_name": "example"
+        }
+      }
+    },
+    {
+      "server_key": "pr",
+      "server": "Adobe Premiere MCP Server",
+      "tool": "create_bin_in_active_project",
+      "action": "createBinInActiveProject",
+      "command_packet": {
+        "application": "premiere",
+        "action": "createBinInActiveProject",
+        "options": {
+          "bin_name": "example"
+        }
+      }
+    },
+    {
+      "server_key": "pr",
+      "server": "Adobe Premiere MCP Server",
+      "tool": "export_sequence",
+      "action": "exportSequence",
+      "command_packet": {
+        "application": "premiere",
+        "action": "exportSequence",
+        "options": {
+          "sequence_id": "example",
+          "output_path": "example",
+          "preset_path": "example"
+        }
+      }
+    },
+    {
+      "server_key": "pr",
+      "server": "Adobe Premiere MCP Server",
+      "tool": "move_project_items_to_bin",
+      "action": "moveProjectItemsToBin",
+      "command_packet": {
+        "application": "premiere",
+        "action": "moveProjectItemsToBin",
+        "options": {
+          "item_names": {},
+          "bin_name": "example"
+        }
+      }
+    },
+    {
+      "server_key": "pr",
+      "server": "Adobe Premiere MCP Server",
+      "tool": "set_audio_track_mute",
+      "action": "setAudioTrackMute",
+      "command_packet": {
+        "application": "premiere",
+        "action": "setAudioTrackMute",
+        "options": {
+          "sequence_id": "example",
+          "audio_track_index": 1,
+          "mute": true
+        }
+      }
+    },
+    {
+      "server_key": "pr",
+      "server": "Adobe Premiere MCP Server",
+      "tool": "set_active_sequence",
+      "action": "setActiveSequence",
+      "command_packet": {
+        "application": "premiere",
+        "action": "setActiveSequence",
+        "options": {
+          "sequence_id": "example"
+        }
+      }
+    },
+    {
+      "server_key": "pr",
+      "server": "Adobe Premiere MCP Server",
+      "tool": "create_sequence_from_media",
+      "action": "createSequenceFromMedia",
+      "command_packet": {
+        "application": "premiere",
+        "action": "createSequenceFromMedia",
+        "options": {
+          "item_names": {}
+        }
+      }
+    },
+    {
+      "server_key": "pr",
+      "server": "Adobe Premiere MCP Server",
+      "tool": "close_gaps_on_sequence",
+      "action": "closeGapsOnSequence",
+      "command_packet": {
+        "application": "premiere",
+        "action": "closeGapsOnSequence",
+        "options": {
+          "sequence_id": "example",
+          "track_index": 1,
+          "track_type": "example"
+        }
+      }
+    },
+    {
+      "server_key": "pr",
+      "server": "Adobe Premiere MCP Server",
+      "tool": "remove_item_from_sequence",
+      "action": "removeItemFromSequence",
+      "command_packet": {
+        "application": "premiere",
+        "action": "removeItemFromSequence",
+        "options": {
+          "sequence_id": "example",
+          "track_index": 1,
+          "track_item_index": 1,
+          "track_type": "example"
+        }
+      }
+    },
+    {
+      "server_key": "pr",
+      "server": "Adobe Premiere MCP Server",
+      "tool": "add_marker_to_sequence",
+      "action": "addMarkerToSequence",
+      "command_packet": {
+        "application": "premiere",
+        "action": "addMarkerToSequence",
+        "options": {
+          "sequence_id": "example",
+          "marker_name": "example",
+          "start_time_ticks": 1,
+          "duration_ticks": 1,
+          "comments": "example"
+        }
+      }
+    },
+    {
+      "server_key": "pr",
+      "server": "Adobe Premiere MCP Server",
+      "tool": "add_media_to_sequence",
+      "action": "addMediaToSequence",
+      "command_packet": {
+        "application": "premiere",
+        "action": "addMediaToSequence",
+        "options": {
+          "sequence_id": "example",
+          "item_name": "example",
+          "video_track_index": 1,
+          "audio_track_index": 1
+        }
+      }
+    },
+    {
+      "server_key": "pr",
+      "server": "Adobe Premiere MCP Server",
+      "tool": "set_clip_disabled",
+      "action": "setClipDisabled",
+      "command_packet": {
+        "application": "premiere",
+        "action": "setClipDisabled",
+        "options": {
+          "sequence_id": "example",
+          "track_index": 1,
+          "track_item_index": 1,
+          "track_type": "example",
+          "disabled": true
+        }
+      }
+    },
+    {
+      "server_key": "pr",
+      "server": "Adobe Premiere MCP Server",
+      "tool": "set_clip_start_end_times",
+      "action": "setClipStartEndTimes",
+      "command_packet": {
+        "application": "premiere",
+        "action": "setClipStartEndTimes",
+        "options": {
+          "sequence_id": "example",
+          "track_index": 1,
+          "track_item_index": 1,
+          "start_time_ticks": 1,
+          "end_time_ticks": 1,
+          "track_type": "example"
+        }
+      }
+    },
+    {
+      "server_key": "pr",
+      "server": "Adobe Premiere MCP Server",
+      "tool": "add_black_and_white_effect",
+      "action": "appendVideoFilter",
+      "command_packet": {
+        "application": "premiere",
+        "action": "appendVideoFilter",
+        "options": {
+          "sequence_id": "example",
+          "video_track_index": 1,
+          "track_item_index": 1
+        }
+      }
+    },
+    {
+      "server_key": "pr",
+      "server": "Adobe Premiere MCP Server",
+      "tool": "get_sequence_frame_image",
+      "action": "exportFrame",
+      "command_packet": {
+        "application": "premiere",
+        "action": "exportFrame",
+        "options": {
+          "sequence_id": "example",
+          "seconds": 1
+        }
+      }
+    },
+    {
+      "server_key": "pr",
+      "server": "Adobe Premiere MCP Server",
+      "tool": "export_frame",
+      "action": "exportFrame",
+      "command_packet": {
+        "application": "premiere",
+        "action": "exportFrame",
+        "options": {
+          "sequence_id": "example",
+          "file_path": "example",
+          "seconds": 1
+        }
+      }
+    },
+    {
+      "server_key": "pr",
+      "server": "Adobe Premiere MCP Server",
+      "tool": "add_gaussian_blur_effect",
+      "action": "appendVideoFilter",
+      "command_packet": {
+        "application": "premiere",
+        "action": "appendVideoFilter",
+        "options": {
+          "sequence_id": "example",
+          "video_track_index": 1,
+          "track_item_index": 1,
+          "blurriness": 1
+        }
+      }
+    },
+    {
+      "server_key": "pr",
+      "server": "Adobe Premiere MCP Server",
+      "tool": "add_tint_effect",
+      "action": "appendVideoFilter",
+      "command_packet": {
+        "application": "premiere",
+        "action": "appendVideoFilter",
+        "options": {
+          "sequence_id": "example",
+          "video_track_index": 1,
+          "track_item_index": 1
+        }
+      }
+    },
+    {
+      "server_key": "pr",
+      "server": "Adobe Premiere MCP Server",
+      "tool": "add_motion_blur_effect",
+      "action": "appendVideoFilter",
+      "command_packet": {
+        "application": "premiere",
+        "action": "appendVideoFilter",
+        "options": {
+          "sequence_id": "example",
+          "video_track_index": 1,
+          "track_item_index": 1,
+          "direction": 1,
+          "length": 1
+        }
+      }
+    },
+    {
+      "server_key": "pr",
+      "server": "Adobe Premiere MCP Server",
+      "tool": "append_video_transition",
+      "action": "appendVideoTransition",
+      "command_packet": {
+        "application": "premiere",
+        "action": "appendVideoTransition",
+        "options": {
+          "sequence_id": "example",
+          "video_track_index": 1,
+          "track_item_index": 1,
+          "transition_name": "example"
+        }
+      }
+    },
+    {
+      "server_key": "pr",
+      "server": "Adobe Premiere MCP Server",
+      "tool": "set_video_clip_properties",
+      "action": "setVideoClipProperties",
+      "command_packet": {
+        "application": "premiere",
+        "action": "setVideoClipProperties",
+        "options": {
+          "sequence_id": "example",
+          "video_track_index": 1,
+          "track_item_index": 1
+        }
+      }
+    },
+    {
+      "server_key": "pr",
+      "server": "Adobe Premiere MCP Server",
+      "tool": "import_media",
+      "action": "importMedia",
+      "command_packet": {
+        "application": "premiere",
+        "action": "importMedia",
+        "options": {
+          "file_paths": []
+        }
+      }
+    },
+    {
+      "server_key": "id",
+      "server": "Adobe InDesign MCP Server",
+      "tool": "create_document",
+      "action": "createDocument",
+      "command_packet": {
+        "application": "indesign",
+        "action": "createDocument",
+        "options": {
+          "width": 1,
+          "height": 1
+        }
+      }
+    },
+    {
+      "server_key": "ae",
+      "server": "Adobe After Effects MCP Server",
+      "tool": "execute_extend_script",
+      "action": "executeExtendScript",
+      "command_packet": {
+        "application": "aftereffects",
+        "action": "executeExtendScript",
+        "options": {
+          "script_string": "example"
+        }
+      }
+    },
+    {
+      "server_key": "ai",
+      "server": "Adobe Illustrator MCP Server",
+      "tool": "get_documents",
+      "action": "getDocuments",
+      "command_packet": {
+        "application": "illustrator",
+        "action": "getDocuments",
+        "options": {}
+      }
+    },
+    {
+      "server_key": "ai",
+      "server": "Adobe Illustrator MCP Server",
+      "tool": "get_active_document_info",
+      "action": "getActiveDocumentInfo",
+      "command_packet": {
+        "application": "illustrator",
+        "action": "getActiveDocumentInfo",
+        "options": {}
+      }
+    },
+    {
+      "server_key": "ai",
+      "server": "Adobe Illustrator MCP Server",
+      "tool": "open_file",
+      "action": "openFile",
+      "command_packet": {
+        "application": "illustrator",
+        "action": "openFile",
+        "options": {
+          "path": "example"
+        }
+      }
+    },
+    {
+      "server_key": "ai",
+      "server": "Adobe Illustrator MCP Server",
+      "tool": "export_png",
+      "action": "exportPNG",
+      "command_packet": {
+        "application": "illustrator",
+        "action": "exportPNG",
+        "options": {
+          "path": "example"
+        }
+      }
+    },
+    {
+      "server_key": "ai",
+      "server": "Adobe Illustrator MCP Server",
+      "tool": "execute_extend_script",
+      "action": "executeExtendScript",
+      "command_packet": {
+        "application": "illustrator",
+        "action": "executeExtendScript",
+        "options": {
+          "script_string": "example"
+        }
+      }
+    }
+  ]
+}

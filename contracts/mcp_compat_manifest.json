@@ -1,0 +1,2297 @@
+{
+  "format_version": 1,
+  "generated_from": "python-mcp-ast",
+  "servers": [
+    {
+      "server_key": "ps",
+      "file": "reference/mcp/ps-mcp.py",
+      "mcp_name": "Adobe Photoshop MCP Server",
+      "application": "photoshop",
+      "proxy_url": "http://localhost:3001",
+      "proxy_timeout": 20,
+      "tool_count": 62,
+      "resource_count": 1,
+      "tools": [
+        {
+          "name": "set_active_document",
+          "action": "setActiveDocument",
+          "doc": "Sets the document with the specified ID to the active document in Photoshop\n\nArgs:\n    document_id (int): ID for the document to set as active.",
+          "params": [
+            {
+              "name": "document_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "get_documents",
+          "action": "getDocuments",
+          "doc": "Returns information on the documents currently open in Photoshop",
+          "params": []
+        },
+        {
+          "name": "create_gradient_layer_style",
+          "action": "createGradientLayerStyle",
+          "doc": "Applies gradient to active selection or entire layer if no selection exists.\n\nColor stops define transition points along the gradient (0-100), with color blending between stops. Opacity stops similarly control transparency transitions.\n\nArgs:\n    layer_id (int): ID for layer to apply gradient to.\n    angle (int): Gradient angle (-180 to 180).\n    type (str): LINEAR or RADIAL gradient.\n    color_stops (list): Dictionaries defining color stops:\n        - location (int): Position (0-100) along gradient.\n        - color (dict): RGB values (0-255 for red/green/blue).\n        - midpoint (int): Transition bias (0-100, default 50).\n    opacity_stops (list): Dictionaries defining opacity stops:\n        - location (int): Position (0-100) along gradient.\n        - opacity (int): Level (0=transparent, 100=opaque).\n        - midpoint (int): Transition bias (0-100, default 50).",
+          "params": [
+            {
+              "name": "layer_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "angle",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "type",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "color_stops",
+              "annotation": "list",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "opacity_stops",
+              "annotation": "list",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "duplicate_document",
+          "action": "duplicateDocument",
+          "doc": "Duplicates the current Photoshop Document into a new file\n\n\nArgs:\n    document_name (str): Name for the new document being created",
+          "params": [
+            {
+              "name": "document_name",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "create_document",
+          "action": "createDocument",
+          "doc": "Creates a new Photoshop Document\n\nLayer are created from bottom up based on the order they are created in, so create background elements first and then build on top.\n\nNew document will contain a layer named \"Background\" that is filled with the specified fill color\n\nArgs:\n    document_name (str): Name for the new document being created\n    width (int): Width in pixels of the new document\n    height (int): Height in pixels of the new document\n    resolution (int): Resolution (Pixels per Inch) of the new document\n    fill_color (dict): dict defining the background color fill of the new document\n    color_mode (str): Color mode for the new document",
+          "params": [
+            {
+              "name": "document_name",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "width",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "height",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "resolution",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "fill_color",
+              "annotation": "dict",
+              "required": false,
+              "default": "{'red': 0, 'green': 0, 'blue': 0}"
+            },
+            {
+              "name": "color_mode",
+              "annotation": "str",
+              "required": false,
+              "default": "'RGB'"
+            }
+          ]
+        },
+        {
+          "name": "export_layers_as_png",
+          "action": "exportLayersAsPng",
+          "doc": "Exports multiple layers from the Photoshop document as PNG files.\n\nThis function exports each specified layer as a separate PNG image file to its \ncorresponding file path. The entire layer, including transparent space will be saved.\n\nArgs:\n    layers_info (list[dict[str, str|int]]): A list of dictionaries containing the export information.\n        Each dictionary must have the following keys:\n            - \"layerId\" (int): The ID of the layer to export as PNG. \n               This layer must exist in the current document.\n            - \"filePath\" (str): The absolute file path including filename where the PNG\n               will be saved (e.g., \"/path/to/directory/layername.png\").\n               The parent directory must already exist or the export will fail.",
+          "params": [
+            {
+              "name": "layers_info",
+              "annotation": "list[dict[str, str | int]]",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "save_document_as",
+          "action": "saveDocumentAs",
+          "doc": "Saves the current Photoshop document to the specified location and format.\n\nArgs:\n    file_path (str): The absolute path (including filename) where the file will be saved.\n        Example: \"/Users/username/Documents/my_image.psd\"\n    file_type (str, optional): The file format to use when saving the document.\n        Defaults to \"PSD\".\n        Supported formats:\n            - \"PSD\": Adobe Photoshop Document (preserves layers and editability)\n            - \"PNG\": Portable Network Graphics (lossless compression with transparency)\n            - \"JPG\": Joint Photographic Experts Group (lossy compression)\n\nReturns:\n    dict: Response from the Photoshop operation indicating success status, and the path that the file was saved at",
+          "params": [
+            {
+              "name": "file_path",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "file_type",
+              "annotation": "str",
+              "required": false,
+              "default": "'PSD'"
+            }
+          ]
+        },
+        {
+          "name": "save_document",
+          "action": "saveDocument",
+          "doc": "Saves the current Photoshop Document\n    ",
+          "params": []
+        },
+        {
+          "name": "group_layers",
+          "action": "groupLayers",
+          "doc": "Creates a new layer group from the specified layers in Photoshop.\n\nNote: The layers will be added to the group in the order they are specified in the document, and not the order of their layerIds passed in. The group will be made at the same level as the top most layer in the layer tree.\n\nArgs:\n    groupName (str): The name to assign to the newly created layer group.\n    layerIds (list[int]): A list of layer ids to include in the new group.\n\nRaises:\n    RuntimeError: If the operation fails or times out.",
+          "params": [
+            {
+              "name": "group_name",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "layer_ids",
+              "annotation": "list[int]",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "get_layer_image",
+          "action": "getLayerImage",
+          "doc": "Returns a jpeg of the specified layer's content as an MCP Image object that can be displayed.",
+          "params": [
+            {
+              "name": "layer_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "get_document_image",
+          "action": "getDocumentImage",
+          "doc": "Returns a jpeg of the current visible Photoshop document as an MCP Image object that can be displayed.",
+          "params": []
+        },
+        {
+          "name": "save_document_image_as_png",
+          "action": "getDocumentImage",
+          "doc": "Capture the Photoshop document and save as PNG file\n\nArgs:\n    file_path: Where to save the PNG file\n    \nReturns:\n    dict: Status and file info",
+          "params": [
+            {
+              "name": "file_path",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "get_layers",
+          "action": "getLayers",
+          "doc": "Returns a nested list of dicts that contain layer info and the order they are arranged in.\n\nArgs:\n    None\n    \nReturns:\n    list: A nested list of dictionaries containing layer information and hierarchy.\n        Each dict has at minimum a 'name' key with the layer name.\n        If a layer has sublayers, they will be contained in a 'layers' key which contains another list of layer dicts.\n        Example: [{'name': 'Group 1', 'layers': [{'name': 'Layer 1'}, {'name': 'Layer 2'}]}, {'name': 'Background'}]",
+          "params": []
+        },
+        {
+          "name": "place_image",
+          "action": "placeImage",
+          "doc": "Places the image at the specified path on the existing pixel layer with the specified id.\n\nThe image will be placed on the center of the layer, and will fill the layer without changing its aspect ration (thus there may be bars at the top or bottom) \n\nArgs:\n    layer_id (int): The id of the layer where the image will be placed.\n    image_path (str): The file path to the image that will be placed on the layer.",
+          "params": [
+            {
+              "name": "layer_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "image_path",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "harmonize_layer",
+          "action": "harmonizeLayer",
+          "doc": "Harmonizes (matches lighting and other settings) the selected layer with the background layers.\n\nThe layer being harmonized should be rasterized and have some transparency.\n\nArgs:\n    layer_id (int): ID of the layer to be harmonizes.\n    new_layer_name (str): Name for the new layer that will be created with the harmonized content\n    rasterize_layer (bool): Whether the new layer should be rasterized.\n        If not rasterized, the layer will remain a generative layer which\n        allows the user to interact with it. True by default.",
+          "params": [
+            {
+              "name": "layer_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "new_layer_name",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "rasterize_layer",
+              "annotation": "bool",
+              "required": false,
+              "default": "True"
+            }
+          ]
+        },
+        {
+          "name": "rename_layers",
+          "action": "renameLayers",
+          "doc": "Renames one or more layers\n\nArgs:\n    layer_data (list[dict]): A list of dictionaries containing layer rename information.\n        Each dictionary must have the following keys:\n            - \"layer_id\" (int): ID of the layer to be renamed.\n            - \"new_layer_name\" (str): New name for the layer.",
+          "params": [
+            {
+              "name": "layer_data",
+              "annotation": "list[dict]",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "scale_layer",
+          "action": "scaleLayer",
+          "doc": "Scales the layer with the specified ID.\n\nArgs:\n    layer_id (int): ID of layer to be scaled.\n    width (int): Percentage to scale horizontally.\n    height (int): Percentage to scale vertically.\n    anchor_position (str): The anchor position to rotate around,\n    interpolation_method (str): Interpolation method to use when resampling the image",
+          "params": [
+            {
+              "name": "layer_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "width",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "height",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "anchor_position",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "interpolation_method",
+              "annotation": "str",
+              "required": false,
+              "default": "'AUTOMATIC'"
+            }
+          ]
+        },
+        {
+          "name": "rotate_layer",
+          "action": "rotateLayer",
+          "doc": "Rotates the layer with the specified ID.\n\nArgs:\n    layer_id (int): ID of layer to be scaled.\n    angle (int): Angle (-359 to 359) to rotate the layer by in degrees\n    anchor_position (str): The anchor position to rotate around,\n    interpolation_method (str): Interpolation method to use when resampling the image",
+          "params": [
+            {
+              "name": "layer_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "angle",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "anchor_position",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "interpolation_method",
+              "annotation": "str",
+              "required": false,
+              "default": "'AUTOMATIC'"
+            }
+          ]
+        },
+        {
+          "name": "flip_layer",
+          "action": "flipLayer",
+          "doc": "Flips the layer with the specified ID on the specified axis.\n\nArgs:\n    layer_id (int): ID of layer to be scaled.\n    axis (str): The axis on which to flip the layer. Valid values are \"horizontal\", \"vertical\" or \"both\"",
+          "params": [
+            {
+              "name": "layer_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "axis",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "delete_layer",
+          "action": "deleteLayer",
+          "doc": "Deletes the layer with the specified ID\n\nArgs:\n    layer_id (int): ID of the layer to be deleted",
+          "params": [
+            {
+              "name": "layer_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "set_layer_visibility",
+          "action": "setLayerVisibility",
+          "doc": "Sets the visibility of the layer with the specified ID\n\nArgs:\n    layer_id (int): ID of the layer to set visibility\n    visible (bool): Whether the layer is visible",
+          "params": [
+            {
+              "name": "layer_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "visible",
+              "annotation": "bool",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "generate_image",
+          "action": "generateImage",
+          "doc": "Uses Adobe Firefly Generative AI to generate an image on a new layer with the specified layer name.\n\nIf there is an active selection, it will use that region for the generation. Otherwise it will generate\non the entire layer.\n\nArgs:\n    layer_name (str): Name for the layer that will be created and contain the generated image\n    prompt (str): Prompt describing the image to be generated\n    content_type (str): The type of image to be generated. Options include \"photo\", \"art\" or \"none\" (default)",
+          "params": [
+            {
+              "name": "layer_name",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "prompt",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "content_type",
+              "annotation": "str",
+              "required": false,
+              "default": "'none'"
+            }
+          ]
+        },
+        {
+          "name": "generative_fill",
+          "action": "generativeFill",
+          "doc": "Uses Adobe Firefly Generative AI to perform generative fill within the current selection.\n\nThis function uses generative fill to seamlessly integrate new content into the existing image.\nIt requires an active selection, and will fill that region taking into account the surrounding \ncontext and layers below. The AI considers the existing content to create a natural, \ncontextually-aware fill.\n\nArgs:\n    layer_name (str): Name for the layer that will be created and contain the generated fill\n    prompt (str): Prompt describing the content to be generated within the selection\n    layer_id (int): ID of the layer to work with (though a new layer is created for the result)\n    content_type (str): The type of image to be generated. Options include \"photo\", \"art\" or \"none\" (default)\n\nReturns:\n    dict: Response from Photoshop containing the operation status and layer information",
+          "params": [
+            {
+              "name": "layer_name",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "prompt",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "layer_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "content_type",
+              "annotation": "str",
+              "required": false,
+              "default": "'none'"
+            }
+          ]
+        },
+        {
+          "name": "move_layer",
+          "action": "moveLayer",
+          "doc": "Moves the layer within the layer stack based on the specified position\n\nArgs:\n    layer_id (int): Name for the layer that will be moved\n    position (str): How the layer position within the layer stack will be updated. Value values are: TOP (Place above all layers), BOTTOM (Place below all layers), UP (Move up one layer), DOWN (Move down one layer)",
+          "params": [
+            {
+              "name": "layer_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "position",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "get_document_info",
+          "action": "getDocumentInfo",
+          "doc": "Retrieves information about the currently active document.\n\nReturns:\n    response : An object containing the following document properties:\n        - height (int): The height of the document in pixels.\n        - width (int): The width of the document in pixels.\n        - colorMode (str): The document's color mode as a string.\n        - pixelAspectRatio (float): The pixel aspect ratio of the document.\n        - resolution (float): The document's resolution (DPI).\n        - path (str): The file path of the document, if saved.\n        - saved (bool): Whether the document has been saved (True if it has a valid file path).\n        - hasUnsavedChanges (bool): Whether the document contains unsaved changes.",
+          "params": []
+        },
+        {
+          "name": "crop_document",
+          "action": "cropDocument",
+          "doc": "Crops the document to the active selection.\n\nThis function removes all content outside the selection area and resizes the document \nso that the selection becomes the new canvas size.\n\nAn active selection is required.",
+          "params": []
+        },
+        {
+          "name": "paste_from_clipboard",
+          "action": "pasteFromClipboard",
+          "doc": "Pastes the current clipboard contents onto the specified layer.\n\nIf `paste_in_place` is True, the content will be positioned exactly where it was cut or copied from.\nIf False and an active selection exists, the content will be centered within the selection.\nIf no selection is active, the content will be placed at the center of the layer.\n\nArgs:\n    layer_id (int): The ID of the layer where the clipboard contents will be pasted.\n    paste_in_place (bool): Whether to paste at the original location (True) or adjust based on selection/layer center (False).",
+          "params": [
+            {
+              "name": "layer_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "paste_in_place",
+              "annotation": "bool",
+              "required": false,
+              "default": "True"
+            }
+          ]
+        },
+        {
+          "name": "rasterize_layer",
+          "action": "rasterizeLayer",
+          "doc": "Converts the specified layer into a rasterized (flat) image.\n\nThis process removes any vector, text, or smart object properties, turning the layer \ninto pixel-based content.\n\nArgs:\n    layer_id (int): The name of the layer to rasterize.",
+          "params": [
+            {
+              "name": "layer_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "open_photoshop_file",
+          "action": "openFile",
+          "doc": "Opens the specified Photoshop-compatible file within Photoshop.\n\nThis function attempts to open a file in Adobe Photoshop. The file must be in a \nformat compatible with Photoshop, such as PSD, TIFF, JPEG, PNG, etc.\n\nArgs:\n    file_path (str): Complete absolute path to the file to be opened, including filename and extension.\n\nReturns:\n    dict: Response from the Photoshop operation indicating success status.\n    \nRaises:\n    RuntimeError: If the file doesn't exist, is not accessible, or is in an unsupported format.",
+          "params": [
+            {
+              "name": "file_path",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "cut_selection_to_clipboard",
+          "action": "cutSelectionToClipboard",
+          "doc": "Copies and removes (cuts) the selected pixels from the specified layer to the system clipboard.\n\nThis function requires an active selection.\n\nArgs:\n    layer_id (int): The name of the layer that contains the pixels to copy and remove.",
+          "params": [
+            {
+              "name": "layer_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "copy_merged_selection_to_clipboard",
+          "action": "copyMergedSelectionToClipboard",
+          "doc": "Copies the selected pixels from all visible layers to the system clipboard.\n\nThis function requires an active selection. If no selection is active, the operation will fail.\nThe copied content will include pixel data from all visible layers within the selection area,\neffectively capturing what you see on screen.\n\nReturns:\n    dict: Response from the Photoshop operation indicating success status.\n    \nRaises:\n    RuntimeError: If no active selection exists.",
+          "params": []
+        },
+        {
+          "name": "copy_selection_to_clipboard",
+          "action": "copySelectionToClipboard",
+          "doc": "Copies the selected pixels from the specified layer to the system clipboard.\n\nThis function requires an active selection. If no selection is active, the operation will fail.\n\nArgs:\n    layer_id (int): The name of the layer that contains the pixels to copy.\n    \nReturns:\n    dict: Response from the Photoshop operation indicating success status.",
+          "params": [
+            {
+              "name": "layer_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "select_subject",
+          "action": "selectSubject",
+          "doc": "Automatically selects the subject in the specified layer.\n\nThis function identifies and selects the subject in the given image layer. \nIt returns an object containing a property named `hasActiveSelection`, \nwhich indicates whether any pixels were selected (e.g., if no subject was detected).\n\nArgs:\n    layer_int (int): The name of that contains the image to select the subject from.",
+          "params": [
+            {
+              "name": "layer_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "select_sky",
+          "action": "selectSky",
+          "doc": "Automatically selects the sky in the specified layer.\n\nThis function identifies and selects the sky in the given image layer. \nIt returns an object containing a property named `hasActiveSelection`, \nwhich indicates whether any pixels were selected (e.g., if no sky was detected).\n\nArgs:\n    layer_id (int): The name of that contains the image to select the sky from.",
+          "params": [
+            {
+              "name": "layer_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "get_layer_bounds",
+          "action": "getLayerBounds",
+          "doc": "Returns the pixel bounds for the layer with the specified ID\n\nArgs:\n    layer_id (int): ID of the layer to get the bounds information from\n\nReturns:\n    dict: A dictionary containing the layer bounds with the following properties:\n        - left (int): The x-coordinate of the left edge of the layer\n        - top (int): The y-coordinate of the top edge of the layer\n        - right (int): The x-coordinate of the right edge of the layer\n        - bottom (int): The y-coordinate of the bottom edge of the layer\n        \nRaises:\n    RuntimeError: If the layer doesn't exist or if the operation fails",
+          "params": [
+            {
+              "name": "layer_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "remove_background",
+          "action": "removeBackground",
+          "doc": "Automatically removes the background of the image in the layer with the specified ID and keeps the main subject\n\nArgs:\n    layer_id (int): ID of the layer to remove the background from",
+          "params": [
+            {
+              "name": "layer_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "create_pixel_layer",
+          "action": "createPixelLayer",
+          "doc": "Creates a new pixel layer with the specified ID\n\nArgs:\n    layer_name (str): Name of the new layer being created\n    fill_neutral (bool): Whether to fill the layer with a neutral color when applying Blend Mode.\n    opacity (int): Opacity of the newly created layer\n    blend_mode (str): Blend mode of the newly created layer",
+          "params": [
+            {
+              "name": "layer_name",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "fill_neutral",
+              "annotation": "bool",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "opacity",
+              "annotation": "int",
+              "required": false,
+              "default": "100"
+            },
+            {
+              "name": "blend_mode",
+              "annotation": "str",
+              "required": false,
+              "default": "'NORMAL'"
+            }
+          ]
+        },
+        {
+          "name": "create_multi_line_text_layer",
+          "action": "createMultiLineTextLayer",
+          "doc": "Creates a new multi-line text layer with the specified ID within the current Photoshop document.\n\nArgs:\n    layer_name (str): The name of the layer to be created. Can be used to select in other api calls.\n    text (str): The text to include on the layer.\n    font_size (int): Font size.\n    postscript_font_name (string): Postscript Font Name to display the text in. Valid list available via get_option_info.\n    opacity (int): Opacity for the layer specified in percent.\n    blend_mode (str): Blend Mode for the layer. Valid list available via get_option_info\n    text_color (dict): Color of the text expressed in Red, Green, Blue values between 0 and 255\n    position (dict): Position (dict with x, y values) where the text will be placed in the layer. Based on bottom left point of the text.\n    bounds (dict): text bounding box\n    justification (str): text justification. Valid list available via get_option_info.",
+          "params": [
+            {
+              "name": "layer_name",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "text",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "font_size",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "postscript_font_name",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "opacity",
+              "annotation": "int",
+              "required": false,
+              "default": "100"
+            },
+            {
+              "name": "blend_mode",
+              "annotation": "str",
+              "required": false,
+              "default": "'NORMAL'"
+            },
+            {
+              "name": "text_color",
+              "annotation": "dict",
+              "required": false,
+              "default": "{'red': 255, 'green': 255, 'blue': 255}"
+            },
+            {
+              "name": "position",
+              "annotation": "dict",
+              "required": false,
+              "default": "{'x': 100, 'y': 100}"
+            },
+            {
+              "name": "bounds",
+              "annotation": "dict",
+              "required": false,
+              "default": "{'top': 0, 'left': 0, 'bottom': 250, 'right': 300}"
+            },
+            {
+              "name": "justification",
+              "annotation": "str",
+              "required": false,
+              "default": "'LEFT'"
+            }
+          ]
+        },
+        {
+          "name": "create_single_line_text_layer",
+          "action": "createSingleLineTextLayer",
+          "doc": "Create a new single line text layer with the specified ID within the current Photoshop document.\n\n Args:\n    layer_name (str): The name of the layer to be created. Can be used to select in other api calls.\n    text (str): The text to include on the layer.\n    font_size (int): Font size.\n    postscript_font_name (string): Postscript Font Name to display the text in. Valid list available via get_option_info.\n    opacity (int): Opacity for the layer specified in percent.\n    blend_mode (str): Blend Mode for the layer. Valid list available via get_option_info\n    text_color (dict): Color of the text expressed in Red, Green, Blue values between 0 and 255\n    position (dict): Position (dict with x, y values) where the text will be placed in the layer. Based on bottom left point of the text.",
+          "params": [
+            {
+              "name": "layer_name",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "text",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "font_size",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "postscript_font_name",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "opacity",
+              "annotation": "int",
+              "required": false,
+              "default": "100"
+            },
+            {
+              "name": "blend_mode",
+              "annotation": "str",
+              "required": false,
+              "default": "'NORMAL'"
+            },
+            {
+              "name": "text_color",
+              "annotation": "dict",
+              "required": false,
+              "default": "{'red': 255, 'green': 255, 'blue': 255}"
+            },
+            {
+              "name": "position",
+              "annotation": "dict",
+              "required": false,
+              "default": "{'x': 100, 'y': 100}"
+            }
+          ]
+        },
+        {
+          "name": "edit_text_layer",
+          "action": "editTextLayer",
+          "doc": "Edits the text content of an existing text layer in the current Photoshop document.\n\nArgs:\n    layer_id (int): The ID of the existing text layer to edit.\n    text (str): The new text content to replace the current text in the layer. If None, text will not be changed.\n    font_size (int): Font size. If None, size will not be changed.\n    postscript_font_name (string): Postscript Font Name to display the text in. Valid list available via get_option_info. If None, font will not will not be changed.\n    text_color (dict): Color of the text expressed in Red, Green, Blue values between 0 and 255 in format of {\"red\":255, \"green\":255, \"blue\":255}. If None, color will not be changed",
+          "params": [
+            {
+              "name": "layer_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "text",
+              "annotation": "str",
+              "required": false,
+              "default": "None"
+            },
+            {
+              "name": "font_size",
+              "annotation": "int",
+              "required": false,
+              "default": "None"
+            },
+            {
+              "name": "postscript_font_name",
+              "annotation": "str",
+              "required": false,
+              "default": "None"
+            },
+            {
+              "name": "text_color",
+              "annotation": "dict",
+              "required": false,
+              "default": "None"
+            }
+          ]
+        },
+        {
+          "name": "translate_layer",
+          "action": "translateLayer",
+          "doc": "    Moves the layer with the specified ID on the X and Y axis by the specified number of pixels.\n\nArgs:\n    layer_name (str): The name of the layer that should be moved.\n    x_offset (int): Amount to move on the horizontal axis. Negative values move the layer left, positive values right\n    y_offset (int): Amount to move on the vertical axis. Negative values move the layer down, positive values up",
+          "params": [
+            {
+              "name": "layer_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "x_offset",
+              "annotation": "int",
+              "required": false,
+              "default": "0"
+            },
+            {
+              "name": "y_offset",
+              "annotation": "int",
+              "required": false,
+              "default": "0"
+            }
+          ]
+        },
+        {
+          "name": "remove_layer_mask",
+          "action": "removeLayerMask",
+          "doc": "Removes the layer mask from the specified layer.\n\nArgs:\n    None",
+          "params": [
+            {
+              "name": "layer_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "add_layer_mask_from_selection",
+          "action": "addLayerMask",
+          "doc": "Creates a layer mask on the specified layer defined by the active selection.\n\nThis function takes the current active selection in the document and converts it into a layer mask\nfor the specified layer. Selected areas will be visible, while non-selected areas will be hidden.\nAn active selection must exist before calling this function.\n\nArgs:\n    layer_name (str): The name of the layer to which the mask will be applied",
+          "params": [
+            {
+              "name": "layer_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "set_layer_properties",
+          "action": "setLayerProperties",
+          "doc": "Sets the blend mode and opacity properties on the layer with the specified ID\n\nArgs:\n    layer_id (int): The ID of the layer whose properties should be updated\n    blend_mode (str): The blend mode for the layer\n    layer_opacity (int): The opacity for the layer (0 - 100)\n    fill_opacity (int): The fill opacity for the layer (0 - 100). Will ignore anny effects that have been applied to the layer.\n    is_clipping_mask (bool): A boolean indicating whether this layer will be clipped to (masked by) the layer below it",
+          "params": [
+            {
+              "name": "layer_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "blend_mode",
+              "annotation": "str",
+              "required": false,
+              "default": "'NORMAL'"
+            },
+            {
+              "name": "layer_opacity",
+              "annotation": "int",
+              "required": false,
+              "default": "100"
+            },
+            {
+              "name": "fill_opacity",
+              "annotation": "int",
+              "required": false,
+              "default": "100"
+            },
+            {
+              "name": "is_clipping_mask",
+              "annotation": "bool",
+              "required": false,
+              "default": "False"
+            }
+          ]
+        },
+        {
+          "name": "fill_selection",
+          "action": "fillSelection",
+          "doc": "Fills the selection on the pixel layer with the specified ID\n\nArgs:\n    layer_id (int): The ID of existing pixel layer to add the fill\n    color (dict): The color of the fill\n    blend_mode (dict): The blend mode for the fill\n    opacity (int) : The opacity of the color for the fill",
+          "params": [
+            {
+              "name": "layer_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "color",
+              "annotation": "dict",
+              "required": false,
+              "default": "{'red': 255, 'green': 0, 'blue': 0}"
+            },
+            {
+              "name": "blend_mode",
+              "annotation": "str",
+              "required": false,
+              "default": "'NORMAL'"
+            },
+            {
+              "name": "opacity",
+              "annotation": "int",
+              "required": false,
+              "default": "100"
+            }
+          ]
+        },
+        {
+          "name": "delete_selection",
+          "action": "deleteSelection",
+          "doc": "Removes the pixels within the selection on the pixel layer with the specified ID\n\nArgs:\n    layer_id (int): The ID of the layer from which the content of the selection should be deleted",
+          "params": [
+            {
+              "name": "layer_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "invert_selection",
+          "action": "invertSelection",
+          "doc": "Inverts the current selection in the Photoshop document",
+          "params": []
+        },
+        {
+          "name": "clear_selection",
+          "action": "selectRectangle",
+          "doc": "Clears / deselects the current selection",
+          "params": []
+        },
+        {
+          "name": "select_rectangle",
+          "action": "selectRectangle",
+          "doc": "Creates a rectangular selection and selects the specified layer\n\nArgs:\n    layer_id (int): The layer to do the select rectangle action on.\n    feather (int): The amount of feathering in pixels to apply to the selection (0 - 1000)\n    anti_alias (bool): Whether anti-aliases is applied to the selection\n    bounds (dict): The bounds for the rectangle selection",
+          "params": [
+            {
+              "name": "layer_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "feather",
+              "annotation": "int",
+              "required": false,
+              "default": "0"
+            },
+            {
+              "name": "anti_alias",
+              "annotation": "bool",
+              "required": false,
+              "default": "True"
+            },
+            {
+              "name": "bounds",
+              "annotation": "dict",
+              "required": false,
+              "default": "{'top': 0, 'left': 0, 'bottom': 100, 'right': 100}"
+            }
+          ]
+        },
+        {
+          "name": "select_polygon",
+          "action": "selectPolygon",
+          "doc": "Creates an n-sided polygon selection and selects the specified layer\n\nArgs:\n    layer_id (int): The layer to do the selection action on.\n    feather (int): The amount of feathering in pixels to apply to the selection (0 - 1000)\n    anti_alias (bool): Whether anti-aliases is applied to the selection\n    points (list): The points that define the sides of the selection, defined via a list of dicts with x, y values.",
+          "params": [
+            {
+              "name": "layer_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "feather",
+              "annotation": "int",
+              "required": false,
+              "default": "0"
+            },
+            {
+              "name": "anti_alias",
+              "annotation": "bool",
+              "required": false,
+              "default": "True"
+            },
+            {
+              "name": "points",
+              "annotation": "list[dict[str, int]]",
+              "required": false,
+              "default": "[{'x': 50, 'y': 10}, {'x': 100, 'y': 90}, {'x': 10, 'y': 40}]"
+            }
+          ]
+        },
+        {
+          "name": "select_ellipse",
+          "action": "selectEllipse",
+          "doc": "Creates an elliptical selection and selects the specified layer\n\nArgs:\n    layer_id (int): The layer to do the selection action on.\n    feather (int): The amount of feathering in pixels to apply to the selection (0 - 1000)\n    anti_alias (bool): Whether anti-aliases is applied to the selection\n    bounds (dict): The bounds that will define the elliptical selection.",
+          "params": [
+            {
+              "name": "layer_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "feather",
+              "annotation": "int",
+              "required": false,
+              "default": "0"
+            },
+            {
+              "name": "anti_alias",
+              "annotation": "bool",
+              "required": false,
+              "default": "True"
+            },
+            {
+              "name": "bounds",
+              "annotation": "dict",
+              "required": false,
+              "default": "{'top': 0, 'left': 0, 'bottom': 100, 'right': 100}"
+            }
+          ]
+        },
+        {
+          "name": "align_content",
+          "action": "alignContent",
+          "doc": "Aligns content on layer with the specified ID to the current selection.\n\nArgs:\n    layer_id (int): The ID of the layer in which to align the content\n    alignment_mode (str): How the content should be aligned. Available options via alignment_modes",
+          "params": [
+            {
+              "name": "layer_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "alignment_mode",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "add_drop_shadow_layer_style",
+          "action": "addDropShadowLayerStyle",
+          "doc": "Adds a drop shadow layer style to the layer with the specified ID\n\nArgs:\n    layer_id (int): The ID for the layer with the content to add the drop shadow to\n    blend_mode (str): The blend mode for the drop shadow\n    color (dict): The color for the drop shadow\n    opacity (int): The opacity of the drop shadow\n    angle (int): The angle (-180 to 180) of the drop shadow relative to the content\n    distance (int): The distance in pixels of the drop shadow (0 to 30000)\n    spread (int): Defines how gradually the shadow fades out at its edges, with higher values creating a harsher, more defined edge, and lower values a softer, more feathered edge (0 to 100)\n    size (int): Control the blur and spread of the shadow effect (0 to 250)",
+          "params": [
+            {
+              "name": "layer_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "blend_mode",
+              "annotation": "str",
+              "required": false,
+              "default": "'MULTIPLY'"
+            },
+            {
+              "name": "color",
+              "annotation": "dict",
+              "required": false,
+              "default": "{'red': 0, 'green': 0, 'blue': 0}"
+            },
+            {
+              "name": "opacity",
+              "annotation": "int",
+              "required": false,
+              "default": "35"
+            },
+            {
+              "name": "angle",
+              "annotation": "int",
+              "required": false,
+              "default": "160"
+            },
+            {
+              "name": "distance",
+              "annotation": "int",
+              "required": false,
+              "default": "3"
+            },
+            {
+              "name": "spread",
+              "annotation": "int",
+              "required": false,
+              "default": "0"
+            },
+            {
+              "name": "size",
+              "annotation": "int",
+              "required": false,
+              "default": "7"
+            }
+          ]
+        },
+        {
+          "name": "duplicate_layer",
+          "action": "duplicateLayer",
+          "doc": "Duplicates the layer specified by layer_to_duplicate_id ID, creating a new layer above it with the name specified by duplicate_layer_name\n\nArgs:\n    layer_to_duplicate_id (id): The id of the layer to be duplicated\n    duplicate_layer_name (str): Name for the newly created layer",
+          "params": [
+            {
+              "name": "layer_to_duplicate_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "duplicate_layer_name",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "flatten_all_layers",
+          "action": "flattenAllLayers",
+          "doc": "Flatten all layers in the document into a single layer with specified name\n\nArgs:\n    layer_name (str): The name of the merged layer",
+          "params": [
+            {
+              "name": "layer_name",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "add_color_balance_adjustment_layer",
+          "action": "addColorBalanceAdjustmentLayer",
+          "doc": "Adds an adjustment layer to the layer with the specified ID to adjust color balance\n\nEach property highlights, midtones and shadows contains an array of 3 values between\n-100 and 100 that represent the relative position between two colors.\n\nFirst value is between cyan and red\nThe second value is between magenta and green\nThe third value is between yellow and blue    \n\nArgs:\n    layer_id (int): The ID of the layer to apply the color balance adjustment layer\n    highlights (list): Relative color values for highlights\n    midtones (list): Relative color values for midtones\n    shadows (list): Relative color values for shadows",
+          "params": [
+            {
+              "name": "layer_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "highlights",
+              "annotation": "list",
+              "required": false,
+              "default": "[0, 0, 0]"
+            },
+            {
+              "name": "midtones",
+              "annotation": "list",
+              "required": false,
+              "default": "[0, 0, 0]"
+            },
+            {
+              "name": "shadows",
+              "annotation": "list",
+              "required": false,
+              "default": "[0, 0, 0]"
+            }
+          ]
+        },
+        {
+          "name": "add_brightness_contrast_adjustment_layer",
+          "action": "addBrightnessContrastAdjustmentLayer",
+          "doc": "Adds an adjustment layer to the layer with the specified ID to adjust brightness and contrast\n\nArgs:\n    layer_id (int): The ID of the layer to apply the brightness and contrast adjustment layer\n    brightness (int): The brightness value (-150 to 150)\n    contrasts (int): The contrast value (-50 to 100)",
+          "params": [
+            {
+              "name": "layer_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "brightness",
+              "annotation": "int",
+              "required": false,
+              "default": "0"
+            },
+            {
+              "name": "contrast",
+              "annotation": "int",
+              "required": false,
+              "default": "0"
+            }
+          ]
+        },
+        {
+          "name": "add_stroke_layer_style",
+          "action": "addStrokeLayerStyle",
+          "doc": "Adds a stroke layer style to the layer with the specified ID.\n\nArgs:\n    layer_id (int): The ID of the layer to apply the stroke effect to.\n    size (int, optional): The width of the stroke in pixels. Defaults to 2.\n    color (dict, optional): The color of the stroke as RGB values. Defaults to black {\"red\": 0, \"green\": 0, \"blue\": 0}.\n    opacity (int, optional): The opacity of the stroke as a percentage (0-100). Defaults to 100.\n    position (str, optional): The position of the stroke relative to the layer content. \n                             Options include \"CENTER\", \"INSIDE\", or \"OUTSIDE\". Defaults to \"CENTER\".\n    blend_mode (str, optional): The blend mode for the stroke effect. Defaults to \"NORMAL\".",
+          "params": [
+            {
+              "name": "layer_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "size",
+              "annotation": "int",
+              "required": false,
+              "default": "2"
+            },
+            {
+              "name": "color",
+              "annotation": "dict",
+              "required": false,
+              "default": "{'red': 0, 'green': 0, 'blue': 0}"
+            },
+            {
+              "name": "opacity",
+              "annotation": "int",
+              "required": false,
+              "default": "100"
+            },
+            {
+              "name": "position",
+              "annotation": "str",
+              "required": false,
+              "default": "'CENTER'"
+            },
+            {
+              "name": "blend_mode",
+              "annotation": "str",
+              "required": false,
+              "default": "'NORMAL'"
+            }
+          ]
+        },
+        {
+          "name": "add_vibrance_adjustment_layer",
+          "action": "addAdjustmentLayerVibrance",
+          "doc": "Adds an adjustment layer to layer with the specified ID to adjust vibrance and saturation\n\nArgs:\n    layer_id (int): The ID of the layer to apply the vibrance and saturation adjustment layer\n    vibrance (int): Controls the intensity of less-saturated colors while preventing oversaturation of already-saturated colors. Range -100 to 100.\n    saturation (int): Controls the intensity of all colors equally. Range -100 to 100.",
+          "params": [
+            {
+              "name": "layer_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "vibrance",
+              "annotation": "int",
+              "required": false,
+              "default": "0"
+            },
+            {
+              "name": "saturation",
+              "annotation": "int",
+              "required": false,
+              "default": "0"
+            }
+          ]
+        },
+        {
+          "name": "add_black_and_white_adjustment_layer",
+          "action": "addAdjustmentLayerBlackAndWhite",
+          "doc": "Adds a Black & White adjustment layer to the specified layer.\n\nCreates an adjustment layer that converts the target layer to black and white. Optionally applies a color tint to the result.\n\nArgs:\n    layer_id (int): The ID of the layer to apply the black and white adjustment to.\n    colors (dict): Controls how each color channel converts to grayscale. Values range from \n                  -200 to 300, with higher values making that color appear lighter in the \n                  conversion. Must include all keys: red, yellow, green, cyan, blue, magenta.\n    tint (bool, optional): Whether to apply a color tint to the black and white result.\n                          Defaults to False.\n    tint_color (dict, optional): The RGB color dict to use for tinting\n                                with \"red\", \"green\", and \"blue\" keys (values 0-255).",
+          "params": [
+            {
+              "name": "layer_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "colors",
+              "annotation": "dict",
+              "required": false,
+              "default": "{'blue': 20, 'cyan': 60, 'green': 40, 'magenta': 80, 'red': 40, 'yellow': 60}"
+            },
+            {
+              "name": "tint",
+              "annotation": "bool",
+              "required": false,
+              "default": "False"
+            },
+            {
+              "name": "tint_color",
+              "annotation": "dict",
+              "required": false,
+              "default": "{'red': 225, 'green': 211, 'blue': 179}"
+            }
+          ]
+        },
+        {
+          "name": "apply_gaussian_blur",
+          "action": "applyGaussianBlur",
+          "doc": "Applies a Gaussian Blur to the layer with the specified ID\n\nArgs:\n    layer_id (int): ID of layer to be blurred\n    radius (float): The blur radius in pixels determining the intensity of the blur effect. Default is 2.5.\n    Valid values range from 0.1 (subtle blur) to 10000 (extreme blur).\n\nReturns:\n    dict: Response from the Photoshop operation\n    \nRaises:\n    RuntimeError: If the operation fails or times out",
+          "params": [
+            {
+              "name": "layer_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "radius",
+              "annotation": "float",
+              "required": false,
+              "default": "2.5"
+            }
+          ]
+        },
+        {
+          "name": "apply_motion_blur",
+          "action": "applyMotionBlur",
+          "doc": "Applies a Motion Blur to the layer with the specified ID\n\nArgs:\nlayer_id (int): ID of layer to be blurred\nangle (int): The angle in degrees (0 to 360) that determines the direction of the motion blur effect. Default is 0.\ndistance (float): The distance in pixels that controls the length/strength of the motion blur. Default is 30.\n    Higher values create a more pronounced motion effect.\n\nReturns:\n    dict: Response from the Photoshop operation\n    \nRaises:\n    RuntimeError: If the operation fails or times out",
+          "params": [
+            {
+              "name": "layer_id",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "angle",
+              "annotation": "int",
+              "required": false,
+              "default": "0"
+            },
+            {
+              "name": "distance",
+              "annotation": "float",
+              "required": false,
+              "default": "30"
+            }
+          ]
+        }
+      ],
+      "resources": [
+        {
+          "uri": "config://get_instructions",
+          "function": "get_instructions",
+          "doc": "Read this first! Returns information and instructions on how to use Photoshop and this API"
+        }
+      ]
+    },
+    {
+      "server_key": "ps-batch-play",
+      "file": "reference/mcp/ps-batch-play.py",
+      "mcp_name": "Adobe Photoshop Batch Play MCP Server",
+      "application": "photoshop",
+      "proxy_url": "http://localhost:3001",
+      "proxy_timeout": 20,
+      "tool_count": 1,
+      "resource_count": 1,
+      "tools": [
+        {
+          "name": "call_batch_play_command",
+          "action": "executeBatchPlayCommand",
+          "doc": "Executes arbitrary Photoshop batchPlay commands via MCP.\n\nArgs:\n    commands (str): A raw JSON string representing a list of batchPlay descriptors.\n        This should be the exact JSON string you would pass to `batchPlay()` in a UXP plugin.\n\nReturns:\n    Any: The result returned from Photoshop after executing the batchPlay command(s).\n\nExample:\n    >>> commands = '''\n    ... [\n    ...     {\n    ...         \"_obj\": \"exportDocumentAs\",\n    ...         \"exportAs\": {\n    ...             \"_obj\": \"exportAsPNG\",\n    ...             \"interlaced\": false,\n    ...             \"transparency\": true,\n    ...             \"metadata\": 1\n    ...         },\n    ...         \"documentID\": 1234,\n    ...         \"saveFile\": {\n    ...             \"_path\": \"/Users/yourname/Downloads/export.png\",\n    ...             \"_kind\": \"local\"\n    ...         },\n    ...         \"overwrite\": true\n    ...     }\n    ... ]\n    ... '''\n    >>> result = call_batch_play_command(commands)\n    >>> print(result)\n    # Output from Photoshop will be returned as-is (usually a list of response descriptors)",
+          "params": [
+            {
+              "name": "commands",
+              "annotation": "list",
+              "required": true,
+              "default": null
+            }
+          ]
+        }
+      ],
+      "resources": [
+        {
+          "uri": "config://get_instructions",
+          "function": "get_instructions",
+          "doc": "Read this first! Returns information and instructions on how to use Photoshop and this API"
+        }
+      ]
+    },
+    {
+      "server_key": "pr",
+      "file": "reference/mcp/pr-mcp.py",
+      "mcp_name": "Adobe Premiere MCP Server",
+      "application": "premiere",
+      "proxy_url": "http://localhost:3001",
+      "proxy_timeout": 20,
+      "tool_count": 26,
+      "resource_count": 1,
+      "tools": [
+        {
+          "name": "get_project_info",
+          "action": "getProjectInfo",
+          "doc": "Returns info on the currently active project in Premiere Pro.",
+          "params": []
+        },
+        {
+          "name": "save_project",
+          "action": "saveProject",
+          "doc": "Saves the active project in Premiere Pro.",
+          "params": []
+        },
+        {
+          "name": "save_project_as",
+          "action": "saveProjectAs",
+          "doc": "Saves the current Premiere project to the specified location.\n\nArgs:\n    file_path (str): The absolute path (including filename) where the file will be saved.\n        Example: \"/Users/username/Documents/project.prproj\"",
+          "params": [
+            {
+              "name": "file_path",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "open_project",
+          "action": "openProject",
+          "doc": "Opens the Premiere project at the specified path.\n\nArgs:\n    file_path (str): The absolute path (including filename) of the Premiere Pro project to open.\n        Example: \"/Users/username/Documents/project.prproj\"",
+          "params": [
+            {
+              "name": "file_path",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "create_project",
+          "action": "createProject",
+          "doc": "Create a new Premiere project.\n\nCreates a new Adobe Premiere project file, saves it to the specified location and then opens it in Premiere.\n\nThe function initializes an empty project with default settings.\n\nArgs:\n    directory_path (str): The full path to the directory where the project file will be saved. This directory must exist before calling the function.\n    project_name (str): The name to be given to the project file. The '.prproj' extension will be added.",
+          "params": [
+            {
+              "name": "directory_path",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "project_name",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "create_bin_in_active_project",
+          "action": "createBinInActiveProject",
+          "doc": "Creates a new bin / folder in the root project.\n\nArgs:\n    name (str) : The name of the bin to be created",
+          "params": [
+            {
+              "name": "bin_name",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "export_sequence",
+          "action": "exportSequence",
+          "doc": "Exports a Premiere Pro sequence to a video file using specified export settings.\n\nThis function renders and exports the specified sequence from the active Premiere Pro project\nto a video file on the file system. The export process uses a preset file to determine\nencoding settings, resolution, format, and other export parameters.\n\nArgs:\n    sequence_id (str): The unique identifier of the sequence to export.\n        This should be the ID of an existing sequence in the current Premiere Pro project.\n        \n    output_path (str): The complete file system path where the exported video will be saved.\n        Must include the full directory path, filename, and appropriate file extension.\n        \n    preset_path (str): The file system path to the export preset file (.epr) that defines the export settings including codec, resolution, bitrate, and format.\n    \n    IMPORTANT: The export may take an extended period of time, so if the call times out, it most likely means the export is still in progress.",
+          "params": [
+            {
+              "name": "sequence_id",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "output_path",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "preset_path",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "move_project_items_to_bin",
+          "action": "moveProjectItemsToBin",
+          "doc": "Moves specified project items to an existing bin/folder in the project.\n\nArgs:\n    item_names (list[str]): A list of names of project items to move to the specified bin.\n        These should be the exact names of items as they appear in the project.\n    bin_name (str): The name of the existing bin to move the project items to.\n        The bin must already exist in the project.\n        \nReturns:\n    dict: Response from the Premiere Pro operation indicating success status.\n    \nRaises:\n    RuntimeError: If the bin doesn't exist, items don't exist, or the operation fails.\n    \nExample:\n    move_project_items_to_bin(\n        item_names=[\"video1.mp4\", \"audio1.wav\", \"image1.png\"], \n        bin_name=\"Media Assets\"\n    )",
+          "params": [
+            {
+              "name": "item_names",
+              "annotation": "list[str]",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "bin_name",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "set_audio_track_mute",
+          "action": "setAudioTrackMute",
+          "doc": "Sets the mute property on the specified audio track. If mute is true, all clips on the track will be muted and not played.\n\nArgs:\n    sequence_id (str) : The id of the sequence on which to set the audio track mute.\n    audio_track_index (int): The index of the audio track to mute or unmute. Indices start at 0 for the first audio track.\n    mute (bool): Whether the track should be muted.\n        - True: Mutes the track (audio will not be played)\n        - False: Unmutes the track (audio will be played normally)",
+          "params": [
+            {
+              "name": "sequence_id",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "audio_track_index",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "mute",
+              "annotation": "bool",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "set_active_sequence",
+          "action": "setActiveSequence",
+          "doc": "Sets the sequence with the specified id as the active sequence within Premiere Pro (currently selected and visible in timeline)\n\nArgs:\n    sequence_id (str): ID for the sequence to be set as active",
+          "params": [
+            {
+              "name": "sequence_id",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "create_sequence_from_media",
+          "action": "createSequenceFromMedia",
+          "doc": "Creates a new sequence from the specified project items, placing clips on the timeline in the order they are provided.\n\nIf there is not an active sequence the newly created sequence will be set as the active sequence when created.\n\nArgs:\n    item_names (list[str]): A list of project item names to include in the sequence in the desired order.\n    sequence_name (str, optional): The name to give the new sequence. Defaults to \"default\".",
+          "params": [
+            {
+              "name": "item_names",
+              "annotation": "list[str]",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "sequence_name",
+              "annotation": "str",
+              "required": false,
+              "default": "'default'"
+            }
+          ]
+        },
+        {
+          "name": "close_gaps_on_sequence",
+          "action": "closeGapsOnSequence",
+          "doc": "Closes gaps on the specified track(s) in a sequence's timeline.\n\nThis function removes empty spaces (gaps) between clips on the timeline by moving\nclips leftward to fill any empty areas. This is useful for cleaning up the timeline\nafter removing clips or when clips have been moved leaving gaps.\n\nArgs:\n    sequence_id (str): The ID of the sequence to close gaps on.\n    track_index (int): The index of the track to close gaps on.\n        Track indices start at 0 for the first track and increment upward.\n        For video tracks, this refers to video track indices.\n        For audio tracks, this refers to audio track indices.\n    track_type (str): Specifies which type of tracks to close gaps on.\n        Valid values:\n        - \"VIDEO\": Close gaps only on the specified video track\n        - \"AUDIO\": Close gaps only on the specified audio track  ",
+          "params": [
+            {
+              "name": "sequence_id",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "track_index",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "track_type",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "remove_item_from_sequence",
+          "action": "removeItemFromSequence",
+          "doc": "Removes a specified media item from the sequence's timeline.\n\nArgs:\n    sequence_id (str): The id for the sequence to remove the media from\n    track_index (int): The index of the track containing the target clip.\n        Track indices start at 0 for the first track and increment upward.\n    track_item_index (int): The index of the clip within the track to remove.\n        Clip indices start at 0 for the first clip in the track and increment from left to right.\n    track_type (str): Specifies which type of tracks being removed.\n        Valid values:\n        - \"VIDEO\": Close gaps only on the specified video track\n        - \"AUDIO\": Close gaps only on the specified audio track\n    ripple_delete (bool, optional): Whether to perform a ripple delete operation. Defaults to True.\n        - True: Removes the clip and shifts all subsequent clips leftward to close the gap\n        - False: Removes the clip but leaves a gap in the timeline where the clip was located",
+          "params": [
+            {
+              "name": "sequence_id",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "track_index",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "track_item_index",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "track_type",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "ripple_delete",
+              "annotation": "bool",
+              "required": false,
+              "default": "True"
+            }
+          ]
+        },
+        {
+          "name": "add_marker_to_sequence",
+          "action": "addMarkerToSequence",
+          "doc": "Adds a marker to the specified sequence.\n\nArgs:\n    sequence_id (str): \n        The ID of the sequence to which the marker will be added.\n\n    marker_name (str): \n        The name/title of the marker.\n\n    start_time_ticks (int): \n        The timeline position where the marker starts, in ticks.\n        (1 tick = 1/254016000000 of a day)\n\n    duration_ticks (int): \n        The length of the marker in ticks.\n\n    comments (str): \n        Optional text comment to store in the marker.\n\n    marker_type (str, optional): \n        The type of marker to add. Defaults to \"Comment\".\n        \n        Supported marker types include:\n            - \"Comment\"      \u2192 General-purpose note marker.",
+          "params": [
+            {
+              "name": "sequence_id",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "marker_name",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "start_time_ticks",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "duration_ticks",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "comments",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "marker_type",
+              "annotation": "str",
+              "required": false,
+              "default": "'Comment'"
+            }
+          ]
+        },
+        {
+          "name": "add_media_to_sequence",
+          "action": "addMediaToSequence",
+          "doc": "Adds a specified media item to the active sequence's timeline.\n\nArgs:\n    sequence_id (str) : The id for the sequence to add the media to\n    item_name (str): The name or identifier of the media item to add.\n    video_track_index (int): The index of the video track where the item should be inserted.\n    audio_track_index (int): The index of the audio track where the item should be inserted.\n    insertion_time_ticks (int): The position on the timeline in ticks, with 0 being the beginning. The API will return positions of existing clips in ticks\n    overwrite (bool, optional): Whether to overwrite existing content at the insertion point. Defaults to True. If False, any existing clips that overlap will be split and item inserted.",
+          "params": [
+            {
+              "name": "sequence_id",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "item_name",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "video_track_index",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "audio_track_index",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "insertion_time_ticks",
+              "annotation": "int",
+              "required": false,
+              "default": "0"
+            },
+            {
+              "name": "overwrite",
+              "annotation": "bool",
+              "required": false,
+              "default": "True"
+            }
+          ]
+        },
+        {
+          "name": "set_clip_disabled",
+          "action": "setClipDisabled",
+          "doc": "Enables or disables a clip in the timeline.\n\nArgs:\n    sequence_id (str): The id for the sequence to set the clip disabled property.\n    track_index (int): The index of the track containing the target clip.\n        Track indices start at 0 for the first track and increment upward.\n        For video tracks, this refers to video track indices.\n        For audio tracks, this refers to audio track indices.\n    track_item_index (int): The index of the clip within the track to enable/disable.\n        Clip indices start at 0 for the first clip in the track and increment from left to right.\n    track_type (str): Specifies which type of track to modify.\n        Valid values:\n        - \"VIDEO\": Modify clips on the specified video track\n        - \"AUDIO\": Modify clips on the specified audio track\n    disabled (bool): Whether to disable the clip.\n        - True: Disables the clip (clip will not be visible during playback or export)\n        - False: Enables the clip (normal visibility)",
+          "params": [
+            {
+              "name": "sequence_id",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "track_index",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "track_item_index",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "track_type",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "disabled",
+              "annotation": "bool",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "set_clip_start_end_times",
+          "action": "setClipStartEndTimes",
+          "doc": "Sets the start and end time boundaries for a specified clip in the timeline.\n\nThis function allows you to modify the duration and timing of video clips, audio clips, \nand images that are already placed in the timeline by adjusting their in and out points. \nThe clip can be trimmed to a shorter duration or extended to a longer duration.\n\nArgs:\n    sequence_id (str): The id for the sequence containing the clip to modify.\n    track_index (int): The index of the track containing the target clip.\n        Track indices start at 0 for the first track and increment upward.\n        For video tracks, this refers to video track indices.\n        For audio tracks, this refers to audio track indices.\n    track_item_index (int): The index of the clip within the track to modify.\n        Clip indices start at 0 for the first clip in the track and increment from left to right.\n    start_time_ticks (int): The new start time for the clip in ticks.\n    end_time_ticks (int): The new end time for the clip in ticks.\n    track_type (str): Specifies which type of tracks to modify clips on.\n        Valid values:\n        - \"VIDEO\": Modify clips only on the specified video track\n        - \"AUDIO\": Modify clips only on the specified audio track  \n    \nNote:\n    - To trim a clip: Set start/end times within the original clip's duration\n    - To extend a clip: Set end time beyond the original clip's duration  \n    - Works with video clips, audio clips, and image files (like PSD files)\n    - Times are specified in ticks (Premiere Pro's internal time unit)",
+          "params": [
+            {
+              "name": "sequence_id",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "track_index",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "track_item_index",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "start_time_ticks",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "end_time_ticks",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "track_type",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "add_black_and_white_effect",
+          "action": "appendVideoFilter",
+          "doc": "Adds a black and white effect to a clip at the specified track and position.\n\nArgs:\n    sequence_id (str) : The id for the sequence to add the effect to\n    video_track_index (int): The index of the video track containing the target clip.\n        Track indices start at 0 for the first video track and increment upward.\n    track_item_index (int): The index of the clip within the track to apply the effect to.\n        Clip indices start at 0 for the first clip in the track and increment from left to right.",
+          "params": [
+            {
+              "name": "sequence_id",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "video_track_index",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "track_item_index",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "get_sequence_frame_image",
+          "action": "exportFrame",
+          "doc": "Returns a jpeg of the specified timestamp in the specified sequence in Premiere pro as an MCP Image object that can be displayed.",
+          "params": [
+            {
+              "name": "sequence_id",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "seconds",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "export_frame",
+          "action": "exportFrame",
+          "doc": "Captures a specific frame from the sequence at the given timestamp\nand exports it as a PNG or JPG (depending on file extension) image file to the specified path.\n\nArgs:\n    sequence_id (str) : The id for the sequence to export the frame from\n    file_path (str): The destination path where the exported PNG / JPG image will be saved.\n        Must include the full directory path and filename with .png or .jpg extension.\n    seconds (int): The timestamp in seconds from the beginning of the sequence\n        where the frame should be captured. The frame closest to this time position\n        will be extracted.",
+          "params": [
+            {
+              "name": "sequence_id",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "file_path",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "seconds",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "add_gaussian_blur_effect",
+          "action": "appendVideoFilter",
+          "doc": "Adds a gaussian blur effect to a clip at the specified track and position.\n\nArgs:\n    sequence_id (str) : The id for the sequence to add the effect to\n    video_track_index (int): The index of the video track containing the target clip.\n        Track indices start at 0 for the first video track and increment upward.\n        \n    track_item_index (int): The index of the clip within the track to apply the effect to.\n        Clip indices start at 0 for the first clip in the track and increment from left to right.\n        \n    blurriness (float): The intensity of the blur effect. Higher values create stronger blur.\n        Recommended range is between 0.0 and 100.0 (Max 3000).\n        \n    blur_dimensions (str, optional): The direction of the blur effect. Defaults to \"HORIZONTAL_VERTICAL\".\n        Valid options are:\n        - \"HORIZONTAL_VERTICAL\": Blur in all directions\n        - \"HORIZONTAL\": Blur only horizontally\n        - \"VERTICAL\": Blur only vertically",
+          "params": [
+            {
+              "name": "sequence_id",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "video_track_index",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "track_item_index",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "blurriness",
+              "annotation": "float",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "blur_dimensions",
+              "annotation": "str",
+              "required": false,
+              "default": "'HORIZONTAL_VERTICAL'"
+            }
+          ]
+        },
+        {
+          "name": "add_tint_effect",
+          "action": "appendVideoFilter",
+          "doc": "Adds the tint effect to a clip at the specified track and position.\n\nThis function applies a tint effect that maps the dark and light areas of the clip to specified colors.\n\nArgs:\n    sequence_id (str) : The id for the sequence to add the effect to\n    video_track_index (int): The index of the video track containing the target clip.\n        Track indices start at 0 for the first video track and increment upward.\n        \n    track_item_index (int): The index of the clip within the track to apply the effect to.\n        Clip indices start at 0 for the first clip in the track and increment from left to right.\n        \n    black_map (dict): The RGB color values to map black/dark areas to, with keys \"red\", \"green\", and \"blue\".\n        Default is {\"red\":0, \"green\":0, \"blue\":0} (pure black).\n        \n    white_map (dict): The RGB color values to map white/light areas to, with keys \"red\", \"green\", and \"blue\".\n        Default is {\"red\":255, \"green\":255, \"blue\":255} (pure white).\n        \n    amount (int): The intensity of the tint effect as a percentage, ranging from 0 to 100.\n        Default is 100 (full tint effect).",
+          "params": [
+            {
+              "name": "sequence_id",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "video_track_index",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "track_item_index",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "black_map",
+              "annotation": "dict",
+              "required": false,
+              "default": "{'red': 0, 'green': 0, 'blue': 0}"
+            },
+            {
+              "name": "white_map",
+              "annotation": "dict",
+              "required": false,
+              "default": "{'red': 255, 'green': 255, 'blue': 255}"
+            },
+            {
+              "name": "amount",
+              "annotation": "int",
+              "required": false,
+              "default": "100"
+            }
+          ]
+        },
+        {
+          "name": "add_motion_blur_effect",
+          "action": "appendVideoFilter",
+          "doc": "Adds the directional blur effect to a clip at the specified track and position.\n\nThis function applies a motion blur effect that simulates movement in a specific direction.\n\nArgs:\n    sequence_id (str) : The id for the sequence to add the effect to\n    video_track_index (int): The index of the video track containing the target clip.\n        Track indices start at 0 for the first video track and increment upward.\n        \n    track_item_index (int): The index of the clip within the track to apply the effect to.\n        Clip indices start at 0 for the first clip in the track and increment from left to right.\n        \n    direction (int): The angle of the directional blur in degrees, ranging from 0 to 360.\n        - 0/360: Vertical blur upward\n        - 90: Horizontal blur to the right \n        - 180: Vertical blur downward\n        - 270: Horizontal blur to the left\n        \n    length (int): The intensity or distance of the blur effect, ranging from 0 to 1000.",
+          "params": [
+            {
+              "name": "sequence_id",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "video_track_index",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "track_item_index",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "direction",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "length",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "append_video_transition",
+          "action": "appendVideoTransition",
+          "doc": "Creates a transition between the specified clip and the adjacent clip on the timeline.\n\nIn general, you should keep transitions short (no more than 2 seconds is a good rule).\n\nArgs:\n    sequence_id (str) : The id for the sequence to add the transition to\n    video_track_index (int): The index of the video track containing the target clips.\n    track_item_index (int): The index of the clip within the track to apply the transition to.\n    transition_name (str): The name of the transition to apply. Must be a valid transition name (see below).\n    duration (float): The duration of the transition in seconds.\n    clip_alignment (float): Controls how the transition is distributed between the two clips.\n                            Range: 0.0 to 1.0, where:\n                            - 0.0 places transition entirely on the right (later) clip\n                            - 0.5 centers the transition equally between both clips (default)\n                            - 1.0 places transition entirely on the left (earlier) clip\n\nValid Transition Names:\n    Basic Transitions (ADBE):\n        - \"ADBE Additive Dissolve\"\n        - \"ADBE Cross Zoom\"\n        - \"ADBE Cube Spin\"\n        - \"ADBE Film Dissolve\"\n        - \"ADBE Flip Over\"\n        - \"ADBE Gradient Wipe\"\n        - \"ADBE Iris Cross\"\n        - \"ADBE Iris Diamond\"\n        - \"ADBE Iris Round\"\n        - \"ADBE Iris Square\"\n        - \"ADBE Page Peel\"\n        - \"ADBE Push\"\n        - \"ADBE Slide\"\n        - \"ADBE Wipe\"\n        \n    After Effects Transitions (AE.ADBE):\n        - \"AE.ADBE Center Split\"\n        - \"AE.ADBE Inset\"\n        - \"AE.ADBE Cross Dissolve New\"\n        - \"AE.ADBE Dip To White\"\n        - \"AE.ADBE Split\"\n        - \"AE.ADBE Whip\"\n        - \"AE.ADBE Non-Additive Dissolve\"\n        - \"AE.ADBE Dip To Black\"\n        - \"AE.ADBE Barn Doors\"\n        - \"AE.ADBE MorphCut\"",
+          "params": [
+            {
+              "name": "sequence_id",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "video_track_index",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "track_item_index",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "transition_name",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "duration",
+              "annotation": "float",
+              "required": false,
+              "default": "1.0"
+            },
+            {
+              "name": "clip_alignment",
+              "annotation": "float",
+              "required": false,
+              "default": "0.5"
+            }
+          ]
+        },
+        {
+          "name": "set_video_clip_properties",
+          "action": "setVideoClipProperties",
+          "doc": "Sets opacity and blend mode properties for a video clip in the timeline.\n\nThis function modifies the visual properties of a specific clip located on a specific video track\nin the active Premiere Pro sequence. The clip is identified by its track index and item index\nwithin that track.\n\nArgs:\n    sequence_id (str) : The id for the sequence to set the video clip properties\n    video_track_index (int): The index of the video track containing the target clip.\n        Track indices start at 0 for the first video track.\n    track_item_index (int): The index of the clip within the track to modify.\n        Clip indices start at 0 for the first clip on the track.\n    opacity (int, optional): The opacity value to set for the clip, as a percentage.\n        Valid values range from 0 (completely transparent) to 100 (completely opaque).\n        Defaults to 100.\n    blend_mode (str, optional): The blend mode to apply to the clip.\n        Must be one of the valid blend modes supported by Premiere Pro.\n        Defaults to \"NORMAL\".",
+          "params": [
+            {
+              "name": "sequence_id",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "video_track_index",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "track_item_index",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "opacity",
+              "annotation": "int",
+              "required": false,
+              "default": "100"
+            },
+            {
+              "name": "blend_mode",
+              "annotation": "str",
+              "required": false,
+              "default": "'NORMAL'"
+            }
+          ]
+        },
+        {
+          "name": "import_media",
+          "action": "importMedia",
+          "doc": "Imports a list of media files into the active Premiere project.\n\nArgs:\n    file_paths (list): A list of file paths (strings) to import into the project.\n        Each path should be a complete, valid path to a media file supported by Premiere Pro.",
+          "params": [
+            {
+              "name": "file_paths",
+              "annotation": "list",
+              "required": true,
+              "default": null
+            }
+          ]
+        }
+      ],
+      "resources": [
+        {
+          "uri": "config://get_instructions",
+          "function": "get_instructions",
+          "doc": "Read this first! Returns information and instructions on how to use Photoshop and this API"
+        }
+      ]
+    },
+    {
+      "server_key": "id",
+      "file": "reference/mcp/id-mcp.py",
+      "mcp_name": "Adobe InDesign MCP Server",
+      "application": "indesign",
+      "proxy_url": "http://localhost:3001",
+      "proxy_timeout": 20,
+      "tool_count": 1,
+      "resource_count": 1,
+      "tools": [
+        {
+          "name": "create_document",
+          "action": "createDocument",
+          "doc": "Creates a new InDesign document with specified dimensions and layout settings.\n\nArgs:\n    width (int): Document width in points (1 point = 1/72 inch)\n    height (int): Document height in points\n    pages (int, optional): Number of pages in the document. Defaults to 0.\n    pages_facing (bool, optional): Whether to create facing pages (spread layout). \n        Defaults to False.\n    columns (dict, optional): Column layout configuration with keys:\n        - count (int): Number of columns per page\n        - gutter (int): Space between columns in points\n        Defaults to {\"count\": 1, \"gutter\": 12}.\n    margins (dict, optional): Page margin settings in points with keys:\n        - top (int): Top margin\n        - bottom (int): Bottom margin  \n        - left (int): Left margin\n        - right (int): Right margin\n        Defaults to {\"top\": 36, \"bottom\": 36, \"left\": 36, \"right\": 36}.\n\nReturns:\n    dict: Result of the command execution from the InDesign UXP plugin",
+          "params": [
+            {
+              "name": "width",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "height",
+              "annotation": "int",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "pages",
+              "annotation": "int",
+              "required": false,
+              "default": "0"
+            },
+            {
+              "name": "pages_facing",
+              "annotation": "bool",
+              "required": false,
+              "default": "False"
+            },
+            {
+              "name": "columns",
+              "annotation": "dict",
+              "required": false,
+              "default": "{'count': 1, 'gutter': 12}"
+            },
+            {
+              "name": "margins",
+              "annotation": "dict",
+              "required": false,
+              "default": "{'top': 36, 'bottom': 36, 'left': 36, 'right': 36}"
+            }
+          ]
+        }
+      ],
+      "resources": [
+        {
+          "uri": "config://get_instructions",
+          "function": "get_instructions",
+          "doc": "Read this first! Returns information and instructions on how to use Photoshop and this API"
+        }
+      ]
+    },
+    {
+      "server_key": "ae",
+      "file": "reference/mcp/ae-mcp.py",
+      "mcp_name": "Adobe After Effects MCP Server",
+      "application": "aftereffects",
+      "proxy_url": "http://localhost:3001",
+      "proxy_timeout": 20,
+      "tool_count": 1,
+      "resource_count": 1,
+      "tools": [
+        {
+          "name": "execute_extend_script",
+          "action": "executeExtendScript",
+          "doc": "Executes arbitrary ExtendScript code in AfterEffects and returns the result.\n\nThe script should use 'return' to send data back. The result will be automatically\nJSON stringified. If the script throws an error, it will be caught and returned\nas an error object.\n\nArgs:\n    script_string (str): The ExtendScript code to execute. Must use 'return' to \n                       send results back.\n\nReturns:\n    any: The result returned from the ExtendScript, or an error object containing:\n        - error (str): Error message\n        - line (str): Line number where error occurred\n\nExample:\n    script = '''\n        var doc = app.activeDocument;\n        return {\n            name: doc.name,\n            path: doc.fullName.fsName,\n            layers: doc.layers.length\n        };\n    '''\n    result = execute_extend_script(script)",
+          "params": [
+            {
+              "name": "script_string",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            }
+          ]
+        }
+      ],
+      "resources": [
+        {
+          "uri": "config://get_instructions",
+          "function": "get_instructions",
+          "doc": "Read this first! Returns information and instructions on how to use AfterEffects and this API"
+        }
+      ]
+    },
+    {
+      "server_key": "ai",
+      "file": "reference/mcp/ai-mcp.py",
+      "mcp_name": "Adobe Illustrator MCP Server",
+      "application": "illustrator",
+      "proxy_url": "http://localhost:3001",
+      "proxy_timeout": 20,
+      "tool_count": 5,
+      "resource_count": 1,
+      "tools": [
+        {
+          "name": "get_documents",
+          "action": "getDocuments",
+          "doc": "Returns information about all currently open documents in Illustrator.",
+          "params": []
+        },
+        {
+          "name": "get_active_document_info",
+          "action": "getActiveDocumentInfo",
+          "doc": "Returns information about the current active document.",
+          "params": []
+        },
+        {
+          "name": "open_file",
+          "action": "openFile",
+          "doc": "Opens an Illustrator (.ai) file in Adobe Illustrator.\n\nArgs:\n    path (str): The absolute file path to the Illustrator file to open.\n        Example: \"/Users/username/Documents/my_artwork.ai\"\n\nReturns:\n    dict: Result containing:\n        - success (bool): Whether the file was opened successfully\n        - error (str): Error message if opening failed",
+          "params": [
+            {
+              "name": "path",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            }
+          ]
+        },
+        {
+          "name": "export_png",
+          "action": "exportPNG",
+          "doc": "Exports the active Illustrator document as a PNG file.\n\nArgs:\n    path (str): The absolute file path where the PNG will be saved.\n        Example: \"/Users/username/Documents/my_export.png\"\n    transparency (bool, optional): Enable/disable transparency. Defaults to True.\n    anti_aliasing (bool, optional): Enable/disable anti-aliasing for smooth edges. Defaults to True.\n    artboard_clipping (bool, optional): Clip export to artboard bounds. Defaults to True.\n    horizontal_scale (int, optional): Horizontal scale percentage (1-1000). Defaults to 100.\n    vertical_scale (int, optional): Vertical scale percentage (1-1000). Defaults to 100.\n    export_type (str, optional): PNG format type. \"PNG24\" (24-bit) or \"PNG8\" (8-bit). Defaults to \"PNG24\".\n    matte (bool, optional): Enable matte background color for transparency preview. \n        If None, uses Illustrator's default behavior.\n    matte_color (dict, optional): RGB color for matte background. Defaults to {\"red\": 255, \"green\": 255, \"blue\": 255}.\n        Dict with keys \"red\", \"green\", \"blue\" with values 0-255.\n\nReturns:\n    dict: Export result containing:\n        - success (bool): Whether the export succeeded\n        - filePath (str): The actual file path where the PNG was saved\n        - fileExists (bool): Whether the exported file exists\n        - options (dict): The export options that were used\n        - documentName (str): Name of the exported document\n        - error (str): Error message if export failed\n\nExample:\n    # Basic PNG export\n    result = export_png(\"/Users/username/Desktop/my_artwork.png\")\n    \n    # High-resolution export with transparency\n    result = export_png(\n        path=\"/Users/username/Desktop/high_res.png\",\n        horizontal_scale=300,\n        vertical_scale=300,\n        transparency=True\n    )\n    \n    # PNG8 export with red matte background\n    result = export_png(\n        path=\"/Users/username/Desktop/small_file.png\",\n        export_type=\"PNG8\",\n        matte=True,\n        matte_color={\"red\": 255, \"green\": 0, \"blue\": 0}\n    )\n    \n    # Blue matte background\n    result = export_png(\n        path=\"/Users/username/Desktop/blue_bg.png\",\n        matte=True,\n        matte_color={\"red\": 0, \"green\": 100, \"blue\": 255}\n    )",
+          "params": [
+            {
+              "name": "path",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            },
+            {
+              "name": "transparency",
+              "annotation": "bool",
+              "required": false,
+              "default": "True"
+            },
+            {
+              "name": "anti_aliasing",
+              "annotation": "bool",
+              "required": false,
+              "default": "True"
+            },
+            {
+              "name": "artboard_clipping",
+              "annotation": "bool",
+              "required": false,
+              "default": "True"
+            },
+            {
+              "name": "horizontal_scale",
+              "annotation": "int",
+              "required": false,
+              "default": "100"
+            },
+            {
+              "name": "vertical_scale",
+              "annotation": "int",
+              "required": false,
+              "default": "100"
+            },
+            {
+              "name": "export_type",
+              "annotation": "str",
+              "required": false,
+              "default": "'PNG24'"
+            },
+            {
+              "name": "matte",
+              "annotation": "bool",
+              "required": false,
+              "default": "None"
+            },
+            {
+              "name": "matte_color",
+              "annotation": "dict",
+              "required": false,
+              "default": "{'red': 255, 'green': 255, 'blue': 255}"
+            }
+          ]
+        },
+        {
+          "name": "execute_extend_script",
+          "action": "executeExtendScript",
+          "doc": "Executes arbitrary ExtendScript code in Illustrator and returns the result.\n\nThe script should use 'return' to send data back. The result will be automatically\nJSON stringified. If the script throws an error, it will be caught and returned\nas an error object.\n\nArgs:\n    script_string (str): The ExtendScript code to execute. Must use 'return' to \n                       send results back.\n\nReturns:\n    any: The result returned from the ExtendScript, or an error object containing:\n        - error (str): Error message\n        - line (str): Line number where error occurred\n\nExample:\n    script = '''\n        var comp = app.project.activeItem;\n        return {\n            name: comp.name,\n            layers: comp.numLayers\n        };\n    '''\n    result = execute_extend_script(script)",
+          "params": [
+            {
+              "name": "script_string",
+              "annotation": "str",
+              "required": true,
+              "default": null
+            }
+          ]
+        }
+      ],
+      "resources": [
+        {
+          "uri": "config://get_instructions",
+          "function": "get_instructions",
+          "doc": "Read this first! Returns information and instructions on how to use Illustrator and this API"
+        }
+      ]
+    }
+  ]
+}

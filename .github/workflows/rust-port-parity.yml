@@ -1,0 +1,42 @@
+name: rust-port-parity
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  parity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Generate compatibility artifacts
+        run: |
+          python scripts/generate_contract.py
+          python scripts/generate_command_fixtures.py
+
+      - name: Ensure generated artifacts are committed
+        run: git diff --exit-code contracts/mcp_compat_manifest.json contracts/command_packet_fixtures.json
+
+      - name: Contract invariant checks
+        run: python scripts/check_contract_invariants.py
+
+      - name: Cargo checks
+        run: |
+          cargo check
+          cargo test
+
+      - name: MCP stdio smoke tests
+        run: python scripts/smoke_mcp_stdio.py
+
+      - name: Hardening gate
+        run: python scripts/run_hardening_gate.py
