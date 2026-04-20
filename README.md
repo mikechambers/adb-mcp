@@ -89,6 +89,16 @@ This gate enforces:
 - Rust compile + tests
 - MCP smoke checks
 
+### Runtime Module Layout
+
+`rust-mcp` runtime split for maintainability:
+
+- `rust-mcp/src/manifest.rs`: contract load + server resolution
+- `rust-mcp/src/protocol.rs`: JSON-RPC request/response + MCP method handlers
+- `rust-mcp/src/transport.rs`: proxy socket command transport + payload mapping
+- `rust-mcp/src/stdio.rs`: Content-Length frame read/write helpers
+- `rust-mcp/src/main.rs`: thin orchestration entrypoint
+
 ### Naming Conventions
 
 - `server_key`: short identifier used by CLI and scripts (`ps`, `pr`, `ai`, etc.).

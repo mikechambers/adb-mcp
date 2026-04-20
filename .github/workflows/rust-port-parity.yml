@@ -27,16 +27,5 @@ jobs:
       - name: Ensure generated artifacts are committed
         run: git diff --exit-code contracts/mcp_compat_manifest.json contracts/command_packet_fixtures.json
 
-      - name: Contract invariant checks
-        run: python scripts/check_contract_invariants.py
-
-      - name: Cargo checks
-        run: |
-          cargo check
-          cargo test
-
-      - name: MCP stdio smoke tests
-        run: python scripts/smoke_mcp_stdio.py
-
       - name: Hardening gate
         run: python scripts/run_hardening_gate.py
