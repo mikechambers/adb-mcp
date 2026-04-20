@@ -89,6 +89,26 @@ This gate enforces:
 - Rust compile + tests
 - MCP smoke checks
 
+### Validation Workflow
+
+Use quick loop during active edits:
+
+```bash
+python scripts/generate_contract.py
+python scripts/generate_command_fixtures.py
+cargo test
+```
+
+Use full gate before commit/PR:
+
+```bash
+python scripts/run_hardening_gate.py
+```
+
+Rule of thumb:
+- quick loop: fast iteration while coding
+- full gate: merge-readiness and regression confidence
+
 ### Runtime Module Layout
 
 `rust-mcp` runtime split for maintainability:

@@ -113,6 +113,9 @@ pub(crate) fn map_failure_status(application: &str, response: Value) -> Result<V
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::sync::mpsc;
+    use std::thread;
+    use std::time::Duration;
 
     #[test]
     fn mock_proxy_contract_flow_success() {
@@ -138,5 +141,45 @@ mod tests {
     fn mock_proxy_contract_flow_malformed_payload() {
         let decoded = decode_packet_payload(Payload::Binary(vec![0, 159, 146, 150].into()));
         assert!(decoded.get("raw").is_some());
+    }
+
+    #[test]
+    fn decode_packet_payload_handles_multivalue_text() {
+        let decoded = decode_packet_payload(Payload::Text(vec![json!({"status":"SUCCESS"}), json!({"extra":true})]));
+        assert!(decoded.is_array());
+        assert_eq!(decoded.as_array().expect("array")[1]["extra"], true);
+    }
+
+    #[test]
+    fn decode_packet_payload_handles_malformed_json_text() {
+        #[allow(deprecated)]
+        let decoded = decode_packet_payload(Payload::String("not-json".to_string()));
+        assert_eq!(decoded["raw"], "not-json");
+    }
+
+    #[test]
+    fn map_failure_status_missing_status_passes_through() {
+        let out = map_failure_status("photoshop", json!({"message":"no-status"})).expect("no status should pass through");
+        assert_eq!(out["message"], "no-status");
+    }
+
+    #[test]
+    fn map_failure_status_missing_message_uses_default() {
+        let err = map_failure_status("photoshop", json!({"status":"FAILURE"})).expect_err("failure should error");
+        assert!(err
+            .to_string()
+            .contains("Unknown failure from plugin"));
+    }
+
+    #[test]
+    fn wait_for_response_accepts_near_timeout_response() {
+        let (tx, rx) = mpsc::channel::<Value>();
+        thread::spawn(move || {
+            thread::sleep(Duration::from_millis(25));
+            let _ = tx.send(json!({"status":"SUCCESS"}));
+        });
+
+        let out = wait_for_response("photoshop", 1, rx).expect("response before timeout should pass");
+        assert_eq!(out["status"], "SUCCESS");
     }
 }
