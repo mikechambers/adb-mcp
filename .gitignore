@@ -29,3 +29,14 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+*.whl

@@ -7,15 +7,18 @@
 </head>
 
 <body>
-
-
-
   <div>
     <sp-button id="btnStart">Connect</sp-button>
   </div>
   <p>&nbsp;</p>
   <div>
     <sp-checkbox id="chkConnectOnLaunch">Connect on Launch</sp-checkbox>
+  </div>
+  <p>&nbsp;</p>
+  <div class="settings">
+    <sp-label>Proxy URL:</sp-label>
+    <sp-textfield id="txtProxyUrl" placeholder="http://localhost:3001" style="width: 100%;"></sp-textfield>
+    <sp-button id="btnSaveSettings" variant="secondary" style="margin-top: 8px;">Save</sp-button>
   </div>
   <footer>
     <div>

@@ -29,20 +29,20 @@ def list_all_fonts_postscript():
     """
     Returns a list of PostScript names for all fonts installed on the system.
     Works on both Windows and macOS.
-    
+
     Returns:
         list: A list of PostScript font names as strings
     """
     postscript_names = []
-    
+
     # Get font directories based on platform
     font_dirs = []
-    
+
     if sys.platform == 'win32':  # Windows
         # Windows font directory
         if 'WINDIR' in os.environ:
             font_dirs.append(os.path.join(os.environ['WINDIR'], 'Fonts'))
-    
+
     elif sys.platform == 'darwin':  # macOS
         # macOS system font directories
         font_dirs.extend([
@@ -50,23 +50,32 @@ def list_all_fonts_postscript():
             '/Library/Fonts',
             os.path.expanduser('~/Library/Fonts')
         ])
-    
+
     else:
-        print(f"Unsupported platform: {sys.platform}")
-        return []
-    
+        # Linux or other: allow fonts to be provided via env or common paths
+        env_dirs = os.environ.get('FONT_DIRS')
+        if env_dirs:
+            font_dirs.extend([p.strip() for p in env_dirs.split(os.pathsep) if p.strip()])
+        else:
+            # Fallback to common Linux font locations
+            font_dirs.extend([
+                '/usr/share/fonts',
+                '/usr/local/share/fonts',
+                os.path.expanduser('~/.fonts')
+            ])
+
     # Get all font files from all directories
     font_extensions = ['*.ttf', '*.ttc', '*.otf']
     font_files = []
-    
+
     for font_dir in font_dirs:
         if os.path.exists(font_dir):
             for ext in font_extensions:
                 font_files.extend(glob.glob(os.path.join(font_dir, ext)))
-                # Also check subdirectories on macOS
-                if sys.platform == 'darwin':
+                # Also check subdirectories on macOS and Linux
+                if sys.platform in ('darwin', 'linux'):
                     font_files.extend(glob.glob(os.path.join(font_dir, '**', ext), recursive=True))
-    
+
     # Process each font file
     for font_path in font_files:
         try:
@@ -76,7 +85,7 @@ def list_all_fonts_postscript():
                     ttc = TTFont(font_path, fontNumber=0)
                     num_fonts = ttc.reader.numFonts
                     ttc.close()
-                    
+
                     # Extract PostScript name from each font in the collection
                     for i in range(num_fonts):
                         try:
@@ -101,23 +110,23 @@ def list_all_fonts_postscript():
                     print(f"Error processing font {font_path}: {e}")
         except Exception as e:
             print(f"Error with font file {font_path}: {e}")
- 
+
     return list(set(postscript_names))
 
 def _extract_postscript_name(font):
     """
     Extract the PostScript name from a TTFont object.
-    
+
     Args:
         font: A TTFont object
-        
+
     Returns:
         str: The PostScript name or None if not found
     """
     # Method 1: Try to get it from the name table (most reliable)
     if 'name' in font:
         name_table = font['name']
-        
+
         # PostScript name is stored with nameID 6
         for record in name_table.names:
             if record.nameID == 6:
@@ -129,7 +138,7 @@ def _extract_postscript_name(font):
                     )
                 except Exception:
                     pass
-    
+
     # Method 2: For CFF OpenType fonts
     if 'CFF ' in font:
         try:
@@ -138,7 +147,7 @@ def _extract_postscript_name(font):
                 return cff.cff.fontNames[0]
         except Exception:
             pass
-    
+
     return None
 
 if __name__ == "__main__":

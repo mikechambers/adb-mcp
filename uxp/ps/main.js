@@ -36,7 +36,19 @@ const { io } = require("./socket.io.js");
 const app = require("photoshop").app;
 
 const APPLICATION = "photoshop";
-const PROXY_URL = "http://localhost:3001";
+const DEFAULT_PROXY_URL = 'http://localhost:3001';
+const PROXY_URL_KEY = 'proxyUrl';
+
+// Get proxy URL from localStorage or use default
+function getProxyUrl() {
+  const saved = localStorage.getItem(PROXY_URL_KEY);
+  return saved || DEFAULT_PROXY_URL;
+}
+
+// Save proxy URL to localStorage
+function setProxyUrl(url) {
+  localStorage.setItem(PROXY_URL_KEY, url);
+}
 
 let socket = null;
 
@@ -72,9 +84,12 @@ const onCommandPacket = async (packet) => {
 };
 
 function connectToServer() {
+    const proxyUrl = getProxyUrl();
+    console.log(`Connecting to proxy: ${proxyUrl}`);
+
     // Create new Socket.IO connection
-    socket = io(PROXY_URL, {
-        transports: ["websocket"],
+    socket = io(proxyUrl, {
+      transports: ['websocket'],
     });
 
     socket.on("connect", () => {
@@ -217,9 +232,26 @@ const getConnectOnLaunch = () => {
 };
 
 // Set checkbox state on page load
-document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("chkConnectOnLaunch").checked =
-        getConnectOnLaunch();
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('chkConnectOnLaunch').checked = getConnectOnLaunch();
+
+  // Load saved proxy URL into textfield
+  document.getElementById('txtProxyUrl').value = getProxyUrl();
+});
+
+// Save settings button handler
+document.getElementById('btnSaveSettings').addEventListener('click', () => {
+  const newUrl = document.getElementById('txtProxyUrl').value.trim();
+  if (newUrl) {
+    setProxyUrl(newUrl);
+    console.log(`Proxy URL saved: ${newUrl}`);
+
+    // If connected, disconnect and reconnect with new URL
+    if (socket && socket.connected) {
+      disconnectFromServer();
+      setTimeout(() => connectToServer(), 500);
+    }
+  }
 });
 
 window.addEventListener("load", (event) => {

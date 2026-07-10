@@ -29,8 +29,12 @@ dev = [
     "mypy",
 ]
 
+[project.scripts]
+# Console scripts - run with: psmcp
+psmcp = "ps_mcp:main"
+
 [tool.setuptools]
-py-modules = ["fonts", "logger", "psmcp", "socket_client"]
+py-modules = ["core", "fonts", "logger", "ps_mcp", "socket_client"]
 
 [tool.black]
 line-length = 88

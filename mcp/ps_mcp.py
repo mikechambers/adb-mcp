@@ -31,25 +31,21 @@ import os
 
 FONT_LIMIT = 1000 #max number of font names to return to AI
 
-#logger.log(f"Python path: {sys.executable}")
-#logger.log(f"PYTHONPATH: {os.environ.get('PYTHONPATH')}")
-#logger.log(f"Current working directory: {os.getcwd()}")
-#logger.log(f"Sys.path: {sys.path}")
+# logger.log(f"Python path: {sys.executable}")
+# logger.log(f"PYTHONPATH: {os.environ.get('PYTHONPATH')}")
+# logger.log(f"Current working directory: {os.getcwd()}")
+# logger.log(f"Sys.path: {sys.path}")
 
 
 mcp_name = "Adobe Photoshop MCP Server"
 mcp = FastMCP(mcp_name, log_level="ERROR")
 print(f"{mcp_name} running on stdio", file=sys.stderr)
 
-APPLICATION = "photoshop"
-PROXY_URL = 'http://localhost:3001'
-PROXY_TIMEOUT = 20
+APPLICATION = os.environ.get("APPLICATION", "photoshop")
+PROXY_URL = os.environ.get("PROXY_URL", "ws://localhost:3001")
+PROXY_TIMEOUT = int(os.environ.get("PROXY_TIMEOUT", "20"))
 
-socket_client.configure(
-    app=APPLICATION, 
-    url=PROXY_URL,
-    timeout=PROXY_TIMEOUT
-)
+socket_client.configure(app=APPLICATION, url=PROXY_URL, timeout=PROXY_TIMEOUT)
 
 init(APPLICATION, socket_client)
 
@@ -125,7 +121,7 @@ def duplicate_document(document_name: str):
         Args:
             document_name (str): Name for the new document being created
     """
-    
+
     command = createCommand("duplicateDocument", {
         "name":document_name
     })
@@ -149,7 +145,7 @@ def create_document(document_name: str, width: int, height:int, resolution:int, 
             fill_color (dict): dict defining the background color fill of the new document
             color_mode (str): Color mode for the new document
     """
-    
+
     command = createCommand("createDocument", {
         "name":document_name,
         "width":width,
@@ -164,20 +160,20 @@ def create_document(document_name: str, width: int, height:int, resolution:int, 
 @mcp.tool()
 def export_layers_as_png(layers_info: list[dict[str, str|int]]):
     """Exports multiple layers from the Photoshop document as PNG files.
-    
-    This function exports each specified layer as a separate PNG image file to its 
+
+    This function exports each specified layer as a separate PNG image file to its
     corresponding file path. The entire layer, including transparent space will be saved.
-    
+
     Args:
         layers_info (list[dict[str, str|int]]): A list of dictionaries containing the export information.
             Each dictionary must have the following keys:
-                - "layerId" (int): The ID of the layer to export as PNG. 
+                - "layerId" (int): The ID of the layer to export as PNG.
                    This layer must exist in the current document.
                 - "filePath" (str): The absolute file path including filename where the PNG
                    will be saved (e.g., "/path/to/directory/layername.png").
                    The parent directory must already exist or the export will fail.
     """
-    
+
     command = createCommand("exportLayersAsPng", {
         "layersInfo":layers_info
     })
@@ -185,11 +181,10 @@ def export_layers_as_png(layers_info: list[dict[str, str|int]]):
     return sendCommand(command)
 
 
-
 @mcp.tool()
 def save_document_as(file_path: str, file_type: str = "PSD"):
     """Saves the current Photoshop document to the specified location and format.
-    
+
     Args:
         file_path (str): The absolute path (including filename) where the file will be saved.
             Example: "/Users/username/Documents/my_image.psd"
@@ -199,11 +194,11 @@ def save_document_as(file_path: str, file_type: str = "PSD"):
                 - "PSD": Adobe Photoshop Document (preserves layers and editability)
                 - "PNG": Portable Network Graphics (lossless compression with transparency)
                 - "JPG": Joint Photographic Experts Group (lossy compression)
-    
+
     Returns:
         dict: Response from the Photoshop operation indicating success status, and the path that the file was saved at
     """
-    
+
     command = createCommand("saveDocumentAs", {
         "filePath":file_path,
         "fileType":file_type
@@ -215,7 +210,7 @@ def save_document_as(file_path: str, file_type: str = "PSD"):
 def save_document():
     """Saves the current Photoshop Document
     """
-    
+
     command = createCommand("saveDocument", {
     })
 
@@ -295,35 +290,35 @@ def get_document_image():
 def save_document_image_as_png(file_path: str):
     """
     Capture the Photoshop document and save as PNG file
-    
+
     Args:
         file_path: Where to save the PNG file
-        
+
     Returns:
         dict: Status and file info
     """
     command = createCommand("getDocumentImage", {})
     response = sendCommand(command)
-    
+
     if response.get('format') == 'raw' and 'rawDataBase64' in response:
         try:
             # Decode raw data
             raw_bytes = base64.b64decode(response['rawDataBase64'])
-            
+
             # Extract metadata
             width = response['width']
             height = response['height']
             components = response['components']
-            
+
             # Convert to numpy array and reshape
             pixel_array = np.frombuffer(raw_bytes, dtype=np.uint8)
             image_array = pixel_array.reshape((height, width, components))
-            
+
             # Create and save PNG
             mode = 'RGBA' if components == 4 else 'RGB'
             image = Image.fromarray(image_array, mode)
             image.save(file_path, 'PNG')
-            
+
             return {
                 'status': 'success',
                 'file_path': file_path,
@@ -331,7 +326,7 @@ def save_document_image_as_png(file_path: str):
                 'height': height,
                 'size_bytes': os.path.getsize(file_path)
             }
-            
+
         except Exception as e:
             return {
                 'status': 'error',
@@ -349,7 +344,7 @@ def get_layers() -> list:
 
     Args:
         None
-        
+
     Returns:
         list: A nested list of dictionaries containing layer information and hierarchy.
             Each dict has at minimum a 'name' key with the layer name.
@@ -369,13 +364,13 @@ def place_image(
 ):
     """Places the image at the specified path on the existing pixel layer with the specified id.
 
-    The image will be placed on the center of the layer, and will fill the layer without changing its aspect ration (thus there may be bars at the top or bottom) 
+    The image will be placed on the center of the layer, and will fill the layer without changing its aspect ration (thus there may be bars at the top or bottom)
 
     Args:
         layer_id (int): The id of the layer where the image will be placed.
         image_path (str): The file path to the image that will be placed on the layer.
     """
-    
+
     command = createCommand("placeImage", {
         "layerId":layer_id,
         "imagePath":image_path
@@ -418,11 +413,11 @@ def rename_layers(
                 - "layer_id" (int): ID of the layer to be renamed.
                 - "new_layer_name" (str): New name for the layer.
     """
-    
+
     command = createCommand("renameLayers", {
         "layerData":layer_data
     })
-    
+
     return sendCommand(command)
 
 
@@ -443,7 +438,7 @@ def scale_layer(
         anchor_position (str): The anchor position to rotate around,
         interpolation_method (str): Interpolation method to use when resampling the image
     """
-    
+
     command = createCommand("scaleLayer", {
         "layerId":layer_id,
         "width":width,
@@ -470,7 +465,7 @@ def rotate_layer(
         anchor_position (str): The anchor position to rotate around,
         interpolation_method (str): Interpolation method to use when resampling the image
     """
-    
+
     command = createCommand("rotateLayer", {
         "layerId":layer_id,
         "angle":angle,
@@ -492,7 +487,7 @@ def flip_layer(
         layer_id (int): ID of layer to be scaled.
         axis (str): The axis on which to flip the layer. Valid values are "horizontal", "vertical" or "both"
     """
-    
+
     command = createCommand("flipLayer", {
         "layerId":layer_id,
         "axis":axis
@@ -510,13 +505,12 @@ def delete_layer(
     Args:
         layer_id (int): ID of the layer to be deleted
     """
-    
+
     command = createCommand("deleteLayer", {
         "layerId":layer_id
     })
 
     return sendCommand(command)
-
 
 
 @mcp.tool()
@@ -530,7 +524,7 @@ def set_layer_visibility(
         layer_id (int): ID of the layer to set visibility
         visible (bool): Whether the layer is visible
     """
-    
+
     command = createCommand("setLayerVisibility", {
         "layerId":layer_id,
         "visible":visible
@@ -555,7 +549,7 @@ def generate_image(
         prompt (str): Prompt describing the image to be generated
         content_type (str): The type of image to be generated. Options include "photo", "art" or "none" (default)
     """
-    
+
     command = createCommand("generateImage", {
         "layerName":layer_name,
         "prompt":prompt,
@@ -574,8 +568,8 @@ def generative_fill(
     """Uses Adobe Firefly Generative AI to perform generative fill within the current selection.
 
     This function uses generative fill to seamlessly integrate new content into the existing image.
-    It requires an active selection, and will fill that region taking into account the surrounding 
-    context and layers below. The AI considers the existing content to create a natural, 
+    It requires an active selection, and will fill that region taking into account the surrounding
+    context and layers below. The AI considers the existing content to create a natural,
     contextually-aware fill.
 
     Args:
@@ -583,7 +577,7 @@ def generative_fill(
         prompt (str): Prompt describing the content to be generated within the selection
         layer_id (int): ID of the layer to work with (though a new layer is created for the result)
         content_type (str): The type of image to be generated. Options include "photo", "art" or "none" (default)
-    
+
     Returns:
         dict: Response from Photoshop containing the operation status and layer information
     """
@@ -642,7 +636,7 @@ def get_document_info():
 def crop_document():
     """Crops the document to the active selection.
 
-    This function removes all content outside the selection area and resizes the document 
+    This function removes all content outside the selection area and resizes the document
     so that the selection becomes the new canvas size.
 
     An active selection is required.
@@ -677,7 +671,7 @@ def paste_from_clipboard(layer_id: int, paste_in_place: bool = True):
 def rasterize_layer(layer_id: int):
     """Converts the specified layer into a rasterized (flat) image.
 
-    This process removes any vector, text, or smart object properties, turning the layer 
+    This process removes any vector, text, or smart object properties, turning the layer
     into pixel-based content.
 
     Args:
@@ -694,7 +688,7 @@ def rasterize_layer(layer_id: int):
 def open_photoshop_file(file_path: str):
     """Opens the specified Photoshop-compatible file within Photoshop.
 
-    This function attempts to open a file in Adobe Photoshop. The file must be in a 
+    This function attempts to open a file in Adobe Photoshop. The file must be in a
     format compatible with Photoshop, such as PSD, TIFF, JPEG, PNG, etc.
 
     Args:
@@ -702,7 +696,7 @@ def open_photoshop_file(file_path: str):
 
     Returns:
         dict: Response from the Photoshop operation indicating success status.
-        
+
     Raises:
         RuntimeError: If the file doesn't exist, is not accessible, or is in an unsupported format.
     """
@@ -740,7 +734,7 @@ def copy_merged_selection_to_clipboard():
 
     Returns:
         dict: Response from the Photoshop operation indicating success status.
-        
+
     Raises:
         RuntimeError: If no active selection exists.
     """
@@ -757,7 +751,7 @@ def copy_selection_to_clipboard(layer_id: int):
 
     Args:
         layer_id (int): The name of the layer that contains the pixels to copy.
-        
+
     Returns:
         dict: Response from the Photoshop operation indicating success status.
     """
@@ -772,15 +766,14 @@ def copy_selection_to_clipboard(layer_id: int):
 def select_subject(layer_id: int):
     """Automatically selects the subject in the specified layer.
 
-    This function identifies and selects the subject in the given image layer. 
-    It returns an object containing a property named `hasActiveSelection`, 
+    This function identifies and selects the subject in the given image layer.
+    It returns an object containing a property named `hasActiveSelection`,
     which indicates whether any pixels were selected (e.g., if no subject was detected).
 
     Args:
         layer_int (int): The name of that contains the image to select the subject from.
     """
 
-    
     command = createCommand("selectSubject", {
         "layerId":layer_id
     })
@@ -791,15 +784,14 @@ def select_subject(layer_id: int):
 def select_sky(layer_id: int):
     """Automatically selects the sky in the specified layer.
 
-    This function identifies and selects the sky in the given image layer. 
-    It returns an object containing a property named `hasActiveSelection`, 
+    This function identifies and selects the sky in the given image layer.
+    It returns an object containing a property named `hasActiveSelection`,
     which indicates whether any pixels were selected (e.g., if no sky was detected).
 
     Args:
         layer_id (int): The name of that contains the image to select the sky from.
     """
 
-    
     command = createCommand("selectSky", {
         "layerId":layer_id
     })
@@ -812,7 +804,7 @@ def get_layer_bounds(
     layer_id: int
 ):
     """Returns the pixel bounds for the layer with the specified ID
-    
+
     Args:
         layer_id (int): ID of the layer to get the bounds information from
 
@@ -822,11 +814,11 @@ def get_layer_bounds(
             - top (int): The y-coordinate of the top edge of the layer
             - right (int): The x-coordinate of the right edge of the layer
             - bottom (int): The y-coordinate of the bottom edge of the layer
-            
+
     Raises:
         RuntimeError: If the layer doesn't exist or if the operation fails
     """
-    
+
     command = createCommand("getLayerBounds", {
         "layerId":layer_id
     })
@@ -838,11 +830,11 @@ def remove_background(
     layer_id:int
 ):
     """Automatically removes the background of the image in the layer with the specified ID and keeps the main subject
-    
+
     Args:
         layer_id (int): ID of the layer to remove the background from
     """
-    
+
     command = createCommand("removeBackground", {
         "layerId":layer_id
     })
@@ -857,14 +849,14 @@ def create_pixel_layer(
     blend_mode:str = "NORMAL",
 ):
     """Creates a new pixel layer with the specified ID
-    
+
     Args:
         layer_name (str): Name of the new layer being created
         fill_neutral (bool): Whether to fill the layer with a neutral color when applying Blend Mode.
         opacity (int): Opacity of the newly created layer
         blend_mode (str): Blend mode of the newly created layer
     """
-    
+
     command = createCommand("createPixelLayer", {
         "layerName":layer_name,
         "opacity":opacity,
@@ -874,23 +866,23 @@ def create_pixel_layer(
 
     return sendCommand(command)
 
+
 @mcp.tool()
 def create_multi_line_text_layer(
-    layer_name:str, 
-    text:str, 
-    font_size:int, 
-    postscript_font_name:str, 
-    opacity:int = 100,
-    blend_mode:str = "NORMAL",
-    text_color:dict = {"red":255, "green":255, "blue":255}, 
-    position:dict = {"x": 100, "y":100},
-    bounds:dict = {"top": 0, "left": 0, "bottom": 250, "right": 300},
-    justification:str = "LEFT"
-    ):
-
+    layer_name: str,
+    text: str,
+    font_size: int,
+    postscript_font_name: str,
+    opacity: int = 100,
+    blend_mode: str = "NORMAL",
+    text_color: dict = {"red": 255, "green": 255, "blue": 255},
+    position: dict = {"x": 100, "y": 100},
+    bounds: dict = {"top": 0, "left": 0, "bottom": 250, "right": 300},
+    justification: str = "LEFT",
+):
     """
     Creates a new multi-line text layer with the specified ID within the current Photoshop document.
-    
+
     Args:
         layer_name (str): The name of the layer to be created. Can be used to select in other api calls.
         text (str): The text to include on the layer.
@@ -922,19 +914,18 @@ def create_multi_line_text_layer(
 
 @mcp.tool()
 def create_single_line_text_layer(
-    layer_name:str, 
-    text:str, 
-    font_size:int, 
-    postscript_font_name:str, 
-    opacity:int = 100,
-    blend_mode:str = "NORMAL",
-    text_color:dict = {"red":255, "green":255, "blue":255}, 
-    position:dict = {"x": 100, "y":100}
-    ):
-
+    layer_name: str,
+    text: str,
+    font_size: int,
+    postscript_font_name: str,
+    opacity: int = 100,
+    blend_mode: str = "NORMAL",
+    text_color: dict = {"red": 255, "green": 255, "blue": 255},
+    position: dict = {"x": 100, "y": 100},
+):
     """
     Create a new single line text layer with the specified ID within the current Photoshop document.
-    
+
      Args:
         layer_name (str): The name of the layer to be created. Can be used to select in other api calls.
         text (str): The text to include on the layer.
@@ -959,18 +950,18 @@ def create_single_line_text_layer(
 
     return sendCommand(command)
 
+
 @mcp.tool()
 def edit_text_layer(
-    layer_id:int, 
-    text:str = None,
-    font_size:int = None,
-    postscript_font_name:str = None, 
-    text_color:dict = None,
-    ):
-
+    layer_id: int,
+    text: str = None,
+    font_size: int = None,
+    postscript_font_name: str = None,
+    text_color: dict = None,
+):
     """
     Edits the text content of an existing text layer in the current Photoshop document.
-    
+
     Args:
         layer_id (int): The ID of the existing text layer to edit.
         text (str): The new text content to replace the current text in the layer. If None, text will not be changed.
@@ -990,7 +981,6 @@ def edit_text_layer(
     return sendCommand(command)
 
 
-
 @mcp.tool()
 def translate_layer(
     layer_id: int,
@@ -1006,7 +996,7 @@ def translate_layer(
         x_offset (int): Amount to move on the horizontal axis. Negative values move the layer left, positive values right
         y_offset (int): Amount to move on the vertical axis. Negative values move the layer down, positive values up
     """
-    
+
     command = createCommand("translateLayer", {
         "layerId":layer_id,
         "xOffset":x_offset,
@@ -1025,7 +1015,7 @@ def remove_layer_mask(
     Args:
         None
     """
-    
+
     command = createCommand("removeLayerMask", {
         "layerId":layer_id
     })
@@ -1038,7 +1028,7 @@ def add_layer_mask_from_selection(
     ):
 
     """Creates a layer mask on the specified layer defined by the active selection.
-    
+
     This function takes the current active selection in the document and converts it into a layer mask
     for the specified layer. Selected areas will be visible, while non-selected areas will be hidden.
     An active selection must exist before calling this function.
@@ -1046,7 +1036,7 @@ def add_layer_mask_from_selection(
     Args:
         layer_name (str): The name of the layer to which the mask will be applied
     """
-    
+
     command = createCommand("addLayerMask", {
         "layerId":layer_id
     })
@@ -1071,7 +1061,7 @@ def set_layer_properties(
         fill_opacity (int): The fill opacity for the layer (0 - 100). Will ignore anny effects that have been applied to the layer.
         is_clipping_mask (bool): A boolean indicating whether this layer will be clipped to (masked by) the layer below it
     """
-    
+
     command = createCommand("setLayerProperties", {
         "layerId":layer_id,
         "blendMode":blend_mode,
@@ -1091,14 +1081,14 @@ def fill_selection(
     ):
 
     """Fills the selection on the pixel layer with the specified ID
-    
+
     Args:
         layer_id (int): The ID of existing pixel layer to add the fill
         color (dict): The color of the fill
         blend_mode (dict): The blend mode for the fill
         opacity (int) : The opacity of the color for the fill
     """
-    
+
     command = createCommand("fillSelection", {
         "layerId":layer_id,
         "color":color,
@@ -1109,18 +1099,17 @@ def fill_selection(
     return sendCommand(command)
 
 
-
 @mcp.tool()
 def delete_selection(
     layer_id: int
     ):
 
     """Removes the pixels within the selection on the pixel layer with the specified ID
-    
+
     Args:
         layer_id (int): The ID of the layer from which the content of the selection should be deleted
     """
-    
+
     command = createCommand("deleteSelection", {
         "layerId":layer_id
     })
@@ -1130,7 +1119,7 @@ def delete_selection(
 
 @mcp.tool()
 def invert_selection():
-    
+
     """Inverts the current selection in the Photoshop document"""
 
     command = createCommand("invertSelection", {})
@@ -1139,7 +1128,7 @@ def invert_selection():
 
 @mcp.tool()
 def clear_selection():
-    
+
     """Clears / deselects the current selection"""
 
     command = createCommand("selectRectangle", {
@@ -1157,9 +1146,9 @@ def select_rectangle(
     anti_alias:bool = True,
     bounds:dict = {"top": 0, "left": 0, "bottom": 100, "right": 100}
     ):
-    
+
     """Creates a rectangular selection and selects the specified layer
-    
+
     Args:
         layer_id (int): The layer to do the select rectangle action on.
         feather (int): The amount of feathering in pixels to apply to the selection (0 - 1000)
@@ -1183,9 +1172,9 @@ def select_polygon(
     anti_alias:bool = True,
     points:list[dict[str, int]] = [{"x": 50, "y": 10}, {"x": 100, "y": 90}, {"x": 10, "y": 40}]
     ):
-    
+
     """Creates an n-sided polygon selection and selects the specified layer
-    
+
     Args:
         layer_id (int): The layer to do the selection action on.
         feather (int): The amount of feathering in pixels to apply to the selection (0 - 1000)
@@ -1209,9 +1198,9 @@ def select_ellipse(
     anti_alias:bool = True,
     bounds:dict = {"top": 0, "left": 0, "bottom": 100, "right": 100}
     ):
-    
+
     """Creates an elliptical selection and selects the specified layer
-    
+
     Args:
         layer_id (int): The layer to do the selection action on.
         feather (int): The amount of feathering in pixels to apply to the selection (0 - 1000)
@@ -1233,7 +1222,7 @@ def align_content(
     layer_id: int,
     alignment_mode:str
     ):
-    
+
     """
     Aligns content on layer with the specified ID to the current selection.
 
@@ -1331,7 +1320,7 @@ def add_color_balance_adjustment_layer(
 
     First value is between cyan and red
     The second value is between magenta and green
-    The third value is between yellow and blue    
+    The third value is between yellow and blue
 
     Args:
         layer_id (int): The ID of the layer to apply the color balance adjustment layer
@@ -1381,13 +1370,13 @@ def add_stroke_layer_style(
     blend_mode: str = "NORMAL"
     ):
     """Adds a stroke layer style to the layer with the specified ID.
-    
+
     Args:
         layer_id (int): The ID of the layer to apply the stroke effect to.
         size (int, optional): The width of the stroke in pixels. Defaults to 2.
         color (dict, optional): The color of the stroke as RGB values. Defaults to black {"red": 0, "green": 0, "blue": 0}.
         opacity (int, optional): The opacity of the stroke as a percentage (0-100). Defaults to 100.
-        position (str, optional): The position of the stroke relative to the layer content. 
+        position (str, optional): The position of the stroke relative to the layer content.
                                  Options include "CENTER", "INSIDE", or "OUTSIDE". Defaults to "CENTER".
         blend_mode (str, optional): The blend mode for the stroke effect. Defaults to "NORMAL".
     """
@@ -1410,13 +1399,13 @@ def add_vibrance_adjustment_layer(
     vibrance:int = 0,
     saturation:int = 0):
     """Adds an adjustment layer to layer with the specified ID to adjust vibrance and saturation
-    
+
     Args:
         layer_id (int): The ID of the layer to apply the vibrance and saturation adjustment layer
         vibrance (int): Controls the intensity of less-saturated colors while preventing oversaturation of already-saturated colors. Range -100 to 100.
         saturation (int): Controls the intensity of all colors equally. Range -100 to 100.
     """
-    #0.1 to 255
+    # 0.1 to 255
 
     command = createCommand("addAdjustmentLayerVibrance", {
         "layerId":layer_id,
@@ -1434,13 +1423,13 @@ def add_black_and_white_adjustment_layer(
     tint_color: dict = {"red": 225, "green": 211, "blue": 179}
 ):
     """Adds a Black & White adjustment layer to the specified layer.
-    
+
     Creates an adjustment layer that converts the target layer to black and white. Optionally applies a color tint to the result.
-    
+
     Args:
         layer_id (int): The ID of the layer to apply the black and white adjustment to.
-        colors (dict): Controls how each color channel converts to grayscale. Values range from 
-                      -200 to 300, with higher values making that color appear lighter in the 
+        colors (dict): Controls how each color channel converts to grayscale. Values range from
+                      -200 to 300, with higher values making that color appear lighter in the
                       conversion. Must include all keys: red, yellow, green, cyan, blue, magenta.
         tint (bool, optional): Whether to apply a color tint to the black and white result.
                               Defaults to False.
@@ -1460,7 +1449,7 @@ def add_black_and_white_adjustment_layer(
 @mcp.tool()
 def apply_gaussian_blur(layer_id: int, radius: float = 2.5):
     """Applies a Gaussian Blur to the layer with the specified ID
-    
+
     Args:
         layer_id (int): ID of layer to be blurred
         radius (float): The blur radius in pixels determining the intensity of the blur effect. Default is 2.5.
@@ -1468,12 +1457,10 @@ def apply_gaussian_blur(layer_id: int, radius: float = 2.5):
 
     Returns:
         dict: Response from the Photoshop operation
-        
+
     Raises:
         RuntimeError: If the operation fails or times out
     """
-
-
 
     command = createCommand("applyGaussianBlur", {
         "layerId":layer_id,
@@ -1481,8 +1468,6 @@ def apply_gaussian_blur(layer_id: int, radius: float = 2.5):
     })
 
     return sendCommand(command)
-
-
 
 
 @mcp.tool()
@@ -1497,11 +1482,10 @@ def apply_motion_blur(layer_id: int, angle: int = 0, distance: float = 30):
 
     Returns:
         dict: Response from the Photoshop operation
-        
+
     Raises:
         RuntimeError: If the operation fails or times out
     """
-
 
     command = createCommand("applyMotionBlur", {
         "layerId":layer_id,
@@ -1581,15 +1565,15 @@ interpolation_methods = [
 ]
 
 anchor_positions = [
-   "BOTTOMCENTER",
-   "BOTTOMLEFT", 
-   "BOTTOMRIGHT", 
-   "MIDDLECENTER", 
-   "MIDDLELEFT", 
-   "MIDDLERIGHT", 
-   "TOPCENTER", 
-   "TOPLEFT", 
-   "TOPRIGHT"
+    "BOTTOMCENTER",
+    "BOTTOMLEFT",
+    "BOTTOMRIGHT",
+    "MIDDLECENTER",
+    "MIDDLELEFT",
+    "MIDDLERIGHT",
+    "TOPCENTER",
+    "TOPLEFT",
+    "TOPRIGHT",
 ]
 
 justification_modes = [
@@ -1641,3 +1625,12 @@ blend_modes = [
     "SUBTRACT",
     "VIVIDLIGHT"
 ]
+
+
+def main():
+    """Entry point for psmcp console script."""
+    mcp.run()
+
+
+if __name__ == "__main__":
+    main()
