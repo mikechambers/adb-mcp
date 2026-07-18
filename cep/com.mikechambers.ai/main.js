@@ -1,7 +1,8 @@
-/* Socket.IO Plugin for After Effects (CEP)
+/* Socket.IO Plugin for Illustrator (CEP)
  * Main JavaScript file
  */
 
+const { io } = require('socket.io-client');
 const csInterface = new CSInterface();
 const APPLICATION = "illustrator";
 const PROXY_URL = "http://localhost:3001";
@@ -69,7 +70,7 @@ function connectToServer() {
     log(`Connecting to ${PROXY_URL}...`);
     
     socket = io(PROXY_URL, {
-        transports: ["websocket", "polling"],
+        transports: ["websocket"],
     });
 
     socket.on("connect", () => {
