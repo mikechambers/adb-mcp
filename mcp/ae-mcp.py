@@ -133,3 +133,6 @@ BLEND_MODES = [
     "SUBTRACT",
     "VIVID_LIGHT"
 ]
+
+if __name__ == "__main__":
+    mcp.run()

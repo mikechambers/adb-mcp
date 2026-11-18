@@ -138,3 +138,6 @@ BLEND_MODES = [
     "DIVIDE"
 ]
 """
+
+if __name__ == "__main__":
+    mcp.run()
